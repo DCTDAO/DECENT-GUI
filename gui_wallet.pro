@@ -1,4 +1,5 @@
 CONFIG += debug
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 SOURCES += src/main_gui_wallet.cpp \
     src/gui_wallet_mainwindow.cpp \
     src/gui_wallet_centralwigdet.cpp \
