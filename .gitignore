@@ -1,0 +1,5 @@
+*.[oa]
+*~
+*.obj
+projects/*/*/Makefile
+projects/gui_wallet/gui_wallet_qt/gui_wallet
