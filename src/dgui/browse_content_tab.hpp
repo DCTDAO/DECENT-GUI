@@ -1,3 +1,12 @@
+/*
+ *	File: browse_content_tab.hpp
+ *
+ *	Created on: 11 Nov 2016
+ *	Created by: Davit Kalantaryan (Email: davit.kalantaryan@desy.de)
+ *
+ *  This file implements ...
+ *
+ */
 #ifndef BROWSE_CONTENT_TAB_H
 #define BROWSE_CONTENT_TAB_H
 

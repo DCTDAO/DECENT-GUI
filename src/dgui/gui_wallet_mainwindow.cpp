@@ -1,5 +1,5 @@
 /*
- *	File: mainwindow_gui_wallet.cpp
+ *	File: gui_wallet_mainwindow.cpp
  *
  *	Created on: Nov 11, 2016
  *	Created by: Davit Kalantaryan (Email: davit.kalantaryan@desy.de)
@@ -7,7 +7,7 @@
  *  This file implements ...
  *
  */
-#include "gui_wallet_mainwindow.h"
+#include "gui_wallet_mainwindow.hpp"
 #include <QMenuBar>
 
 using namespace gui_wallet;

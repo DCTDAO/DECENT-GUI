@@ -10,12 +10,12 @@
 
 #include <stdio.h>
 #include <QApplication>
-#include "gui_wallet_mainwindow.h"
+#include "gui_wallet_mainwindow.hpp"
 
 
 int main(int argc, char* argv[])
 {
-    freopen( "/dev/null", "w", stderr);
+    //freopen( "/dev/null", "w", stderr);
     QApplication aApp(argc,argv);
     gui_wallet::Mainwindow_gui_wallet aMainWindow;
 

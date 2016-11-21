@@ -1,5 +1,5 @@
 /*
- *	File: mainwindow_gui_wallet.cpp
+ *	File: gui_wallet_mainwindow.cpp
  *
  *	Created on: Nov 11, 2016
  *	Created by: Davit Kalantaryan (Email: davit.kalantaryan@desy.de)
@@ -11,7 +11,7 @@
 #define MAINWINDOW_GUI_WALLET_H
 
 #include <QMainWindow>
-#include "gui_wallet_centralwigdet.h"
+#include "gui_wallet_centralwigdet.hpp"
 #include <QAction>
 
 namespace gui_wallet
