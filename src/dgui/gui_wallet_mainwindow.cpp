@@ -19,7 +19,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     setCentralWidget(&m_CentralWidget);
     CreateActions();
     CreateMenues();
-    resize(800,300);
+    resize(900,550);
 }
 
 

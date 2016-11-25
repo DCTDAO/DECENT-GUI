@@ -11,10 +11,8 @@
 #define BROWSE_CONTENT_TAB_H
 
 #include <QWidget>
-#include <QHBoxLayout>
+#include <QTableWidget>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QTextEdit>
 
 namespace gui_wallet
 {
@@ -24,12 +22,11 @@ namespace gui_wallet
         Browse_content_tab();
         virtual ~Browse_content_tab();
 
+        void showEvent ( QShowEvent * event )  ;
+
     private:
-        QHBoxLayout m_main_layout;
-        QVBoxLayout m_synopsis_layout;
-        QVBoxLayout m_info_layout;
-        QLabel      m_synopsis_label;
-        QTextEdit   m_synopsis_text;
+        QVBoxLayout     m_main_layout;
+        QTableWidget    m_TableWidget;
     };
 }
 
