@@ -10,6 +10,8 @@
 #ifndef CENTRALWIGDET_GUI_WALLET_H
 #define CENTRALWIGDET_GUI_WALLET_H
 
+#define USE_TABLE_FOR_FIRST_LINE
+
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -46,15 +48,23 @@ namespace gui_wallet
 
     protected:
         virtual void showEvent ( QShowEvent * event ) ;
+        virtual void resizeEvent ( QResizeEvent * event );
         virtual void makeWarningImediatly(const QString& waringTitle, const QString& waringText, const QString& details );
+
+    private:
+        void PrepareGUIprivate();
 
     private slots:
         void make_deleyed_warning();
 
     private:
         QVBoxLayout         m_main_layout;
+#ifdef USE_TABLE_FOR_FIRST_LINE
+        QTableWidget        m_first_line_twidget;
+#else
         tmpWidget           m_first_line_widget;
         QHBoxLayout         m_first_line_layout;
+#endif
         QLineEdit           m_search_box;
         QTabWidget          m_main_tabs;
         Browse_content_tab  m_browse_cont_tab;
@@ -64,6 +74,7 @@ namespace gui_wallet
         QString             m_DelayedWaringTitle;
         QString             m_DelayedWaringText;
         QString             m_DelayedWaringDetails;
+        class QLabel*       m_imageLabel;
 
     };
 }

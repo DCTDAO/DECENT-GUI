@@ -91,8 +91,8 @@ Upload_tab::Upload_tab()
     }
     pPushButton = new QPushButton("Select path");
     pltEdit = pPushButton->palette();
-    pltEdit.setColor(QPalette::Base, Qt::red);
-    pltEdit.setColor(QPalette::WindowText, Qt::white);
+    pltEdit.setColor(QPalette::Button, Qt::red);
+    pltEdit.setColor(QPalette::ButtonText, Qt::white);
     pPushButton->setPalette(pltEdit);
     pPushButton->setAutoFillBackground(true);
     m_info_widget.setCellWidget(NUMBER_OF_INFO_LINES,0,new qtLabel_test("Patch"));
