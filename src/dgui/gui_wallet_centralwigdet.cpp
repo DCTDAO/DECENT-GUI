@@ -8,7 +8,7 @@
  *
  */
 
-#define DECENT_LOGO_FILE_NAME   "dc_logo.jpg"
+#define DECENT_LOGO_FILE_NAME   "../../../images/dc_logo.jpg"
 
 #include "gui_wallet_centralwigdet.hpp"
 #include <QMessageBox>
