@@ -8,7 +8,8 @@
  *
  */
 
-#define DECENT_LOGO_FILE_NAME   "../../../images/dc_logo.jpg"
+#define DECENT_LOGO_FILE_NAME       "dc_logo.jpg"
+#define DECENT_LOGO_INITIAL_PATH    "../../../images/"
 
 #include "gui_wallet_centralwigdet.hpp"
 #include <QMessageBox>
@@ -36,18 +37,28 @@ CentralWigdet::~CentralWigdet()
 
 void CentralWigdet::PrepareGUIprivate()
 {
+    bool bImageFound(true);
     m_main_tabs.addTab(&m_browse_cont_tab,tr("BROWSE CONTENT"));
     m_main_tabs.addTab(&m_trans_tab,tr("TRANSACTIONS"));
     m_main_tabs.addTab(&m_Upload_tab,tr("UPLOAD"));
     m_main_tabs.addTab(&m_Overview_tab,tr("OVERVIEW"));
 
     QPixmap image;
-    if( image.load(DECENT_LOGO_FILE_NAME) )
+    if( !image.load(DECENT_LOGO_INITIAL_PATH DECENT_LOGO_FILE_NAME) )
     {
-        m_imageLabel->setPixmap(image);
+        // Search for couple of other places
+        if( !image.load("./" DECENT_LOGO_FILE_NAME) )
+        {
+            if( !image.load("./" DECENT_LOGO_FILE_NAME) )
+            {
+                if( !image.load(DECENT_LOGO_FILE_NAME) ){bImageFound = false;}
+            }
+        }
     }
+
+    if(bImageFound){m_imageLabel->setPixmap(image);}
     else
-    {
+    {   
         m_DelayedWaringTitle = tr("no logo file");
         m_DelayedWaringText = tr(DECENT_LOGO_FILE_NAME" file can not be found!");
         m_DelayedWaringDetails = tr(
