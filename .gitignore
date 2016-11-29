@@ -1,9 +1,11 @@
 *.[oa]
 *~
 *.obj
-*.pro.user
+*.pro.user*
 projects/*/*/Makefile*
 projects/gui_wallet/gui_wallet_qt/gui_wallet
 sys/*/bin/*
+sys/*/.objects/*
 projects/*/*/debug/*
 projects/*/*/release/*
+moc_*.cpp

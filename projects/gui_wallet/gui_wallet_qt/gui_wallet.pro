@@ -6,6 +6,9 @@
 # This file can be used to produce Makefile for gui_wallet GUI application
 # for Decent
 #
+
+DEFINES += USE_NUM_GMP
+
 win32:SYSTEM_PATH = ../../../sys/win64
 else { 
     CODENAME = $$system(lsb_release -c | cut -f 2)
