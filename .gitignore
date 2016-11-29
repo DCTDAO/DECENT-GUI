@@ -1,6 +1,9 @@
 *.[oa]
 *~
 *.obj
+*.pro.user
 projects/*/*/Makefile*
 projects/gui_wallet/gui_wallet_qt/gui_wallet
-systems/*/bin/*
+sys/*/bin/*
+projects/*/*/debug/*
+projects/*/*/release/*
