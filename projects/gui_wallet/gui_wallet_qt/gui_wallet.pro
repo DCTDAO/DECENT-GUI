@@ -30,10 +30,12 @@ SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
     ../../../src/dgui/browse_content_tab.cpp \
     ../../../src/dgui/transactions_tab.cpp \
     ../../../src/dgui/upload_tab.cpp \
-    ../../../src/dgui/overview_tab.cpp
+    ../../../src/dgui/overview_tab.cpp \
+    ../../../src/dgui/gui_wallet_global.cpp
 HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/gui_wallet_centralwigdet.hpp \
     ../../../src/dgui/browse_content_tab.hpp \
     ../../../src/dgui/transactions_tab.hpp \
     ../../../src/dgui/upload_tab.hpp \
-    ../../../src/dgui/overview_tab.hpp
+    ../../../src/dgui/overview_tab.hpp \
+    ../../../src/dgui/gui_wallet_global.hpp

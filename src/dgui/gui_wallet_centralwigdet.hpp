@@ -10,7 +10,7 @@
 #ifndef CENTRALWIGDET_GUI_WALLET_H
 #define CENTRALWIGDET_GUI_WALLET_H
 
-#define USE_TABLE_FOR_FIRST_LINE
+//#define USE_TABLE_FOR_FIRST_LINE
 
 #include <QWidget>
 #include <QVBoxLayout>
@@ -25,15 +25,7 @@
 
 extern int g_nDebugApplication;
 
-class qtWidget_test : public QWidget
-{
-public:
-    ~qtWidget_test()
-    {
-        if(g_nDebugApplication){printf("qtWidget_test::~qtWidget_test();\n");}
-    }
-};
-
+struct qtWidget_test : public QWidget{~qtWidget_test(){if(g_nDebugApplication){printf("qtWidget_test::~qtWidget_test();\n");}}};
 #define tmpWidget  qtWidget_test
 
 namespace gui_wallet
@@ -49,7 +41,6 @@ namespace gui_wallet
     protected:
         virtual void showEvent ( QShowEvent * event ) ;
         virtual void resizeEvent ( QResizeEvent * event );
-        virtual void makeWarningImediatly(const QString& waringTitle, const QString& waringText, const QString& details );
 
     private:
         void PrepareGUIprivate();
@@ -59,12 +50,8 @@ namespace gui_wallet
 
     private:
         QVBoxLayout         m_main_layout;
-#ifdef USE_TABLE_FOR_FIRST_LINE
-        QTableWidget        m_first_line_twidget;
-#else
         tmpWidget           m_first_line_widget;
         QHBoxLayout         m_first_line_layout;
-#endif
         QLineEdit           m_search_box;
         QTabWidget          m_main_tabs;
         Browse_content_tab  m_browse_cont_tab;
@@ -78,7 +65,6 @@ namespace gui_wallet
 
     };
 }
-
 
 
 #endif // CENTRALWIGDET_GUI_WALLET_H
