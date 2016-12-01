@@ -34,16 +34,27 @@ QMAKE_CXXFLAGS_WARN_ON += -Wno-sign-compare
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-function
 QMAKE_CXXFLAGS_WARN_ON -= -Wunused-function
 
-BOOST_ROOT= /doocs/develop/kalantar/programs/cpp/works/.private/opt/boost_1_57_0
+QMAKE_CXXFLAGS += -msse4.2
+QMAKE_CFLAGS += -msse4.2
+
+#BOOST_ROOT= /doocs/develop/kalantar/programs/cpp/works/.private/opt/boost_1_57_0
+BOOST_ROOT= ../../../../../opt/boost_1_57_0
 LIBS += -L$$BOOST_ROOT/lib
 LIBS += -lboost_program_options
 LIBS += -lboost_filesystem
 LIBS += -lboost_system
+LIBS += -lboost_chrono
+LIBS += -lboost_date_time
+LIBS += -lboost_context
+LIBS += -lboost_coroutine
+LIBS += -lboost_thread
 LIBS += -lssl
 LIBS += -lcrypto
 LIBS += -lz
+LIBS += -lgmp
 
-INCLUDEPATH += /doocs/develop/kalantar/programs/cpp/works/.private/opt/boost_1_57_0/include
+#INCLUDEPATH += /doocs/develop/kalantar/programs/cpp/works/.private/opt/boost_1_57_0/include
+INCLUDEPATH += $$BOOST_ROOT/include
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/include
 INCLUDEPATH +=  ../../../../DECENT-Network/libraries/app/include
 INCLUDEPATH += ../../../../DECENT-Network/libraries/chain/include
@@ -136,9 +147,28 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/fc/src/network/http/http_connection.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/operations.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/transfer.cpp \
-    ../../../../DECENT-Network/libraries/chain/protocol/asset_ops.cpp
+    ../../../../DECENT-Network/libraries/chain/protocol/asset_ops.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/proposal.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/withdraw_permission.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/custom.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/assert.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/thread/spin_yield_lock.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/log/appender.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/log/console_appender.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/crypto/sha224.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/crypto/openssl.cpp \
+    ../../../../DECENT-Network/libraries/chain/special_authority.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/network/url.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/market.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/witness.cpp \
+    ../../../../DECENT-Network/libraries/chain/protocol/committee_member.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/log/gelf_appender.cpp \
+    ../../../../DECENT-Network/libraries/db/object_database.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/network/resolve.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/network/udp_socket.cpp
 
 
 HEADERS += \
     ../../../../DECENT-Network/libraries/fc/include/fc/log/logger.hpp \
-    ../../../../DECENT-Network/libraries/fc/src/crypto/_digest_common.hpp
+    ../../../../DECENT-Network/libraries/fc/src/crypto/_digest_common.hpp \
+    ../../../../tests/src/tests/custodyutils.h
