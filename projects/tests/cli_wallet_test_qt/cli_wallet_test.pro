@@ -165,7 +165,9 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/fc/src/log/gelf_appender.cpp \
     ../../../../DECENT-Network/libraries/db/object_database.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/resolve.cpp \
-    ../../../../DECENT-Network/libraries/fc/src/network/udp_socket.cpp
+    ../../../../DECENT-Network/libraries/fc/src/network/udp_socket.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/compress/zlib.cpp \
+    ../../../../DECENT-Network/libraries/db/undo_database.cpp
 
 
 HEADERS += \
