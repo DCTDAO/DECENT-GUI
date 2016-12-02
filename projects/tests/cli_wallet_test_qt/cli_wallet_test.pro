@@ -38,7 +38,7 @@ QMAKE_CXXFLAGS += -msse4.2
 QMAKE_CFLAGS += -msse4.2
 
 #BOOST_ROOT= /doocs/develop/kalantar/programs/cpp/works/.private/opt/boost_1_57_0
-BOOST_ROOT= ../../../../../opt/boost_1_57_0
+BOOST_ROOT= ../../../../../opt/boost_1_57_0_unix
 LIBS += -L$$BOOST_ROOT/lib
 LIBS += -lboost_program_options
 LIBS += -lboost_filesystem
@@ -130,28 +130,34 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/fc/src/crypto/base64.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/hex.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/sstream.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/crypto/_digest_common.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/sha1.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/elliptic_common.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/src/secp256k1.c \
     ../../../../DECENT-Network/libraries/fc/src/crypto/base58.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/bigint.cpp \
     ../../../../DECENT-Network/libraries/fc/src/asio.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/sha512.cpp \
+\
     ../../../../DECENT-Network/libraries/chain/protocol/memo.cpp \
     ../../../../DECENT-Network/libraries/utilities/words.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/aes.cpp \
     ../../../../DECENT-Network/libraries/chain/asset_object.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/confidential.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/crypto/elliptic_secp256k1.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/block.cpp \
     ../../../../DECENT-Network/libraries/chain/vesting_balance_object.cpp \
+\
     ../../../../DECENT-Network/libraries/wallet/api_documentation.cpp \
     ../../../../DECENT-Network/libraries/fc/src/thread/mutex.cpp \
     ../../../../DECENT-Network/libraries/fc/git_revision.cpp \
     ../../../src/tests/utilites_git_revision.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/account.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/asset.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/network/tcp_socket.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/http/http_connection.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/operations.cpp \
@@ -161,16 +167,20 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/chain/protocol/withdraw_permission.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/custom.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/assert.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/thread/spin_yield_lock.cpp \
     ../../../../DECENT-Network/libraries/fc/src/log/appender.cpp \
     ../../../../DECENT-Network/libraries/fc/src/log/console_appender.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/crypto/sha224.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/openssl.cpp \
     ../../../../DECENT-Network/libraries/chain/special_authority.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/url.cpp \
+\
     ../../../../DECENT-Network/libraries/chain/protocol/market.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/witness.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/committee_member.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/log/gelf_appender.cpp \
     ../../../../DECENT-Network/libraries/db/object_database.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/resolve.cpp \
@@ -182,4 +192,5 @@ SOURCES += \
 HEADERS += \
     ../../../../DECENT-Network/libraries/fc/include/fc/log/logger.hpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/_digest_common.hpp \
-    ../../../../tests/src/tests/custodyutils.h
+    ../../../../tests/src/tests/custodyutils.h \
+    ../../../../DECENT-Network/libraries/fc/vendor/websocketpp/websocketpp/extensions/permessage_deflate/disabled.hpp

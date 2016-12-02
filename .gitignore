@@ -13,4 +13,4 @@ workspaces
 .gitattributes
 projects/*/*/x64
 projects/*/*/Win32
-projects/tests/cli_wallet_test_vs13/cli_wallet_test.vcxproj.filters
+projects/*/*/*.filters*

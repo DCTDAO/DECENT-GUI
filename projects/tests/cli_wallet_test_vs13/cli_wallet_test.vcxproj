@@ -93,7 +93,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;%(AdditionalIncludeDirectories);W:\.private\opt\amd64_open_ssl-0_9_8g\inc32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>W:\.private\opt\zlib\zlib_win\include;../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;W:\.private\opt\amd64_open_ssl_0_9_8g\inc32</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -109,7 +109,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>W:\.private\opt\boost_1_57_0\include;W:\.private\decent\DECENT-Network\libraries\fc\include;W:\.private\decent\DECENT-Network\libraries\app\include;W:\.private\decent/DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;%(AdditionalIncludeDirectories);W:\.private\opt\amd64_open_ssl-0_9_8g\inc32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>W:\.private\opt\zlib\zlib_win\include;../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;W:\.private\opt\amd64_open_ssl_0_9_8g\inc32</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;%(AdditionalIncludeDirectories);W:\.private\opt\amd64_open_ssl-0_9_8g\inc32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>W:\.private\opt\zlib\zlib_win\include;../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;W:\.private\opt\amd64_open_ssl_0_9_8g\inc32</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;%(AdditionalIncludeDirectories);W:\.private\opt\amd64_open_ssl-0_9_8g\inc32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>W:\.private\opt\zlib\zlib_win\include;../../../../../opt/boost_1_57_0/include;../../../../DECENT-Network/libraries/fc/include;../../../../DECENT-Network/libraries/app/include;../../../../DECENT-Network/libraries/chain/include;../../../../DECENT-Network/libraries/db/include;../../../../DECENT-Network/libraries/plugins/market_history/include;../../../../DECENT-Network/libraries/net/include;../../../../DECENT-Network/libraries/plugins/debug_witness/include;../../../../DECENT-Network/libraries/egenesis/include;../../../../DECENT-Network/libraries/utilities/include;../../../../DECENT-Network/libraries/wallet/include;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include;../../../../DECENT-Network/libraries/fc/vendor/websocketpp;../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp;W:\.private\opt\amd64_open_ssl_0_9_8g\inc32</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -159,18 +159,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\asset_object.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\account.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\assert.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\asset.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\asset_ops.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\block.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\committee_member.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\confidential.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\custom.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\fee_schedule.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\market.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\memo.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\operations.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\proposal.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\transaction.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\transfer.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\types.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\vote.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\withdraw_permission.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\witness.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\special_authority.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\vesting_balance_object.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\db\object_database.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\db\undo_database.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\egenesis\egenesis_brief.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\git_revision.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\asio.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\compress\zlib.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\aes.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\base58.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\base64.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\bigint.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\city.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\elliptic_common.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\elliptic_impl_priv.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\elliptic_secp256k1.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\hex.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\openssl.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\pke.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\ripemd160.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\sha1.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\sha224.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\sha256.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\sha512.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\_digest_common.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\exception.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\filesystem.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\interprocess\signals.cpp" />
@@ -179,13 +212,21 @@
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\io\iostream.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\io\json.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\io\sstream.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\appender.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\console_appender.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\file_appender.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\gelf_appender.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\logger.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\logger_config.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\log\log_message.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\http\http_connection.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\http\http_server.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\http\websocket.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\ip.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\resolve.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\tcp_socket.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\udp_socket.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\network\url.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\rpc\cli.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\rpc\http_api.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\rpc\state.cpp" />
@@ -193,7 +234,9 @@
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\shared_ptr.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\string.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\thread\future.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\thread\mutex.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\thread\spin_lock.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\thread\spin_yield_lock.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\thread\task.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\thread\thread.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\time.cpp" />
@@ -201,9 +244,17 @@
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\utf8.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\variant.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\variant_object.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\vendor\secp256k1-zkp\src\secp256k1.c" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\utilities\key_conversion.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\utilities\words.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\wallet\api_documentation.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\wallet\wallet.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\programs\cli_wallet\main.cpp" />
+    <ClCompile Include="..\..\..\src\tests\utilites_git_revision.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\_digest_common.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\fc\vendor\websocketpp\websocketpp\extensions\permessage_deflate\disabled.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
