@@ -90,34 +90,43 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/utilities/key_conversion.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/types.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/json.cpp \
+\
     ../../../../DECENT-Network/libraries/egenesis/egenesis_brief.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/http/websocket.cpp \
     ../../../../DECENT-Network/libraries/fc/src/exception.cpp \
+\
     ../../../../DECENT-Network/libraries/wallet/wallet.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/ip.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/http/http_server.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/interprocess/signals.cpp \
     ../../../../DECENT-Network/libraries/fc/src/string.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/ripemd160.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/transaction.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/fee_schedule.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/shared_ptr.cpp \
     ../../../../DECENT-Network/libraries/fc/src/thread/future.cpp \
     ../../../../DECENT-Network/libraries/fc/src/time.cpp \
     ../../../../DECENT-Network/libraries/chain/protocol/vote.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/rpc/websocket_api.cpp \
     ../../../../DECENT-Network/libraries/fc/src/uint128.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/datastream.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/crypto/city.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/iostream.cpp \
     ../../../../DECENT-Network/libraries/fc/src/rpc/cli.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/thread/spin_lock.cpp \
     ../../../../DECENT-Network/libraries/fc/src/log/logger_config.cpp \
     ../../../../DECENT-Network/libraries/fc/src/thread/thread.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/rpc/state.cpp \
     ../../../../DECENT-Network/libraries/fc/src/utf8.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/fstream.cpp \
     ../../../../DECENT-Network/libraries/fc/src/thread/task.cpp \
+\
     ../../../../DECENT-Network/libraries/fc/src/crypto/base64.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/hex.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/sstream.cpp \
