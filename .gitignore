@@ -14,3 +14,4 @@ workspaces
 projects/*/*/x64
 projects/*/*/Win32
 projects/*/*/*.filters*
+!sys/*/bin/setup_environment.bat
