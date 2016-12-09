@@ -9,7 +9,9 @@
  */
 
 #define DECENT_LOGO_FILE_NAME       "dc_logo.jpg"
-#define DECENT_LOGO_INITIAL_PATH    "../../../images/"
+#define GLOBE_FILE_NAME             "globe.jpg"
+#define MAN_LOGO_FILE_NAME          "man_logo.jpg"
+#define DECENT_IMGS_INITIAL_PATH    "../../../images/"
 
 #include "gui_wallet_centralwigdet.hpp"
 #include <QMessageBox>
@@ -23,6 +25,8 @@
 using namespace gui_wallet;
 
 CentralWigdet::CentralWigdet()
+    :
+      m_nBalance(0)
 {
     m_imageLabel = new QLabel;
     PrepareGUIprivate();
@@ -35,6 +39,35 @@ CentralWigdet::~CentralWigdet()
 }
 
 
+void CentralWigdet::SetAccountBalanceGUI(int a_nBallance)
+{
+    if(a_nBallance>=0){m_nBalance = a_nBallance;}
+    QString aBalance = QString::number(m_nBalance,10) + tr(" DTC");
+    m_balanceLabel.setText(aBalance);
+}
+
+
+const int& CentralWigdet::GetAccountBalance()const
+{
+    return m_nBalance;
+}
+
+
+
+//static void SetImageToLabelStatic(){}
+#define SetImageToLabelStatic(_bRet_,_image_,_image_name_) \
+        do{ \
+            (_bRet_)=true; \
+            if( !(_image_).load(DECENT_IMGS_INITIAL_PATH _image_name_) ) {\
+                /* Search for couple of other places */ \
+                if( !(_image_).load("./" _image_name_) ) {\
+                    if( !(_image_).load((_image_name_)) ){(_bRet_)=false;} \
+                }\
+             }\
+        }while(0)
+
+
+
 void CentralWigdet::PrepareGUIprivate()
 {
     bool bImageFound(true);
@@ -44,18 +77,8 @@ void CentralWigdet::PrepareGUIprivate()
     m_main_tabs.addTab(&m_Overview_tab,tr("OVERVIEW"));
 
     QPixmap image;
-    if( !image.load(DECENT_LOGO_INITIAL_PATH DECENT_LOGO_FILE_NAME) )
-    {
-        // Search for couple of other places
-        if( !image.load("./" DECENT_LOGO_FILE_NAME) )
-        {
-            if( !image.load("./" DECENT_LOGO_FILE_NAME) )
-            {
-                if( !image.load(DECENT_LOGO_FILE_NAME) ){bImageFound = false;}
-            }
-        }
-    }
 
+    SetImageToLabelStatic(bImageFound,image,DECENT_LOGO_FILE_NAME);
     if(bImageFound){m_imageLabel->setPixmap(image);}
     else
     {   
@@ -78,6 +101,77 @@ void CentralWigdet::PrepareGUIprivate()
 
     m_first_line_layout.addWidget(m_imageLabel);
     m_first_line_layout.addWidget(&m_search_box);
+    /* /// Probably should be Modified, to skip new ...! */
+    QLabel* pBalanceLabel = new QLabel(tr("Balance"));
+    QPalette aPal = pBalanceLabel->palette();
+    aPal.setColor(QPalette::Window, Qt::black);
+    aPal.setColor(QPalette::WindowText, Qt::white);
+    pBalanceLabel->setPalette(aPal);
+    m_first_line_layout.addWidget(pBalanceLabel);
+
+    /*/////////////// pGlobeLabel ////////////////////////*/
+    QLabel* pGlobeLabel = new QLabel;
+    SetImageToLabelStatic(bImageFound,image,GLOBE_FILE_NAME);
+    if(bImageFound){pGlobeLabel->setPixmap(image);}
+    else
+    {
+        m_DelayedWaringTitle = tr("no glob file");
+        m_DelayedWaringText = tr(GLOBE_FILE_NAME" file can not be found!");
+        m_DelayedWaringDetails = tr(
+                "file '"GLOBE_FILE_NAME"' could not be found\n"
+                "The search paths are the following:\n"
+                "1. the current directory \n"
+                "2. the 'image'' folder in the current directory\n"
+                "3. the 'image'' folder in the \"../../../\"\n"
+                "To see the logo, please put the logo file to the directories\n"
+                "mentioned above and then rerun the application");
+        QTimer::singleShot(100, this, SLOT(make_deleyed_warning()));
+        pGlobeLabel->setText("Glb");
+    }
+    m_first_line_layout.addWidget(pGlobeLabel);
+    /*/////////////// end pGlobeLabel ////////////////////*/
+
+    /* /// End Probably should be Modified, to skip new ...! */
+
+    //m_balanceLabel.setText(tr("0 DTC"));
+    SetAccountBalanceGUI();
+    aPal = m_balanceLabel.palette();
+    aPal.setColor(QPalette::Window, Qt::black);
+    aPal.setColor(QPalette::WindowText, Qt::white);
+    m_balanceLabel.setPalette(aPal);
+    m_first_line_layout.addWidget(&m_balanceLabel);
+
+    /*/////////////// pManLabel ////////////////////////*/
+    QLabel* pManLabel = new QLabel;
+    SetImageToLabelStatic(bImageFound,image,MAN_LOGO_FILE_NAME);
+    if(bImageFound){pManLabel->setPixmap(image);}
+    else
+    {
+        m_DelayedWaringTitle = tr("no glob file");
+        m_DelayedWaringText = tr(MAN_LOGO_FILE_NAME" file can not be found!");
+        m_DelayedWaringDetails = tr(
+                "file '"MAN_LOGO_FILE_NAME"' could not be found\n"
+                "The search paths are the following:\n"
+                "1. the current directory \n"
+                "2. the 'image'' folder in the current directory\n"
+                "3. the 'image'' folder in the \"../../../\"\n"
+                "To see the logo, please put the logo file to the directories\n"
+                "mentioned above and then rerun the application");
+        QTimer::singleShot(100, this, SLOT(make_deleyed_warning()));
+        pManLabel->setText("Man");
+    }
+    m_first_line_layout.addWidget(pManLabel);
+    /*/////////////// end pManLabel ////////////////////*/
+
+    //m_users_list
+    m_users_list.setStyleSheet("color: white;""background-color:red;");
+    aPal = m_users_list.palette();
+    aPal.setColor(QPalette::Window, Qt::red);
+    aPal.setColor(QPalette::WindowText, Qt::white);
+    m_users_list.setPalette(aPal);
+    m_users_list.addItem(tr("Username"));
+    m_first_line_layout.addWidget(&m_users_list);
+
     m_first_line_widget.setLayout(&m_first_line_layout);
     m_main_layout.addWidget(&m_first_line_widget);
 

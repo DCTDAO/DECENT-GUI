@@ -22,6 +22,8 @@
 #include "upload_tab.hpp"
 #include "overview_tab.hpp"
 #include <stdio.h>
+#include <QLabel>
+#include <QComboBox>
 
 extern int g_nDebugApplication;
 
@@ -35,8 +37,12 @@ namespace gui_wallet
         Q_OBJECT
     public:
         CentralWigdet();
-        virtual ~CentralWigdet(); // virtual because may be this class will be
-                                  // used by inheritance
+        virtual ~CentralWigdet(); /* virtual because may be this class will be */
+                                  /* used by inheritance */
+
+        void SetAccountBalanceGUI(int ballance=-1); /* arg_in <0 means only update on GUI*/
+
+        const int& GetAccountBalance()const;
 
     protected:
         virtual void showEvent ( QShowEvent * event ) ;
@@ -62,6 +68,10 @@ namespace gui_wallet
         QString             m_DelayedWaringText;
         QString             m_DelayedWaringDetails;
         class QLabel*       m_imageLabel;
+        QLabel              m_balanceLabel;
+        /* 'm_nBalance' to have this filed in order to skip parsing the text each time balance is needed*/
+        int                 m_nBalance;
+        QComboBox           m_users_list;
 
     };
 }
