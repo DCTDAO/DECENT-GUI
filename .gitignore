@@ -15,3 +15,9 @@ projects/*/*/x64
 projects/*/*/Win32
 projects/*/*/*.filters*
 !sys/*/bin/setup_environment.bat
+projects/tests/cli_wallet_test_vs15/*
+!projects/tests/cli_wallet_test_vs15/cli_wallet_test.vcxproj
+!projects/tests/cli_wallet_test_vs15/cli_wallet_test.sln
+projects/tests/cli_wallet_test_vs13/*
+!projects/tests/cli_wallet_test_vs13/cli_wallet_test.vcxproj
+!projects/tests/cli_wallet_test_vs13/cli_wallet_test.sln
