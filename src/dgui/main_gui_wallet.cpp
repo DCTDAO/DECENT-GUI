@@ -9,6 +9,7 @@
  */
 
 #include <stdio.h>
+#include <wchar.h>
 #include <string.h>
 #include <QApplication>
 #include "gui_wallet_mainwindow.hpp"
@@ -45,11 +46,22 @@ int main(int argc, char* argv[])
 
     freopen( "/dev/null", "w", stderr);
     QApplication aApp(argc,argv);
+
+#if 0
+    //QString testString;
+    wprintf(L"fwide=%d\n",fwide(stdout,1));
+    wprintf(L"Русский\n");
+    wchar_t i = 0x2192;
+    //for( i=4000; i<6000;++i)
+    {
+        //wprintf(L"chr=%c(code=%d)\n",i,(int)i);
+        wprintf(L"chr='%lc'(code=%d)\n",i,(int)i);
+    }
+#else
     gui_wallet::Mainwindow_gui_wallet aMainWindow;
-
     aMainWindow.show();
-
     aApp.exec();
+#endif
 
     return 0;
 }

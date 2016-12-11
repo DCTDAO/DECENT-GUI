@@ -76,6 +76,32 @@ void CentralWigdet::PrepareGUIprivate()
     m_main_tabs.addTab(&m_Upload_tab,tr("UPLOAD"));
     m_main_tabs.addTab(&m_Overview_tab,tr("OVERVIEW"));
 
+    QTabBar* pTabBar = m_main_tabs.tabBar();
+
+    pTabBar->setStyleSheet("QTabBar::tab:disabled {"
+        "width: 200px;"
+        "color: transparent;"
+        "background: transparent;"
+     "}");
+    //pTabBar->setStyleSheet("QTabBar{disabled{width:100px;color:transparent;background:transparent;}}");
+    //m_main_tabs.addTab(new QWidget(),tr(""));
+    m_main_tabs.addTab(new QWidget(),tr(""));
+    m_main_tabs.setTabEnabled(4,false);
+    m_main_tabs.setTabEnabled(5,false);
+    /* /// Should be fixed, and set to widget of project defined class*/
+    QString aSendReceiveText;
+#if 0
+    wchar_t vwcStr[2]={0};
+    vwcStr[0] = 0x2192;
+    vwcStr[1] = (wchar_t)0;
+    aSendReceiveText.fromWCharArray(vwcStr);
+#else
+    aSendReceiveText = tr("-> SEND");
+    //aSendReceiveText.fromWCharArray(L"Русский");
+#endif
+    m_main_tabs.addTab(new QWidget(),aSendReceiveText);
+    m_main_tabs.addTab(new QWidget(),tr("<- RECEIVE"));
+
     QPixmap image;
 
     SetImageToLabelStatic(bImageFound,image,DECENT_LOGO_FILE_NAME);
