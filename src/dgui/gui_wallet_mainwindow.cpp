@@ -14,18 +14,56 @@ using namespace gui_wallet;
 
 Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
-        m_ActionExit(tr("&Exit"),this)
+        m_ActionExit(tr("&Exit"),this),
+        m_ActionAbout(tr("About"),this)
 {
+#if 0
+
     setCentralWidget(&m_CentralWidget);
     CreateActions();
     CreateMenues();
     resize(900,550);
+
+#else
+
+    m_barLeft = new QMenuBar;
+    m_barRight = new QMenuBar;
+
+    m_pCentralAllLayout = new QVBoxLayout;
+    m_pMenuLayout = new QHBoxLayout;
+
+    m_pMenuLayout->addWidget(m_barLeft);
+    m_pMenuLayout->addWidget(m_barRight);
+
+    m_pMenuLayout->setAlignment(m_barLeft, Qt::AlignLeft);
+    m_pMenuLayout->setAlignment(m_barRight, Qt::AlignRight);
+
+    m_pCentralAllLayout->addLayout(m_pMenuLayout);
+    /*mainMenuLayout0->addWidget(new QWidget);
+
+    QWidget *central = new QWidget;
+    central->setLayout(mainMenuLayout0);*/
+
+    m_pCentralWidget = new CentralWigdet(m_pCentralAllLayout);
+    m_pCentralWidget->setLayout(m_pCentralAllLayout);
+    setCentralWidget(m_pCentralWidget);
+    CreateActions();
+    CreateMenues();
+    resize(900,550);
+
+    setCentralWidget(m_pCentralWidget);
+
+#endif
 }
 
 
 Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
 }
+
+
+void Mainwindow_gui_wallet::AboutSlot()
+{}
 
 
 void Mainwindow_gui_wallet::CreateActions()
@@ -51,6 +89,9 @@ void Mainwindow_gui_wallet::CreateActions()
 
     /**************************************************************************/
 
+    m_ActionAbout.setStatusTip( tr("About") );
+    connect( &m_ActionAbout, SIGNAL(triggered()), this, SLOT(AboutSlot()) );
+
     /**************************************************************************/
 
     /**************************************************************************/
@@ -61,12 +102,22 @@ void Mainwindow_gui_wallet::CreateActions()
 
 void Mainwindow_gui_wallet::CreateMenues()
 {
-    m_pMenuFile = menuBar()->addMenu( tr("&File") );
+    QMenuBar* pMenuBar = m_barLeft;
+
+    m_pMenuFile = pMenuBar->addMenu( tr("&File") );
     //m_pMenuFile->addAction( m_pActionLoadIniFile );
     //m_pMenuFile->addAction( m_pActionPrint );
     m_pMenuFile->addAction( &m_ActionExit );
 
-    m_pMenuSetting = menuBar()->addMenu( tr("&Setting") );
-    m_pMenuHelp = menuBar()->addMenu( tr("&Help") );
-    m_pMenuContent = menuBar()->addMenu( tr("Content") );
+    m_pMenuSetting = pMenuBar->addMenu( tr("&Setting") );
+    m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );
+    m_pMenuHelpL->addAction( &m_ActionAbout );
+    m_pMenuContent = pMenuBar->addMenu( tr("Content") );
+
+    //QMenu*          m_pMenuHelpR;
+    //QMenu*          m_pMenuCreateTicket;
+    pMenuBar = m_barRight;
+    m_pMenuHelpR = pMenuBar->addMenu( tr("Help") );
+    m_pMenuHelpR->addAction( &m_ActionAbout );
+    m_pMenuCreateTicket = pMenuBar->addMenu( tr("Create ticket") );
 }

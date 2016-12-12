@@ -36,7 +36,7 @@ namespace gui_wallet
     {
         Q_OBJECT
     public:
-        CentralWigdet();
+        CentralWigdet(class QBoxLayout* pAllLayout);
         virtual ~CentralWigdet(); /* virtual because may be this class will be */
                                   /* used by inheritance */
 
@@ -49,7 +49,7 @@ namespace gui_wallet
         virtual void resizeEvent ( QResizeEvent * event );
 
     private:
-        void PrepareGUIprivate();
+        void PrepareGUIprivate(class QBoxLayout* pAllLayout);
 
     private slots:
         void make_deleyed_warning();

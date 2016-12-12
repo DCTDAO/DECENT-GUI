@@ -13,8 +13,10 @@
 #include <string.h>
 #include <QApplication>
 #include "gui_wallet_mainwindow.hpp"
+#include <graphene/wallet/WALLET.HPP>
 
 int g_nDebugApplication = 0;
+//graphene::wallet::wallet_api    g_wallet_api;
 
 
 int main(int argc, char* argv[])

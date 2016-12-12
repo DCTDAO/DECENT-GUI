@@ -27,13 +27,24 @@ namespace gui_wallet
         void CreateActions();
         void CreateMenues();
 
+    protected slots:
+        void AboutSlot();
+
     private:
-        CentralWigdet   m_CentralWidget;
+        class QVBoxLayout*   m_pCentralAllLayout;
+        class QHBoxLayout*   m_pMenuLayout;
+        CentralWigdet*       m_pCentralWidget;
+
+        QMenuBar *      m_barLeft ;
+        QMenuBar *      m_barRight;
         QMenu*          m_pMenuFile;
         QMenu*          m_pMenuSetting;
-        QMenu*          m_pMenuHelp;
+        QMenu*          m_pMenuHelpL;
         QMenu*          m_pMenuContent;
+        QMenu*          m_pMenuHelpR;
+        QMenu*          m_pMenuCreateTicket;
         QAction         m_ActionExit;
+        QAction         m_ActionAbout;
     };
 
 }

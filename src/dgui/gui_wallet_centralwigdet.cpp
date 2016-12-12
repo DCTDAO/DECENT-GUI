@@ -24,12 +24,12 @@
 
 using namespace gui_wallet;
 
-CentralWigdet::CentralWigdet()
+CentralWigdet::CentralWigdet(class QBoxLayout* a_pAllLayout)
     :
       m_nBalance(0)
 {
     m_imageLabel = new QLabel;
-    PrepareGUIprivate();
+    PrepareGUIprivate(a_pAllLayout);
 }
 
 
@@ -68,7 +68,7 @@ const int& CentralWigdet::GetAccountBalance()const
 
 
 
-void CentralWigdet::PrepareGUIprivate()
+void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
 {
     bool bImageFound(true);
     m_main_tabs.addTab(&m_browse_cont_tab,tr("BROWSE CONTENT"));
@@ -109,9 +109,9 @@ void CentralWigdet::PrepareGUIprivate()
     else
     {   
         m_DelayedWaringTitle = tr("no logo file");
-        m_DelayedWaringText = tr(DECENT_LOGO_FILE_NAME" file can not be found!");
+        m_DelayedWaringText = tr(DECENT_LOGO_FILE_NAME " file can not be found!");
         m_DelayedWaringDetails = tr(
-                "file '"DECENT_LOGO_FILE_NAME"' could not be found\n"
+                "file '" DECENT_LOGO_FILE_NAME "' could not be found\n"
                 "The search paths are the following:\n"
                 "1. the current directory \n"
                 "2. the 'image'' folder in the current directory\n"
@@ -142,9 +142,9 @@ void CentralWigdet::PrepareGUIprivate()
     else
     {
         m_DelayedWaringTitle = tr("no glob file");
-        m_DelayedWaringText = tr(GLOBE_FILE_NAME" file can not be found!");
+        m_DelayedWaringText = tr(GLOBE_FILE_NAME " file can not be found!");
         m_DelayedWaringDetails = tr(
-                "file '"GLOBE_FILE_NAME"' could not be found\n"
+                "file '" GLOBE_FILE_NAME "' could not be found\n"
                 "The search paths are the following:\n"
                 "1. the current directory \n"
                 "2. the 'image'' folder in the current directory\n"
@@ -176,7 +176,7 @@ void CentralWigdet::PrepareGUIprivate()
         m_DelayedWaringTitle = tr("no glob file");
         m_DelayedWaringText = tr(MAN_LOGO_FILE_NAME" file can not be found!");
         m_DelayedWaringDetails = tr(
-                "file '"MAN_LOGO_FILE_NAME"' could not be found\n"
+                "file '" MAN_LOGO_FILE_NAME "' could not be found\n"
                 "The search paths are the following:\n"
                 "1. the current directory \n"
                 "2. the 'image'' folder in the current directory\n"
@@ -202,7 +202,8 @@ void CentralWigdet::PrepareGUIprivate()
     m_main_layout.addWidget(&m_first_line_widget);
 
     m_main_layout.addWidget(&m_main_tabs);
-    setLayout(&m_main_layout);
+    //setLayout(&m_main_layout);
+    a_pAllLayout->addLayout(&m_main_layout);
 }
 
 
