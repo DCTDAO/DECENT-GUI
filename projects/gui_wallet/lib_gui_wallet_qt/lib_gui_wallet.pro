@@ -45,6 +45,7 @@ else {
 }
 
 # Debug:DESTDIR = debug1
+TEMPLATE = lib
 DESTDIR = $$SYSTEM_PATH/bin
 OBJECTS_DIR = $$SYSTEM_PATH/.objects
 CONFIG += debug
@@ -56,8 +57,6 @@ greaterThan(QT_MAJOR_VERSION, 4):QT += widgets
 
 QMAKE_CXXFLAGS += -msse4.2
 QMAKE_CFLAGS += -msse4.2
-
-win32{
 
 LIBS += -L$$BOOST_ROOT/lib
 
@@ -85,27 +84,3 @@ LIBS += -lssl
 LIBS += -lz
 LIBS += -lcrypto++
 LIBS += -lcrypto
-
-}else
-{
-LIBS += -L$$SYSTEM_PATH/bin
-LIBS += -lssl
-}
-
-SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
-    ../../../src/dgui/gui_wallet_mainwindow.cpp \
-    ../../../src/dgui/gui_wallet_centralwigdet.cpp \
-    ../../../src/dgui/browse_content_tab.cpp \
-    ../../../src/dgui/transactions_tab.cpp \
-    ../../../src/dgui/upload_tab.cpp \
-    ../../../src/dgui/overview_tab.cpp \
-    ../../../src/dgui/gui_wallet_global.cpp \
-    ../../../src/dgui/gui_wallet_connectdlg.cpp
-HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
-    ../../../src/dgui/gui_wallet_centralwigdet.hpp \
-    ../../../src/dgui/browse_content_tab.hpp \
-    ../../../src/dgui/transactions_tab.hpp \
-    ../../../src/dgui/upload_tab.hpp \
-    ../../../src/dgui/overview_tab.hpp \
-    ../../../src/dgui/gui_wallet_global.hpp \
-    ../../../src/dgui/gui_wallet_connectdlg.hpp

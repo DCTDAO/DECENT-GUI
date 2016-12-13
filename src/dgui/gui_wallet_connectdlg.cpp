@@ -20,6 +20,8 @@
 #include <graphene/egenesis/egenesis.hpp>
 #include <mutex>
 #include <QHeaderView>
+#include <QLineEdit>
+#include <QPushButton>
 
 using namespace graphene::wallet;
 using namespace fc::http;
@@ -109,20 +111,60 @@ ConnectDlg::ConnectDlg()
       m_main_table(FIELDS,2)
 {
     ((graphene::wallet::wallet_data*)m_pWdata)->chain_id = graphene::egenesis::get_egenesis_chain_id();
+
+    m_pRpcEndpointEdit = new QLineEdit(tr("ws://127.0.0.1:8090"));
+    m_pConnectButton = new QPushButton(tr("Connect"));
+
     m_main_table.setItem(0,0,new QTableWidgetItem(tr("rpc-endpoint")));
-    m_pLineEdit = new QLineEdit(tr("ws://127.0.0.1:8090"));
-    m_main_table.setCellWidget(0,1,m_pLineEdit);
+    m_main_table.setCellWidget(0,1,m_pRpcEndpointEdit);
+
+    //m_main_table.setItem(FIELDS-1,0,new QTableWidgetItem(tr("rpc-endpoint")));
+    m_main_table.setCellWidget(FIELDS-1,1,m_pConnectButton);
+
     m_main_table.horizontalHeader()->hide();
     m_main_table.verticalHeader()->hide();
     m_main_table.resize(size());
     m_main_layout.addWidget(&m_main_table);
     setLayout(&m_main_layout);
+
+    /* Initing signal-slot pairs*/
+    connect( m_pConnectButton, SIGNAL(clicked()), this, SLOT(ConnectPushedSlot()) );
 }
 
 
 ConnectDlg::~ConnectDlg()
 {
     delete ((graphene::wallet::wallet_data*)m_pWdata);
+}
+
+
+void ConnectDlg::resizeEvent ( QResizeEvent * event )
+{
+    QWidget::resizeEvent(event);
+
+    QSize aInfWidgSize = m_main_table.size();
+
+    m_main_table.setColumnWidth(0,40*aInfWidgSize.width()/100);
+    m_main_table.setColumnWidth(1,59*aInfWidgSize.width()/100);
+
+}
+
+#include <stdio.h>
+
+void ConnectDlg::ConnectPushedSlot()
+{
+    //printf("hi\n");
+    try
+    {
+        CreateWallepApiInstance(this);
+    }
+    catch(const fc::exception& a_fc)
+    {
+        printf("%s\n",(a_fc.to_detail_string()).c_str());
+    }
+    catch(...)
+    {}
+    close();
 }
 
 }

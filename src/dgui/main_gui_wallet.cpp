@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    freopen( "/dev/null", "w", stderr);
+    //freopen( "/dev/null", "w", stderr);
     QApplication aApp(argc,argv);
 
 #if 0

@@ -15,7 +15,6 @@
 
 #include <QDialog>
 #include <string>
-#include <QLineEdit>
 #include <QHBoxLayout>
 #include <QTableWidget>
 
@@ -29,18 +28,27 @@ void UseWalletApiInstance(WaletFncType fpFunction, void* userData);
 
 class ConnectDlg : public QDialog
 {
+    Q_OBJECT
+
     //friend int CreateWallepApiInstance( void* dataContainer );
     friend int CreateWallepApiInstance( void* a_dataContainer );
 public:
     ConnectDlg();
     virtual ~ConnectDlg();
 
+protected:
+    void resizeEvent ( QResizeEvent * event );
+
+protected slots:
+    void ConnectPushedSlot();
+
 private:
     std::string                                     m_wallet_file_name;
     /*struct graphene::wallet::wallet_data*/void*   m_pWdata;
-    QHBoxLayout     m_main_layout;
-    QTableWidget    m_main_table;
-    QLineEdit*      m_pLineEdit;
+    QHBoxLayout         m_main_layout;
+    QTableWidget        m_main_table;
+    class QLineEdit*    m_pRpcEndpointEdit;
+    class QPushButton*  m_pConnectButton;
 };
 
 }
