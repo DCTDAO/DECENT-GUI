@@ -15,17 +15,9 @@ using namespace gui_wallet;
 Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
         m_ActionExit(tr("&Exit"),this),
+        m_ActionConnect(tr("Connect"),this),
         m_ActionAbout(tr("About"),this)
 {
-#if 0
-
-    setCentralWidget(&m_CentralWidget);
-    CreateActions();
-    CreateMenues();
-    resize(900,550);
-
-#else
-
     m_barLeft = new QMenuBar;
     m_barRight = new QMenuBar;
 
@@ -53,7 +45,6 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
     setCentralWidget(m_pCentralWidget);
 
-#endif
 }
 
 
@@ -64,6 +55,12 @@ Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 
 void Mainwindow_gui_wallet::AboutSlot()
 {}
+
+
+void Mainwindow_gui_wallet::ConnectSlot()
+{
+    m_ConnectDlg.exec();
+}
 
 
 void Mainwindow_gui_wallet::CreateActions()
@@ -92,6 +89,9 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionAbout.setStatusTip( tr("About") );
     connect( &m_ActionAbout, SIGNAL(triggered()), this, SLOT(AboutSlot()) );
 
+    m_ActionConnect.setStatusTip( tr("Connect to witness node") );
+    connect( &m_ActionConnect, SIGNAL(triggered()), this, SLOT(ConnectSlot()) );
+
     /**************************************************************************/
 
     /**************************************************************************/
@@ -108,6 +108,7 @@ void Mainwindow_gui_wallet::CreateMenues()
     //m_pMenuFile->addAction( m_pActionLoadIniFile );
     //m_pMenuFile->addAction( m_pActionPrint );
     m_pMenuFile->addAction( &m_ActionExit );
+    m_pMenuFile->addAction( &m_ActionConnect );
 
     m_pMenuSetting = pMenuBar->addMenu( tr("&Setting") );
     m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );

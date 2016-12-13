@@ -114,7 +114,7 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/fc/src/uint128.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/datastream.cpp \
 \
-    ../../../../DECENT-Network/libraries/fc/src/crypto/city.cpp \
+    ../../../../DECENT-Network/libraries/fbriefc/src/crypto/city.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/iostream.cpp \
     ../../../../DECENT-Network/libraries/fc/src/rpc/cli.cpp \
 \

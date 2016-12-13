@@ -53,6 +53,37 @@ greaterThan(QT_MAJOR_VERSION, 4):QT += widgets
 #QT -= core
 #QT -= gui
 #QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
+
+QMAKE_CXXFLAGS += -msse4.2
+QMAKE_CFLAGS += -msse4.2
+
+LIBS += -L$$BOOST_ROOT/lib
+
+LIBS += $$DECENT_LIB/wallet/libgraphene_wallet.a
+LIBS += $$DECENT_LIB/utilities/libgraphene_utilities.a
+LIBS += $$DECENT_LIB/egenesis/libgraphene_egenesis_brief.a
+LIBS += $$DECENT_LIB/app/libgraphene_app.a
+LIBS += $$DECENT_LIB/chain/libgraphene_chain.a
+LIBS += $$DECENT_LIB/contrib/pbc/.libs/libpbc.a
+LIBS += $$DECENT_LIB/wallet/libgraphene_wallet.a
+LIBS += $$DECENT_LIB/encrypt/libdecent_encrypt.a
+LIBS += $$DECENT_LIB/fc/libfc_debug.a
+LIBS += $$DECENT_LIB/fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a
+
+LIBS += -lboost_system
+LIBS += -lboost_thread
+LIBS += -lboost_context
+LIBS += -lboost_chrono
+LIBS += -lboost_coroutine
+LIBS += -lboost_date_time
+LIBS += -lboost_filesystem
+
+#LIBS += -lgmp
+LIBS += -lssl
+LIBS += -lz
+LIBS += -lcrypto++
+LIBS += -lcrypto
+
 SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
     ../../../src/dgui/gui_wallet_mainwindow.cpp \
     ../../../src/dgui/gui_wallet_centralwigdet.cpp \
@@ -60,11 +91,13 @@ SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
     ../../../src/dgui/transactions_tab.cpp \
     ../../../src/dgui/upload_tab.cpp \
     ../../../src/dgui/overview_tab.cpp \
-    ../../../src/dgui/gui_wallet_global.cpp
+    ../../../src/dgui/gui_wallet_global.cpp \
+    ../../../src/dgui/gui_wallet_connectdlg.cpp
 HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/gui_wallet_centralwigdet.hpp \
     ../../../src/dgui/browse_content_tab.hpp \
     ../../../src/dgui/transactions_tab.hpp \
     ../../../src/dgui/upload_tab.hpp \
     ../../../src/dgui/overview_tab.hpp \
-    ../../../src/dgui/gui_wallet_global.hpp
+    ../../../src/dgui/gui_wallet_global.hpp \
+    ../../../src/dgui/gui_wallet_connectdlg.hpp
