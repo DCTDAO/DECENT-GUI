@@ -30,7 +30,15 @@ private:
 
 }
 
-class WarnerWidget : public QObject
+typedef void (*TypeInGuiFnc)(void*);
+
+struct SInGuiThreadCallInfo
+{
+    void*           data;
+    TypeInGuiFnc    fnc;
+};
+
+class InGuiThreatCaller : public QObject
 {
     Q_OBJECT
 
@@ -39,14 +47,17 @@ public:
     int                                 m_nRes;
     decent_tools::UnnamedSemaphoreLite  m_sema;
 public:
-    void EmitWarningText(const QString& a_str);
+    void EmitShowMessageBox(const QString& a_str);
+    void EmitCallFunc(SInGuiThreadCallInfo a_call_info);
 
 public slots:
-    void MakeWarningSlot(const QString& a_str);
+    void MakeShowMessageBoxSlot(const QString& a_str);
+    void MakeCallFuncSlot(SInGuiThreadCallInfo a_call_info);
 
 private:
 signals:
-    void MakeWarningSig(const QString& a_str);
+    void ShowMessageBoxSig(const QString& a_str);
+    void CallFuncSig(SInGuiThreadCallInfo a_call_info);
 };
 
 

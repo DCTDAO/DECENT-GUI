@@ -22,16 +22,18 @@
 using namespace graphene::wallet;
 using namespace fc::http;
 
-static WarnerWidget* s_pWarner = NULL;
+static InGuiThreatCaller* s_pWarner = NULL;
 
 
 gui_wallet::application::application(int& argc, char** argv)
     :
       QApplication(argc,argv)
 {
-    s_pWarner = new WarnerWidget;
-    connect( s_pWarner, SIGNAL(MakeWarningSig(const QString&)),
-             s_pWarner, SLOT(MakeWarningSlot(const QString&)) );
+    s_pWarner = new InGuiThreatCaller;
+    connect( s_pWarner, SIGNAL(ShowMessageBoxSig(const QString&)),
+             s_pWarner, SLOT(MakeShowMessageBoxSlot(const QString&)) );
+    connect( s_pWarner, SIGNAL(CallFuncSig(SInGuiThreadCallInfo)),
+             s_pWarner, SLOT(MakeCallFuncSlot(SInGuiThreadCallInfo)) );
 }
 
 
@@ -69,7 +71,7 @@ static int WarnAndWaitFunc(void* a_pOwner,const char* a_form,...)
 
     s_pWarner->m_nRes = -1;
     s_pWarner->m_pParent2 = (QWidget*)a_pOwner;
-    s_pWarner->EmitWarningText(aString);
+    s_pWarner->EmitShowMessageBox(aString);
     s_pWarner->m_sema.wait();
 
     return s_pWarner->m_nRes;
@@ -239,10 +241,13 @@ void UseConnectedApiInstance(WaletFncType /*a_fpFunction*/, void* /*a_pUserData*
 } /* namespace gui_wallet */
 
 
-void WarnerWidget::EmitWarningText(const QString& a_str)
-{emit MakeWarningSig(a_str);}
+void InGuiThreatCaller::EmitShowMessageBox(const QString& a_str)
+{emit ShowMessageBoxSig(a_str);}
 
-void WarnerWidget::MakeWarningSlot(const QString& a_str)
+void InGuiThreatCaller::EmitCallFunc(SInGuiThreadCallInfo a_call_info)
+{emit CallFuncSig(a_call_info);}
+
+void InGuiThreatCaller::MakeShowMessageBoxSlot(const QString& a_str)
 {
     QMessageBox aMessageBox(QMessageBox::Warning,QObject::tr("WARNING"),
                             a_str,
@@ -251,4 +256,9 @@ void WarnerWidget::MakeWarningSlot(const QString& a_str)
     aMessageBox.setDetailedText(QObject::tr("Should be implemented"));
     m_nRes = aMessageBox.exec();
     m_sema.post();
+}
+
+void InGuiThreatCaller::MakeCallFuncSlot(SInGuiThreadCallInfo a_call_info)
+{
+    (*a_call_info.fnc)(a_call_info.data);
 }

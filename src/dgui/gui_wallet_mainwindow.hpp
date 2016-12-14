@@ -50,6 +50,8 @@ namespace gui_wallet
         QAction         m_ActionConnect;
         QAction         m_ActionAbout;
         ConnectDlg      m_ConnectDlg;
+        QDialog         m_info_dialog;
+        QTextEdit       m_info_textedit;
     };
 
 }

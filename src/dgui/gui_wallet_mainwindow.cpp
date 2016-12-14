@@ -17,7 +17,9 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionExit(tr("&Exit"),this),
         m_ActionConnect(tr("Connect"),this),
         m_ActionAbout(tr("About"),this),
-        m_ConnectDlg(this)
+        m_ConnectDlg(this),
+        m_info_dialog(),
+        m_info_textedit(&m_info_dialog)
 {
     m_barLeft = new QMenuBar;
     m_barRight = new QMenuBar;
@@ -46,6 +48,9 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
     setCentralWidget(m_pCentralWidget);
 
+    m_info_textedit.setFixedSize(499,299);
+    m_info_dialog.setFixedSize(500,300);
+
 }
 
 
@@ -53,9 +58,99 @@ Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
 }
 
+#if 0
+static fc::variant_object static_about()
+{
+  std::string client_version( graphene::utilities::git_revision_description );
+  const size_t pos = client_version.find( '/' );
+  if( pos != string::npos && client_version.size() > pos )
+     client_version = client_version.substr( pos + 1 );
+
+  fc::mutable_variant_object result;
+  //result["blockchain_name"]        = BLOCKCHAIN_NAME;
+  //result["blockchain_description"] = BTS_BLOCKCHAIN_DESCRIPTION;
+  result["client_version"]           = client_version;
+  result["graphene_revision"]        = graphene::utilities::git_revision_sha;
+  result["graphene_revision_age"]    = fc::get_approximate_relative_time_string( fc::time_point_sec( graphene::utilities::git_revision_unix_timestamp ) );
+  result["fc_revision"]              = fc::git_revision_sha;
+  result["fc_revision_age"]          = fc::get_approximate_relative_time_string( fc::time_point_sec( fc::git_revision_unix_timestamp ) );
+  result["compile_date"]             = "compiled on " __DATE__ " at " __TIME__;
+  result["boost_version"]            = boost::replace_all_copy(std::string(BOOST_LIB_VERSION), "_", ".");
+  result["openssl_version"]          = OPENSSL_VERSION_TEXT;
+
+  std::string bitness = boost::lexical_cast<std::string>(8 * sizeof(int*)) + "-bit";
+#if defined(__APPLE__)
+  std::string os = "osx";
+#elif defined(__linux__)
+  std::string os = "linux";
+#elif defined(_MSC_VER)
+  std::string os = "win32";
+#else
+  std::string os = "other";
+#endif
+  result["build"] = os + " " + bitness;
+
+  return result;
+}
+#endif
+
 
 void Mainwindow_gui_wallet::AboutSlot()
-{}
+{
+    graphene::wallet::wallet_api* pApi = NULL;
+    bool bCreatedHere = false;
+    std::string aStr;
+
+    try
+    {
+        aStr = "";
+        fc::variant_object var_obj_about;
+        pApi = m_ConnectDlg.GetCurApi();
+#if 0
+        if(!pApi){
+            graphene::wallet::wallet_data wdata;
+            get_remote_api
+            pApi = new graphene::wallet::wallet_api(wdata,);
+            bCreatedHere=true;
+        }
+#endif
+
+        if(pApi)
+        {
+            var_obj_about = pApi->about();
+            fc::variant_object::iterator itCur;
+            fc::variant_object::iterator itBeg = var_obj_about.begin();
+            fc::variant_object::iterator itEnd = var_obj_about.end();
+
+            for(itCur=itBeg;itCur < itEnd;++itCur)
+            {
+                aStr += "\"";
+                aStr += (*itCur).key();
+                aStr += "\": \"";
+                aStr += (*itCur).value().as_string();
+                aStr += "\"\n";
+            }
+
+        } // if(pApi)
+        else
+        {
+            //var_obj_about = static_about();
+            aStr = "First connect to the witness node, then require again info!";
+        }
+
+
+    }
+    catch(...)
+    {
+        aStr += "Exception thrown!";
+    }
+
+
+    m_info_textedit.setText(tr(aStr.c_str()));
+    m_info_dialog.exec();
+
+    if(bCreatedHere){delete pApi;}
+}
 
 
 void Mainwindow_gui_wallet::ConnectSlot()
