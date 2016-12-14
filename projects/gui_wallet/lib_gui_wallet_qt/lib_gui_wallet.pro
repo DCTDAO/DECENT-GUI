@@ -1,6 +1,6 @@
-# File gui_wallet.pro
+# File lib_gui_wallet.pro
 #
-# File created : 18 Nov 2016
+# File created : 13 Dec 2016
 # Created by   : Davit Kalantaryan (davit.kalantaryan@desy.de)
 #
 # This file can be used to produce Makefile for gui_wallet GUI application

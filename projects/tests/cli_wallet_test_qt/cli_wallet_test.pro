@@ -49,6 +49,7 @@ LIBS += -lboost_context
 LIBS += -lboost_coroutine
 LIBS += -lboost_thread
 LIBS += -lssl
+LIBS += -lcrypto++
 LIBS += -lcrypto
 LIBS += -lz
 LIBS += -lgmp
@@ -68,12 +69,14 @@ INCLUDEPATH += ../../../../DECENT-Network/libraries/wallet/include
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/websocketpp
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp
+INCLUDEPATH += ../../../../DECENT-Network/libraries/encrypt/include
 
 #disabled sources
 #SOURCES += ../../../../DECENT-Network/libraries/fc/src/crypto/elliptic_mixed.cpp
 #../../../../DECENT-Network/libraries/fc/src/crypto/elliptic_impl_pub.cpp
 #../../../../DECENT-Network/libraries/utilities/git_revision.cpp
 #../../../../DECENT-Network/libraries/utilities/git_revision.cpp
+# ../../../../DECENT-Network/libraries/chain/special_authority.cpp  this file is not there anymore ?
 
 SOURCES += \
     ../../../../DECENT-Network/programs/cli_wallet/main.cpp \
@@ -114,7 +117,7 @@ SOURCES += \
     ../../../../DECENT-Network/libraries/fc/src/uint128.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/datastream.cpp \
 \
-    ../../../../DECENT-Network/libraries/fbriefc/src/crypto/city.cpp \
+    ../../../../DECENT-Network/libraries/fc/src/crypto/city.cpp \
     ../../../../DECENT-Network/libraries/fc/src/io/iostream.cpp \
     ../../../../DECENT-Network/libraries/fc/src/rpc/cli.cpp \
 \
@@ -174,7 +177,6 @@ SOURCES += \
 \
     ../../../../DECENT-Network/libraries/fc/src/crypto/sha224.cpp \
     ../../../../DECENT-Network/libraries/fc/src/crypto/openssl.cpp \
-    ../../../../DECENT-Network/libraries/chain/special_authority.cpp \
     ../../../../DECENT-Network/libraries/fc/src/network/url.cpp \
 \
     ../../../../DECENT-Network/libraries/chain/protocol/market.cpp \

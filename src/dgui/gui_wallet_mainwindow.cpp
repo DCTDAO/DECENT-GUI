@@ -16,7 +16,8 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
         m_ActionExit(tr("&Exit"),this),
         m_ActionConnect(tr("Connect"),this),
-        m_ActionAbout(tr("About"),this)
+        m_ActionAbout(tr("About"),this),
+        m_ConnectDlg(this)
 {
     m_barLeft = new QMenuBar;
     m_barRight = new QMenuBar;

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
-#include <QApplication>
+#include "gui_wallet_application.hpp"
 #include "gui_wallet_mainwindow.hpp"
 
 int g_nDebugApplication = 0;
@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    //freopen( "/dev/null", "w", stderr);
-    QApplication aApp(argc,argv);
+    freopen( "/dev/null", "w", stderr);
+    gui_wallet::application aApp(argc,argv);
 
 #if 0
     //QString testString;

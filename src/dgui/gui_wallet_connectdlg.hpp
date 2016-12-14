@@ -17,24 +17,25 @@
 #include <string>
 #include <QHBoxLayout>
 #include <QTableWidget>
-
-typedef void (*WaletFncType)(/*class graphene::wallet::wallet_api*/void* wa,void*ud);
+#include <graphene/wallet/wallet.hpp>
+#include <thread>
+#include <vector>
 
 namespace gui_wallet
 {
-
-int CreateWallepApiInstance( void* dataContainer );
-void UseWalletApiInstance(WaletFncType fpFunction, void* userData);
 
 class ConnectDlg : public QDialog
 {
     Q_OBJECT
 
+    enum{RPC_ENDPOINT_FIELD,CHAIN_ID_FIELD,CONNECT_BUTTON_FIELD,NUM_OF_FIELDS};
+
     //friend int CreateWallepApiInstance( void* dataContainer );
-    friend int CreateWallepApiInstance( void* a_dataContainer );
 public:
-    ConnectDlg();
+    ConnectDlg(QWidget* parent);
     virtual ~ConnectDlg();
+
+    graphene::wallet::wallet_api* GetCurApi();
 
 protected:
     void resizeEvent ( QResizeEvent * event );
@@ -43,12 +44,12 @@ protected slots:
     void ConnectPushedSlot();
 
 private:
-    std::string                                     m_wallet_file_name;
-    /*struct graphene::wallet::wallet_data*/void*   m_pWdata;
+    std::string                       m_wallet_file_name;
+    graphene::wallet::wallet_data     m_wdata;
     QHBoxLayout         m_main_layout;
     QTableWidget        m_main_table;
-    class QLineEdit*    m_pRpcEndpointEdit;
-    class QPushButton*  m_pConnectButton;
+    graphene::wallet::wallet_api* m_pCurApi;
+    std::vector<graphene::wallet::wallet_api*>   m_vAllApis;
 };
 
 }

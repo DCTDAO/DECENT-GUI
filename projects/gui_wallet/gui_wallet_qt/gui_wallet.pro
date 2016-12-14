@@ -7,6 +7,8 @@
 # for Decent
 #
 
+USE_LIB_OR_NOT = not_use_lib
+
 BOOST_ROOT= ../../../../../opt/boost_1_57_0_unix
 DECENT_ROOT = ../../../../DECENT-Network
 DECENT_LIB = $$DECENT_ROOT/libraries
@@ -35,6 +37,7 @@ INCLUDEPATH += ../../../../DECENT-Network/libraries/wallet/include
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/websocketpp
 INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp
+INCLUDEPATH += ../../../include
 
 DEFINES += USE_NUM_GMP
 
@@ -57,8 +60,9 @@ greaterThan(QT_MAJOR_VERSION, 4):QT += widgets
 QMAKE_CXXFLAGS += -msse4.2
 QMAKE_CFLAGS += -msse4.2
 
-win32{
+equals(USE_LIB_OR_NOT, "not_use_lib") {
 
+message( "Preparing all object files localy..." )
 LIBS += -L$$BOOST_ROOT/lib
 
 LIBS += $$DECENT_LIB/wallet/libgraphene_wallet.a
@@ -89,7 +93,7 @@ LIBS += -lcrypto
 }else
 {
 LIBS += -L$$SYSTEM_PATH/bin
-LIBS += -lssl
+LIBS += -llib_gui_wallet
 }
 
 SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
@@ -100,7 +104,9 @@ SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
     ../../../src/dgui/upload_tab.cpp \
     ../../../src/dgui/overview_tab.cpp \
     ../../../src/dgui/gui_wallet_global.cpp \
-    ../../../src/dgui/gui_wallet_connectdlg.cpp
+    ../../../src/dgui/gui_wallet_connectdlg.cpp \
+    ../../../src/dgui/fc_rpc_gui.cpp \
+    ../../../src/dgui/gui_wallet_application.cpp
 HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/gui_wallet_centralwigdet.hpp \
     ../../../src/dgui/browse_content_tab.hpp \
@@ -108,4 +114,8 @@ HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/upload_tab.hpp \
     ../../../src/dgui/overview_tab.hpp \
     ../../../src/dgui/gui_wallet_global.hpp \
-    ../../../src/dgui/gui_wallet_connectdlg.hpp
+    ../../../src/dgui/gui_wallet_connectdlg.hpp \
+    ../../../src/dgui/fc_rpc_gui.hpp \
+    ../../../include/unnamedsemaphorelite.hpp \
+    ../../../src/dgui/gui_wallet_application.hpp \
+    ../../../src/dgui/connected_api_instance.hpp
