@@ -7,11 +7,19 @@
 # for Decent
 #
 
+DECENT_ROOT_DEFAULT = ../../../../DECENT-Network
 USE_LIB_OR_NOT = not_use_lib
 
-BOOST_ROOT= ../../../../../opt/boost_1_57_0_unix
-DECENT_ROOT = ../../../../DECENT-Network
-DECENT_LIB = $$DECENT_ROOT/libraries
+DECENT_ROOT_DEV = $$(DECENT_ROOT)
+equals(DECENT_ROOT_DEV, "") {
+DECENT_ROOT_DEV = $$DECENT_ROOT_DEFAULT
+}
+
+DECENT_LIB = $$DECENT_ROOT_DEV/libraries
+
+#BOOST_ROOT_QT= ../../../../../opt/boost_1_57_0_unix
+BOOST_ROOT_QT = $$(BOOST_ROOT)
+#message("!!!!!! BOOST_ROOT is" $$[BOOST_ROOT_QT])
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-variable
@@ -23,28 +31,31 @@ INCLUDEPATH += $$DECENT_LIB/wallet/include
 INCLUDEPATH += $$DECENT_LIB/app/include
 INCLUDEPATH += $$DECENT_LIB/encrypt/include
 
-INCLUDEPATH += $$BOOST_ROOT/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/include
-INCLUDEPATH +=  ../../../../DECENT-Network/libraries/app/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/chain/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/db/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/plugins/market_history/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/net/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/plugins/debug_witness/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/egenesis/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/utilities/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/wallet/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp/include
-INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/websocketpp
-INCLUDEPATH += ../../../../DECENT-Network/libraries/fc/vendor/secp256k1-zkp
+INCLUDEPATH += $$BOOST_ROOT_QT/include
+INCLUDEPATH += $$DECENT_LIB/fc/include
+INCLUDEPATH += $$DECENT_LIB/app/include
+INCLUDEPATH += $$DECENT_LIB/chain/include
+INCLUDEPATH += $$DECENT_LIB/db/include
+INCLUDEPATH += $$DECENT_LIB/plugins/market_history/include
+INCLUDEPATH += $$DECENT_LIB/net/include
+INCLUDEPATH += $$DECENT_LIB/plugins/debug_witness/include
+INCLUDEPATH += $$DECENT_LIB/egenesis/include
+INCLUDEPATH += $$DECENT_LIB/utilities/include
+INCLUDEPATH += $$DECENT_LIB/wallet/include
+INCLUDEPATH += $$DECENT_LIB/fc/vendor/secp256k1-zkp/include
+INCLUDEPATH += $$DECENT_LIB/fc/vendor/websocketpp
+INCLUDEPATH += $$DECENT_LIB/fc/vendor/secp256k1-zkp
 INCLUDEPATH += ../../../include
 
 DEFINES += USE_NUM_GMP
 
 win32:SYSTEM_PATH = ../../../sys/win64
-else { 
+else {
+macx: SYSTEM_PATH = ../../../sys/mac
+else{
     CODENAME = $$system(lsb_release -c | cut -f 2)
     SYSTEM_PATH = ../../../sys/$$CODENAME
+}
 }
 
 # Debug:DESTDIR = debug1
@@ -63,7 +74,7 @@ QMAKE_CFLAGS += -msse4.2
 equals(USE_LIB_OR_NOT, "not_use_lib") {
 
 message( "Preparing all object files localy..." )
-LIBS += -L$$BOOST_ROOT/lib
+LIBS += -L$$BOOST_ROOT_QT/lib
 
 LIBS += $$DECENT_LIB/wallet/libgraphene_wallet.a
 LIBS += $$DECENT_LIB/utilities/libgraphene_utilities.a
@@ -90,8 +101,7 @@ LIBS += -lz
 LIBS += -lcrypto++
 LIBS += -lcrypto
 
-}else
-{
+}else{
 LIBS += -L$$SYSTEM_PATH/bin
 LIBS += -llib_gui_wallet
 }
