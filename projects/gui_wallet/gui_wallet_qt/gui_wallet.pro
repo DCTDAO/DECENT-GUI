@@ -7,18 +7,30 @@
 # for Decent
 #
 
+#CONFIG += TEST
+# For making test: '$qmake "CONFIG+=TEST" gui_wallet.pro'  , then '$make'
+
+options = $$find(CONFIG, "TEST")
+
+count(options, 1) {
+
+DEFINES += TEST_SIMPLE_APP
+SOURCES += ../../../src/dgui/main_gui_wallet.cpp
+
+}else{
+
+
 DECENT_ROOT_DEFAULT = ../../../../DECENT-Network
 USE_LIB_OR_NOT = not_use_lib
 
 DECENT_ROOT_DEV = $$(DECENT_ROOT)
-equals(DECENT_ROOT_DEV, "") {
-DECENT_ROOT_DEV = $$DECENT_ROOT_DEFAULT
-}
+equals(DECENT_ROOT_DEV, ""): DECENT_ROOT_DEV = $$DECENT_ROOT_DEFAULT
 
 DECENT_LIB = $$DECENT_ROOT_DEV/libraries
 
 #BOOST_ROOT_QT= ../../../../../opt/boost_1_57_0_unix
 BOOST_ROOT_QT = $$(BOOST_ROOT)
+equals(BOOST_ROOT_QT, ""): BOOST_ROOT_QT = /usr/local/opt/boost
 #message("!!!!!! BOOST_ROOT is" $$[BOOST_ROOT_QT])
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
@@ -49,13 +61,33 @@ INCLUDEPATH += ../../../include
 
 DEFINES += USE_NUM_GMP
 
-win32:SYSTEM_PATH = ../../../sys/win64
-else {
-macx: SYSTEM_PATH = ../../../sys/mac
-else{
-    CODENAME = $$system(lsb_release -c | cut -f 2)
-    SYSTEM_PATH = ../../../sys/$$CODENAME
+win32{
+    SYSTEM_PATH = ../../../sys/win64
+    LIBS += -lcrypto++
 }
+else {
+    macx{
+        SYSTEM_PATH = ../../../sys/mac
+
+        OPEN_SSL_ROOT_PATH = $$(OPENSSL_ROOT_DIR)
+        equals(OPEN_SSL_ROOT_PATH, ""): OPEN_SSL_ROOT_PATH = /usr/local/opt/openssl
+
+        CRIPTOPP_ROOT_PATH = $$(CRIPTOPP_ROOT_DIR)
+        equals(CRIPTOPP_ROOT_PATH, ""): CRIPTOPP_ROOT_PATH = /usr/local/opt/cryptopp
+        #CRIPTOPP_ROOT_PATH = $$CALLER_PATH/cryptopp/$$CRIPTOPP_VERSION
+
+        #INCLUDEPATH += $$CALLER_PATH/openssl/1.0.2j/include
+        INCLUDEPATH += $$OPEN_SSL_ROOT_PATH/include
+        INCLUDEPATH += $$CRIPTOPP_ROOT_PATH/include
+        LIBS += -L$$CRIPTOPP_ROOT_PATH/lib
+        LIBS += -L$$OPEN_SSL_ROOT_PATH/lib
+        LIBS += -lcryptopp
+    }
+    else{
+        CODENAME = $$system(lsb_release -c | cut -f 2)
+        SYSTEM_PATH = ../../../sys/$$CODENAME
+        LIBS += -lcrypto++
+    }
 }
 
 # Debug:DESTDIR = debug1
@@ -98,7 +130,6 @@ LIBS += -lboost_filesystem
 #LIBS += -lgmp
 LIBS += -lssl
 LIBS += -lz
-LIBS += -lcrypto++
 LIBS += -lcrypto
 
 }else{
@@ -129,3 +160,5 @@ HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../include/unnamedsemaphorelite.hpp \
     ../../../src/dgui/gui_wallet_application.hpp \
     ../../../src/dgui/connected_api_instance.hpp
+
+}

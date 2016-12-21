@@ -21,3 +21,6 @@ projects/tests/cli_wallet_test_vs15/*
 projects/tests/cli_wallet_test_vs13/*
 !projects/tests/cli_wallet_test_vs13/cli_wallet_test.vcxproj
 !projects/tests/cli_wallet_test_vs13/cli_wallet_test.sln
+.DS_Store
+.qmake.stash
+gui_wallet.app

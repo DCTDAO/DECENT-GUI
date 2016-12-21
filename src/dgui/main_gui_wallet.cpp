@@ -11,13 +11,19 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
+#ifndef TEST_SIMPLE_APP
 #include "gui_wallet_application.hpp"
 #include "gui_wallet_mainwindow.hpp"
+#endif
 
 int g_nDebugApplication = 0;
 
 int main(int argc, char* argv[])
 {
+
+#ifdef TEST_SIMPLE_APP
+    printf("Hello world! argc=%d, argv=%p\n",argc,argv);
+#else
     for(int i(1); i<argc;)
     {
         if((strcmp(argv[i],"--debug-application")==0)||(strcmp(argv[i],"-dba")==0))
@@ -60,6 +66,7 @@ int main(int argc, char* argv[])
     gui_wallet::Mainwindow_gui_wallet aMainWindow;
     aMainWindow.show();
     aApp.exec();
+#endif
 #endif
 
     return 0;
