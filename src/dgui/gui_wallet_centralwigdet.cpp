@@ -11,7 +11,11 @@
 #define DECENT_LOGO_FILE_NAME       "dc_logo.jpg"
 #define GLOBE_FILE_NAME             "globe.jpg"
 #define MAN_LOGO_FILE_NAME          "man_logo.jpg"
+#ifdef __APPLE__
+#define DECENT_IMGS_INITIAL_PATH    "../../../../../../images/"
+#else
 #define DECENT_IMGS_INITIAL_PATH    "../../../images/"
+#endif
 
 #include "gui_wallet_centralwigdet.hpp"
 #include <QMessageBox>
@@ -115,7 +119,7 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
                 "The search paths are the following:\n"
                 "1. the current directory \n"
                 "2. the 'image'' folder in the current directory\n"
-                "3. the 'image'' folder in the \"../../../\"\n"
+                "3. the folder" DECENT_IMGS_INITIAL_PATH "\n"
                 "To see the logo, please put the logo file to the directories\n"
                 "mentioned above and then rerun the application");
         QTimer::singleShot(100, this, SLOT(make_deleyed_warning()));
@@ -148,7 +152,7 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
                 "The search paths are the following:\n"
                 "1. the current directory \n"
                 "2. the 'image'' folder in the current directory\n"
-                "3. the 'image'' folder in the \"../../../\"\n"
+                "3. the folder" DECENT_IMGS_INITIAL_PATH "\n"
                 "To see the logo, please put the logo file to the directories\n"
                 "mentioned above and then rerun the application");
         QTimer::singleShot(100, this, SLOT(make_deleyed_warning()));
