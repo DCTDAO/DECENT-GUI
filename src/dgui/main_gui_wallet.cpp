@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <string.h>
+#include <string>
 #ifndef TEST_SIMPLE_APP
 #include "gui_wallet_application.hpp"
 #include "gui_wallet_mainwindow.hpp"
@@ -22,7 +23,7 @@
 #define LAST_SYS_CHAR   '/'
 #endif
 
-int g_nDebugApplication = 0;
+int g_nDebugApplication = 1;
 std::string* g_pApplicationPath = NULL;
 
 int main(int argc, char* argv[])
@@ -31,6 +32,20 @@ int main(int argc, char* argv[])
 #ifdef TEST_SIMPLE_APP
     printf("Hello world! argc=%d, argv=%p\n",argc,argv);
 #else
+
+    const char* cpcPath = strrchr(argv[0],LAST_SYS_CHAR);
+
+    if(cpcPath)
+    {
+        int nStrLen = (int)(((size_t)cpcPath) - ((size_t)argv[0]));
+        if(nStrLen){g_pApplicationPath = new std::string(argv[0],nStrLen);}
+        else {g_pApplicationPath = new std::string(".");}
+    }
+    else {g_pApplicationPath = new std::string(".");}
+
+    static std::string scAppFullPath ( argv[0] );
+
+
     for(int i(1); i<argc;)
     {
         if((strcmp(argv[i],"--debug-application")==0)||(strcmp(argv[i],"-dba")==0))
@@ -56,16 +71,10 @@ int main(int argc, char* argv[])
         }
     }
 
-    freopen( "/dev/null", "w", stderr);
-    const char* cpcPath = strrchr(argv[0],LAST_SYS_CHAR);
+    if(g_nDebugApplication){printf("argv[0]=\"%s\"\napp dir. = \"%s\"\n",
+                                   scAppFullPath.c_str(),g_pApplicationPath->c_str());}
 
-    if(cpcPath)
-    {
-        int nStrLen = (int)(((size_t)cpcPath) - ((size_t)argv[0]));
-        if(nStrLen){g_pApplicationPath = new std::string(argv[0],nStrLen);}
-        else {g_pApplicationPath = new std::string(".");}
-    }
-    else {g_pApplicationPath = new std::string(".");}
+    freopen( "/dev/null", "w", stderr);
 
     gui_wallet::application aApp(argc,argv);
 
