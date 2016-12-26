@@ -28,10 +28,18 @@ equals(DECENT_ROOT_DEV, ""): DECENT_ROOT_DEV = $$DECENT_ROOT_DEFAULT
 
 DECENT_LIB = $$DECENT_ROOT_DEV/libraries
 
-#BOOST_ROOT_QT= ../../../../../opt/boost_1_57_0_unix
 BOOST_ROOT_QT = $$(BOOST_ROOT)
-equals(BOOST_ROOT_QT, ""): BOOST_ROOT_QT = /usr/local/opt/boost
-#message("!!!!!! BOOST_ROOT is" $$[BOOST_ROOT_QT])
+#equals(BOOST_ROOT_QT, ""): BOOST_ROOT_QT = /usr/local/opt/boost
+#equals(BOOST_ROOT_QT, ""): BOOST_ROOT_QT = ../../../../../opt/boost_1_57_0_unix
+equals(BOOST_ROOT_QT, ""){
+    exists( /usr/local/opt/boost/libboost_thread* ){
+        BOOST_ROOT_QT = /usr/local/opt/boost
+    }else{
+        BOOST_ROOT_QT = ../../../../../opt/boost_1_57_0_unix
+    }
+}
+message("!!!!!! BOOST_ROOT is '"$$BOOST_ROOT_QT"'")
+#message("!!!!!! BOOST_ROOT is" $$(BOOST_ROOT))
 
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-parameter
 QMAKE_CXXFLAGS_WARN_ON += -Wno-unused-variable
@@ -119,9 +127,25 @@ LIBS += $$DECENT_LIB/encrypt/libdecent_encrypt.a
 LIBS += $$DECENT_LIB/fc/libfc_debug.a
 LIBS += $$DECENT_LIB/fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a
 
+# http://askubuntu.com/questions/486006/cannot-find-boost-thread-mt-library
+
+exists( $$BOOST_ROOT_QT/lib/libboost_thread-mt* ) {
+      #message( "Configuring for multi-threaded Qt..." )
+      #CONFIG += thread
+    LIBS += -lboost_thread-mt
+}else{
+    LIBS += -lboost_thread
+}
+
+exists( $$BOOST_ROOT_QT/lib/libboost_context-mt* ) {
+      #message( "Configuring for multi-threaded Qt..." )
+      #CONFIG += thread
+    LIBS += -lboost_context-mt
+}else{
+    LIBS += -lboost_context
+}
+
 LIBS += -lboost_system
-LIBS += -lboost_thread
-LIBS += -lboost_context
 LIBS += -lboost_chrono
 LIBS += -lboost_coroutine
 LIBS += -lboost_date_time
