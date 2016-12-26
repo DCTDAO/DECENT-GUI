@@ -32,6 +32,7 @@ namespace gui_wallet
     protected slots:
         void AboutSlot();
         void ConnectSlot();
+        void InfoSlot();
 
     private:
         class QVBoxLayout*   m_pCentralAllLayout;
@@ -49,6 +50,7 @@ namespace gui_wallet
         QAction         m_ActionExit;
         QAction         m_ActionConnect;
         QAction         m_ActionAbout;
+        QAction         m_ActionInfo;
         ConnectDlg      m_ConnectDlg;
         QDialog         m_info_dialog;
         QTextEdit       m_info_textedit;

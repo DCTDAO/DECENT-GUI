@@ -9,6 +9,8 @@
  */
 
 #include "fc_rpc_gui.hpp"
+#include <fc/io/json.hpp>
+#include <iostream>
 
 using namespace fc::rpc;
 using namespace fc;
@@ -28,22 +30,37 @@ static int default_reporter_function(void* owner,const char* form,...);
 gui::gui()
     :
       _result_formatters(),
+      m_pFirstTask(NULL),
+      m_pLastTask(NULL),
       m_semaphore(),
       m_pOwner(NULL),
       m_info_report(&default_reporter_function),
       m_warning_report(&default_reporter_function),
       m_error_report(&default_reporter_function)
 {
-    //
+    //m_pTaskInitial = new taskList;
 }
 
 
 gui::~gui()
 {
+   taskListItem *pItemTodelete, *pItemTemp;
    if( _run_complete.valid() )
    {
       stop();
    }
+
+   m_task_mutex.lock();
+   pItemTodelete = m_pFirstTask ? m_pFirstTask->next : NULL;
+   while(pItemTodelete)
+   {
+       pItemTemp = pItemTodelete->next;
+       delete pItemTodelete;
+       pItemTodelete = pItemTemp;
+   }
+   m_task_mutex.unlock();
+
+   //delete m_pTaskInitial;
 }
 
 
@@ -107,8 +124,56 @@ void gui::format_result( const string& method, std::function<string(variant,cons
    _result_formatters[method] = formatter;
 }
 
+
+void gui::SetNewTask(const std::string& a_line)
+{
+    //m_line = a_line;
+    //taskListItem * pTaskNext;
+
+    m_task_mutex.lock();
+    if(!m_pFirstTask)
+    {
+        m_pFirstTask = m_pLastTask = &m_InitialTaskBuffer;
+        m_pLastTask->line = a_line;
+    }
+    else
+    {
+        m_pLastTask->next = new taskListItem(a_line);
+        m_pLastTask = m_pLastTask->next;
+    }
+    m_task_mutex.unlock();
+
+    m_semaphore.post();
+}
+
+
+gui::taskListItem* gui::GetFirstTask()
+{
+    struct taskListItem* pReturn = NULL;
+
+    m_task_mutex.lock();
+    if(m_pFirstTask)
+    {
+        pReturn = m_pFirstTask;
+        if(m_pFirstTask->next)
+        {
+            memcpy(m_pFirstTask,m_pFirstTask->next,sizeof(struct taskListItem));
+            delete m_pFirstTask->next;
+        }
+        else
+        {
+            m_pFirstTask = NULL;
+        }
+    } // if(m_pFirstTask)
+    m_task_mutex.unlock();
+
+    return pReturn;
+}
+
 void gui::run()
 {
+   struct taskListItem* pTaskListItem;
+
    while( !_run_complete.canceled() )
    {
       try
@@ -122,24 +187,33 @@ void gui::run()
          {
             break;
          }
-#if 0
-         std::cout << line << "\n";
-         line += char(EOF);
-         fc::variants args = fc::json::variants_from_string(line);;
-         if( args.size() == 0 )
-            continue;
 
-         const string& method = args[0].get_string();
-
-         auto result = receive_call( 0, method, variants( args.begin()+1,args.end() ) );
-         auto itr = _result_formatters.find( method );
-         if( itr == _result_formatters.end() )
+         pTaskListItem = GetFirstTask();
+         while(pTaskListItem)
          {
-            std::cout << fc::json::to_pretty_string( result ) << "\n";
+             std::string line = pTaskListItem->line;
+             //std::cout << line << "\n";
+             line += char(EOF);
+             fc::variants args = fc::json::variants_from_string(line);
+             if( args.size() == 0 )continue;
+             const string& method = args[0].get_string();
+
+             //const string& method = m_method;
+
+             auto result = receive_call( 0, method, variants( args.begin()+1,args.end() ) );
+             auto itr = _result_formatters.find( method );
+             if( itr == _result_formatters.end() )
+             {
+                std::cout << "!!!!!!!if\n"<<fc::json::to_pretty_string( result ) << "\n";
+                (*m_info_report)(m_pOwner,"%s\n",fc::json::to_pretty_string( result ).c_str());
+             }
+             else
+             {
+                std::cout << "!!!!!!!!else\n"<<itr->second( result, args ) << "\n";
+                (*m_info_report)(m_pOwner,"%s\n",itr->second( result, args ).c_str());
+             }
          }
-         else
-            std::cout << itr->second( result, args ) << "\n";
-#endif
+
       }
       catch ( const fc::exception& e )
       {

@@ -12,6 +12,7 @@
 
 #include <fc/rpc/api_connection.hpp>
 #include <unnamedsemaphorelite.hpp>
+#include <mutex>
 
 typedef int (*TYPE_REPORTER)(void*owner,const char* form,...);
 
@@ -35,16 +36,39 @@ namespace fc { namespace rpc {
          void wait();
          void format_result( const string& method, std::function<string(variant,const variants&)> formatter);
 
+         void SetNewTask(const std::string& a_line);
          void SetOwner(void* owner);
          void SetInfoReporter(TYPE_REPORTER info_reporter);
          void SetWarnReporter(TYPE_REPORTER warn_reporter);
          void SetErrorReporter(TYPE_REPORTER err_reporter);
 
+
       private:
          void run();
+         /*
+          *  return
+          *      NULL     -> there is no any task to handle
+          *      non NULL -> pointer to tast to fullfill
+          */
+         //struct taskListItem* GetFirstTask();
 
          std::map<string,std::function<string(variant,const variants&)> > _result_formatters;
          fc::future<void> _run_complete;
+
+         /*typedef*/ struct taskListItem{
+             taskListItem(const std::string& a_str=""):next(NULL),line(a_str){}
+             struct taskListItem* next;
+             std::string line;
+         }/*taskListItem*/;
+         gui::taskListItem* GetFirstTask();
+
+         taskListItem                       m_InitialTaskBuffer;
+         taskListItem*                      m_pFirstTask;
+         taskListItem*                      m_pLastTask;
+         std::mutex                         m_task_mutex;
+
+         //std::string                        m_method;
+         //std::string                        m_line;
          decent_tools::UnnamedSemaphoreLite m_semaphore;
          void*                              m_pOwner;
          TYPE_REPORTER                      m_info_report;

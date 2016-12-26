@@ -85,6 +85,7 @@ static int ErrorFunc(void*,const char*, ...)
 int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,
                                 graphene::wallet::wallet_api** a_ppApi,
+                                fc::rpc::gui** a_ppGuiApi,
                                 void* a_pOwner)
 {
     try
@@ -110,6 +111,7 @@ int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
         fc::api<wallet_api> wapi(wapiptr);
 
         auto wallet_gui = std::make_shared<fc::rpc::gui>();
+        *a_ppGuiApi = wallet_gui.get();
         for( auto& name_formatter : wapiptr->get_result_formatters() )
            wallet_gui->format_result( name_formatter.first, name_formatter.second );
 #if 0

@@ -17,6 +17,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionExit(tr("&Exit"),this),
         m_ActionConnect(tr("Connect"),this),
         m_ActionAbout(tr("About"),this),
+        m_ActionInfo(tr("Info"),this),
         m_ConnectDlg(this),
         m_info_dialog(),
         m_info_textedit(&m_info_dialog)
@@ -145,11 +146,66 @@ void Mainwindow_gui_wallet::AboutSlot()
         aStr += "Exception thrown!";
     }
 
+    m_info_textedit.setText(tr(aStr.c_str()));
+    m_info_dialog.exec();
+
+    if(bCreatedHere){delete pApi;}
+}
+
+
+void Mainwindow_gui_wallet::InfoSlot()
+{
+
+#if 1
+
+    fc::rpc::gui* pApi = NULL;
+
+    try
+    {
+        pApi = m_ConnectDlg.GetCurGuiApi();
+        pApi->SetNewTask("Info");
+    }
+    catch(...)
+    {
+        //
+    }
+#else
+
+    graphene::wallet::wallet_api* pApi = NULL;
+    bool bCreatedHere = false;
+    std::string aStr;
+
+    try
+    {
+        aStr = "";
+        fc::variant variant_info;
+        pApi = m_ConnectDlg.GetCurApi();
+
+        if(pApi)
+        {
+            variant_info = pApi->info();
+            aStr += variant_info.as_string();
+
+        } // if(pApi)
+        else
+        {
+            //var_obj_about = static_about();
+            aStr = "First connect to the witness node, then require again info!";
+        }
+
+
+    }
+    catch(...)
+    {
+        aStr += "Exception thrown!";
+    }
+
 
     m_info_textedit.setText(tr(aStr.c_str()));
     m_info_dialog.exec();
 
     if(bCreatedHere){delete pApi;}
+#endif
 }
 
 
@@ -185,6 +241,9 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionAbout.setStatusTip( tr("About") );
     connect( &m_ActionAbout, SIGNAL(triggered()), this, SLOT(AboutSlot()) );
 
+    m_ActionInfo.setStatusTip( tr("Info") );
+    connect( &m_ActionInfo, SIGNAL(triggered()), this, SLOT(InfoSlot()) );
+
     m_ActionConnect.setStatusTip( tr("Connect to witness node") );
     connect( &m_ActionConnect, SIGNAL(triggered()), this, SLOT(ConnectSlot()) );
 
@@ -196,8 +255,13 @@ void Mainwindow_gui_wallet::CreateActions()
 }
 
 
+
+
 void Mainwindow_gui_wallet::CreateMenues()
 {
+#define ADD_ACTION_TO_MENU_HELP(__action_ptr__) \
+    do{m_pMenuHelpL->addAction( (__action_ptr__) );m_pMenuHelpR->addAction( (__action_ptr__) );}while(0)
+
     QMenuBar* pMenuBar = m_barLeft;
 
     m_pMenuFile = pMenuBar->addMenu( tr("&File") );
@@ -208,13 +272,18 @@ void Mainwindow_gui_wallet::CreateMenues()
 
     m_pMenuSetting = pMenuBar->addMenu( tr("&Setting") );
     m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );
-    m_pMenuHelpL->addAction( &m_ActionAbout );
+    //m_pMenuHelpL->addAction( &m_ActionAbout );
+    //m_pMenuHelpL->addAction( &m_ActionInfo );
     m_pMenuContent = pMenuBar->addMenu( tr("Content") );
 
     //QMenu*          m_pMenuHelpR;
     //QMenu*          m_pMenuCreateTicket;
     pMenuBar = m_barRight;
     m_pMenuHelpR = pMenuBar->addMenu( tr("Help") );
-    m_pMenuHelpR->addAction( &m_ActionAbout );
+    //m_pMenuHelpR->addAction( &m_ActionAbout );
+    //m_pMenuHelpR->addAction( &m_ActionInfo );
     m_pMenuCreateTicket = pMenuBar->addMenu( tr("Create ticket") );
+
+    ADD_ACTION_TO_MENU_HELP(&m_ActionAbout);
+    ADD_ACTION_TO_MENU_HELP(&m_ActionInfo);
 }

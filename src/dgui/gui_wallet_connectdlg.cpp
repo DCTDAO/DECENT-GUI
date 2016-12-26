@@ -28,7 +28,8 @@ ConnectDlg::ConnectDlg(QWidget* a_parent)
       QDialog(a_parent),
       m_wallet_file_name("wallet.json"),
       m_main_table(NUM_OF_FIELDS,2),
-      m_pCurApi(NULL)
+      m_pCurApi(NULL),
+      m_pCurGuiApi(NULL)
 {
     //m_wdata.chain_id = (chain_id_type)0;
 
@@ -79,6 +80,11 @@ graphene::wallet::wallet_api* ConnectDlg::GetCurApi()
     return m_pCurApi;
 }
 
+fc::rpc::gui* ConnectDlg::GetCurGuiApi()
+{
+    return m_pCurGuiApi;
+}
+
 
 void ConnectDlg::ConnectPushedSlot()
 {
@@ -87,7 +93,7 @@ void ConnectDlg::ConnectPushedSlot()
     QByteArray aLatin=aRpcEndPointAStr.toLatin1();
     m_wdata.ws_server = aLatin.data();
     m_wdata.chain_id = chain_id_type( std::string( (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ) );
-    std::thread aThread(CreateConnectedApiInstance,&m_wdata,m_wallet_file_name,&m_pCurApi,this);
+    std::thread aThread(CreateConnectedApiInstance,&m_wdata,m_wallet_file_name,&m_pCurApi,&m_pCurGuiApi,this);
     aThread.detach();
     //close();
 }
