@@ -16,7 +16,14 @@
 #include "gui_wallet_mainwindow.hpp"
 #endif
 
+#ifdef WIN32
+#define LAST_SYS_CHAR   '\\'
+#else
+#define LAST_SYS_CHAR   '/'
+#endif
+
 int g_nDebugApplication = 0;
+std::string* g_pApplicationPath = NULL;
 
 int main(int argc, char* argv[])
 {
@@ -50,6 +57,16 @@ int main(int argc, char* argv[])
     }
 
     freopen( "/dev/null", "w", stderr);
+    const char* cpcPath = strrchr(argv[0],LAST_SYS_CHAR);
+
+    if(cpcPath)
+    {
+        int nStrLen = (int)(((size_t)cpcPath) - ((size_t)argv[0]));
+        if(nStrLen){g_pApplicationPath = new std::string(argv[0],nStrLen);}
+        else {g_pApplicationPath = new std::string(".");}
+    }
+    else {g_pApplicationPath = new std::string(".");}
+
     gui_wallet::application aApp(argc,argv);
 
 #if 0
@@ -66,6 +83,7 @@ int main(int argc, char* argv[])
     gui_wallet::Mainwindow_gui_wallet aMainWindow;
     aMainWindow.show();
     aApp.exec();
+    delete g_pApplicationPath;
 #endif
 #endif
 

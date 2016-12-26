@@ -25,6 +25,8 @@
 #include <QScrollBar>
 #include "gui_wallet_global.hpp"
 
+extern std::string* g_pApplicationPath ;
+
 
 using namespace gui_wallet;
 
@@ -65,7 +67,10 @@ const int& CentralWigdet::GetAccountBalance()const
             if( !(_image_).load(DECENT_IMGS_INITIAL_PATH _image_name_) ) {\
                 /* Search for couple of other places */ \
                 if( !(_image_).load("./" _image_name_) ) {\
-                    if( !(_image_).load((_image_name_)) ){(_bRet_)=false;} \
+                    if( !(_image_).load((_image_name_)) ){\
+                        std::string cImageFlName = (*g_pApplicationPath) + (DECENT_IMGS_INITIAL_PATH _image_name_); \
+                        if( !(_image_).load(cImageFlName.c_str()) ){(_bRet_)=false;} \
+                    } \
                 }\
              }\
         }while(0)
