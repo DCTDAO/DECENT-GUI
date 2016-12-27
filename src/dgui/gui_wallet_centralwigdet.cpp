@@ -11,10 +11,11 @@
 #define DECENT_LOGO_FILE_NAME       "dc_logo.jpg"
 #define GLOBE_FILE_NAME             "globe.jpg"
 #define MAN_LOGO_FILE_NAME          "man_logo.jpg"
+#define FOLDER_NAME_FOR_IMAGES      "images"
 #ifdef __APPLE__
-#define DECENT_IMGS_INITIAL_PATH    "../../../../../../images/"
+#define DECENT_IMGS_INITIAL_PATH    "../../../../../../" FOLDER_NAME_FOR_IMAGES "/"
 #else
-#define DECENT_IMGS_INITIAL_PATH    "../../../images/"
+#define DECENT_IMGS_INITIAL_PATH    "../../../" FOLDER_NAME_FOR_IMAGES "/"
 #endif
 
 #include "gui_wallet_centralwigdet.hpp"
@@ -25,7 +26,7 @@
 #include <QScrollBar>
 #include "gui_wallet_global.hpp"
 
-extern std::string* g_pApplicationPath ;
+extern std::string g_cApplicationPath ;
 
 
 using namespace gui_wallet;
@@ -60,7 +61,42 @@ const int& CentralWigdet::GetAccountBalance()const
 
 
 
-//static void SetImageToLabelStatic(){}
+#if 1
+
+#ifndef _PATH_DELIMER_
+#ifdef WIN32
+#define _PATH_DELIMER_  '\\'
+#else
+#define _PATH_DELIMER_  '/'
+#endif
+#endif
+
+static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _image_name_)
+{
+    std::string::size_type nPosFound;
+    std::string cFullPath;
+    std::string cCurDir(g_cApplicationPath);
+
+    for(;;)
+    {
+        // 1. Try to find image in the directory of executable
+        cFullPath = cCurDir + "/" + _image_name_;
+        if( (_image_).load(cFullPath.c_str()) ){_bRet_ = true;return;}
+
+        // 2. Try to find in the directory of executable + image folder
+        cFullPath = cCurDir + ("/" FOLDER_NAME_FOR_IMAGES "/") + _image_name_;
+        if( (_image_).load(cFullPath.c_str()) ){_bRet_ = true;return;}
+
+        // Go one up and try again
+        nPosFound = cCurDir.find_last_of(_PATH_DELIMER_);
+        if(nPosFound == std::string::npos){_bRet_ = false;return;} // Not found!
+        cCurDir.erase(nPosFound,std::string::npos);
+    }
+}
+
+
+#else  // #if 1/0
+
 #define SetImageToLabelStatic(_bRet_,_image_,_image_name_) \
         do{ \
             (_bRet_)=true; \
@@ -74,6 +110,8 @@ const int& CentralWigdet::GetAccountBalance()const
                 }\
              }\
         }while(0)
+
+#endif // #if 1/0
 
 
 

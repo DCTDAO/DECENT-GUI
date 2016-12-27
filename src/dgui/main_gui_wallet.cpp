@@ -23,8 +23,8 @@
 #define LAST_SYS_CHAR   '/'
 #endif
 
-int g_nDebugApplication = 1;
-std::string* g_pApplicationPath = NULL;
+int g_nDebugApplication = 0;
+std::string g_cApplicationPath ;
 
 int main(int argc, char* argv[])
 {
@@ -38,10 +38,10 @@ int main(int argc, char* argv[])
     if(cpcPath)
     {
         int nStrLen = (int)(((size_t)cpcPath) - ((size_t)argv[0]));
-        if(nStrLen){g_pApplicationPath = new std::string(argv[0],nStrLen);}
-        else {g_pApplicationPath = new std::string(".");}
+        if(nStrLen){g_cApplicationPath = std::string(argv[0],nStrLen);}
+        else {g_cApplicationPath = std::string(".");}
     }
-    else {g_pApplicationPath = new std::string(".");}
+    else {g_cApplicationPath = std::string(".");}
 
     static std::string scAppFullPath ( argv[0] );
 
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     }
 
     if(g_nDebugApplication){printf("argv[0]=\"%s\"\napp dir. = \"%s\"\n",
-                                   scAppFullPath.c_str(),g_pApplicationPath->c_str());}
+                                   scAppFullPath.c_str(),g_cApplicationPath.c_str());}
 
     freopen( "/dev/null", "w", stderr);
 
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
     gui_wallet::Mainwindow_gui_wallet aMainWindow;
     aMainWindow.show();
     aApp.exec();
-    delete g_pApplicationPath;
+    //delete g_pApplicationPath;
 #endif
 #endif
 
