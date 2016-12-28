@@ -27,6 +27,7 @@
 #include "gui_wallet_global.hpp"
 
 extern std::string g_cApplicationPath ;
+extern int g_nDebugApplication;
 
 
 using namespace gui_wallet;
@@ -71,11 +72,24 @@ const int& CentralWigdet::GetAccountBalance()const
 #endif
 #endif
 
+#ifdef WIN32
+#include <direct.h>
+#ifndef getcwd
+#define getcwd _getcwd
+#endif
+#else
+#include <unistd.h>
+#endif
+
 static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _image_name_)
 {
+    char vcBuffer[512];
     std::string::size_type nPosFound;
     std::string cFullPath;
-    std::string cCurDir(g_cApplicationPath);
+    std::string cCurDir(std::string(getcwd(vcBuffer,511)) + "/" + g_cApplicationPath);
+
+    //printf("g_nDebugApplication=%d\n",g_nDebugApplication);
+    if(g_nDebugApplication){printf("!!! cur_dir=\"%s\"\n",cCurDir.c_str());}
 
     for(;;)
     {

@@ -71,7 +71,8 @@ int main(int argc, char* argv[])
         }
     }
 
-    if(g_nDebugApplication){printf("argv[0]=\"%s\"\napp dir. = \"%s\"\n",
+    if(g_nDebugApplication){printf("argv[0]=\"%s\"\n"
+                                   "app dir. = \"%s\"\n",
                                    scAppFullPath.c_str(),g_cApplicationPath.c_str());}
 
     freopen( "/dev/null", "w", stderr);
