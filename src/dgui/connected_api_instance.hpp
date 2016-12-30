@@ -19,11 +19,17 @@ typedef void (*WaletFncType)(graphene::wallet::wallet_api* wa,void*ud);
 namespace gui_wallet
 {
 
-int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
-                                const std::string& a_wallet_file_name,
-                                graphene::wallet::wallet_api** a_ppApi,
-                                fc::rpc::gui** a_ppGuiApi,
-                                void* a_pOwner);
+/*
+ *  struncture that conatins all necessary pointers for api-s
+ *   most probably this will be moved to the cpp file, because it is needed only by
+ *   one source file
+ */
+struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wallet_api* wal_api; fc::rpc::gui* gui_api;};
+
+graphene::wallet::wallet_api* GetCurWalletApi();
+fc::rpc::gui* GetCurGuiApi();
+int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
+                                const std::string& a_wallet_file_name);
 void UseConnectedApiInstance(WaletFncType a_fpFunction, void* a_pUserData);
 
 }

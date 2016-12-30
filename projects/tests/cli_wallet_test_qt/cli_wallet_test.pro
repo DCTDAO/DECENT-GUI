@@ -14,10 +14,17 @@ DEFINES += USE_SCALAR_4X64
 DEFINES += USE_SCALAR_INV_BUILTIN
 DEFINES += HAVE___INT128
 
-win32:SYSTEM_PATH = ../../../sys/win64
+win32{
+    SYSTEM_PATH = ../../../sys/win64
+}
 else {
-    CODENAME = $$system(lsb_release -c | cut -f 2)
-    SYSTEM_PATH = ../../../sys/$$CODENAME
+    macx{
+        SYSTEM_PATH = ../../../sys/mac
+    }
+    else{
+        CODENAME = $$system(lsb_release -c | cut -f 2)
+        SYSTEM_PATH = ../../../sys/$$CODENAME
+    }
 }
 
 # Debug:DESTDIR = debug1
@@ -39,15 +46,31 @@ QMAKE_CFLAGS += -msse4.2
 
 #BOOST_ROOT= /doocs/develop/kalantar/programs/cpp/works/.private/opt/boost_1_57_0
 BOOST_ROOT= ../../../../../opt/boost_1_57_0_unix
+BOOST_ROOT_QT= $$BOOST_ROOT
+
+exists( $$BOOST_ROOT_QT/lib/libboost_thread-mt* ) {
+      #message( "Configuring for multi-threaded Qt..." )
+      #CONFIG += thread
+    LIBS += -lboost_thread-mt
+}else{
+    LIBS += -lboost_thread
+}
+
+exists( $$BOOST_ROOT_QT/lib/libboost_context-mt* ) {
+      #message( "Configuring for multi-threaded Qt..." )
+      #CONFIG += thread
+    LIBS += -lboost_context-mt
+}else{
+    LIBS += -lboost_context
+}
+
 LIBS += -L$$BOOST_ROOT/lib
 LIBS += -lboost_program_options
 LIBS += -lboost_filesystem
 LIBS += -lboost_system
 LIBS += -lboost_chrono
 LIBS += -lboost_date_time
-LIBS += -lboost_context
 LIBS += -lboost_coroutine
-LIBS += -lboost_thread
 LIBS += -lssl
 LIBS += -lcrypto++
 LIBS += -lcrypto

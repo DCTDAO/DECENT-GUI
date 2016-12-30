@@ -82,15 +82,44 @@ static int ErrorFunc(void*,const char*, ...)
     return 0;
 }
 
-int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
-                                const std::string& a_wallet_file_name,
-                                graphene::wallet::wallet_api** a_ppApi,
-                                fc::rpc::gui** a_ppGuiApi,
-                                void* a_pOwner)
+static std::mutex   s_mutex_for_cur_api;
+static StructApi    s_CurrentApi;
+
+
+graphene::wallet::wallet_api* GetCurWalletApi()
+{
+    graphene::wallet::wallet_api* pCurWalletApi;
+    s_mutex_for_cur_api.lock();
+    pCurWalletApi = s_CurrentApi.wal_api;
+    s_mutex_for_cur_api.unlock();
+    return pCurWalletApi;
+}
+
+fc::rpc::gui* GetCurGuiApi()
+{
+    fc::rpc::gui*  pCurGuiApi;
+    s_mutex_for_cur_api.lock();
+    pCurGuiApi = s_CurrentApi.gui_api;
+    s_mutex_for_cur_api.unlock();
+    return pCurGuiApi;
+}
+
+static void SetCurrentApis(const StructApi* a_pApis)
+{
+    s_mutex_for_cur_api.lock();
+    memcpy(&s_CurrentApi,a_pApis,sizeof(StructApi));
+    s_mutex_for_cur_api.unlock();
+}
+
+
+int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
+                                const std::string& a_wallet_file_name)
 {
     try
     {
-        graphene::wallet::wallet_data& wdata = *a_wdata;
+        void* pOwner = NULL; // ???
+        StructApi aApiToCreate;
+        const graphene::wallet::wallet_data& wdata = *a_wdata;
         fc::path wallet_file( a_wallet_file_name );
 
         fc::http::websocket_client client;
@@ -106,12 +135,13 @@ int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
         auto wapiptr = std::make_shared<wallet_api>( wdata, remote_api );
         wapiptr->set_wallet_filename( wallet_file.generic_string() );
         wapiptr->load_wallet_file();
-        *a_ppApi = wapiptr.get();
+        aApiToCreate.wal_api = wapiptr.get();
 
         fc::api<wallet_api> wapi(wapiptr);
 
         auto wallet_gui = std::make_shared<fc::rpc::gui>();
-        *a_ppGuiApi = wallet_gui.get();
+        aApiToCreate.gui_api = wallet_gui.get();
+        SetCurrentApis(&aApiToCreate);
         for( auto& name_formatter : wapiptr->get_result_formatters() )
            wallet_gui->format_result( name_formatter.first, name_formatter.second );
 #if 0
@@ -120,14 +150,14 @@ int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
         void SetWarnReporter(TYPE_REPORTER warn_reporter);
         void SetErrorReporter(TYPE_REPORTER err_reporter);
 #endif
-        wallet_gui.get()->SetOwner(a_pOwner);
+        wallet_gui.get()->SetOwner(pOwner);  // ???
         wallet_gui.get()->SetInfoReporter(&InfoFunc);
         wallet_gui.get()->SetInfoReporter(&WarnFunc);
         wallet_gui.get()->SetInfoReporter(&ErrorFunc);
 
         boost::signals2::scoped_connection closed_connection(con->closed.connect([=]{
            //cerr << "Server has disconnected us.\n";
-           ErrorFunc(a_pOwner,"Server has disconnected us.\n");
+           ErrorFunc(pOwner,"Server has disconnected us.\n");
            wallet_gui->stop();
         }));
         (void)(closed_connection);
@@ -136,11 +166,11 @@ int CreateConnectedApiInstance( graphene::wallet::wallet_data* a_wdata,
         {
            //std::cout << "Please use the set_password method to initialize a new wallet before continuing\n";
            //wallet_cli->set_prompt( "new >>> " );
-           WarnAndWaitFunc(a_pOwner,"Please use the set_password method to initialize a new wallet before continuing\n");
+           WarnAndWaitFunc(pOwner,"Please use the set_password method to initialize a new wallet before continuing\n");
         } else
            {/*wallet_cli->set_prompt( "locked >>> " );*/}
 
-        boost::signals2::scoped_connection locked_connection(wapiptr->lock_changed.connect([&](bool locked) {
+        boost::signals2::scoped_connection locked_connection(wapiptr->lock_changed.connect([&](bool /*locked*/) {
            //wallet_cli->set_prompt(  locked ? "locked >>> " : "unlocked >>> " );
         }));
 

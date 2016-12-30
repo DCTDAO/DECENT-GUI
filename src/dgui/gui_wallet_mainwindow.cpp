@@ -9,6 +9,7 @@
  */
 #include "gui_wallet_mainwindow.hpp"
 #include <QMenuBar>
+#include "connected_api_instance.hpp"
 
 using namespace gui_wallet;
 
@@ -106,7 +107,7 @@ void Mainwindow_gui_wallet::AboutSlot()
     {
         aStr = "";
         fc::variant_object var_obj_about;
-        pApi = m_ConnectDlg.GetCurApi();
+        pApi = GetCurWalletApi();
 #if 0
         if(!pApi){
             graphene::wallet::wallet_data wdata;
@@ -162,8 +163,8 @@ void Mainwindow_gui_wallet::InfoSlot()
 
     try
     {
-        pApi = m_ConnectDlg.GetCurGuiApi();
-        pApi->SetNewTask("Info");
+        pApi = GetCurGuiApi();
+        if(pApi){pApi->SetNewTask("Info");}
     }
     catch(...)
     {

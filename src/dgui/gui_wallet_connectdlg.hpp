@@ -36,8 +36,8 @@ public:
     ConnectDlg(QWidget* parent);
     virtual ~ConnectDlg();
 
-    graphene::wallet::wallet_api* GetCurApi();
-    fc::rpc::gui* GetCurGuiApi();
+    //graphene::wallet::wallet_api* GetCurApi();
+    //fc::rpc::gui* GetCurGuiApi();
 
 protected:
     void resizeEvent ( QResizeEvent * event );
@@ -50,9 +50,9 @@ private:
     graphene::wallet::wallet_data     m_wdata;
     QHBoxLayout         m_main_layout;
     QTableWidget        m_main_table;
-    graphene::wallet::wallet_api*   m_pCurApi;
-    fc::rpc::gui*                   m_pCurGuiApi;
-    std::vector<graphene::wallet::wallet_api*>   m_vAllApis;
+    //graphene::wallet::wallet_api*   m_pCurApi;
+    //fc::rpc::gui*                   m_pCurGuiApi;
+    //std::vector<graphene::wallet::wallet_api*>   m_vAllApis;
 };
 
 }

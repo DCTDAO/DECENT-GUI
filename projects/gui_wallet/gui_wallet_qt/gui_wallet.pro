@@ -7,6 +7,7 @@
 # for Decent
 #
 
+#http://doc.qt.io/qt-5/osx-deployment.html
 #CONFIG += TEST
 # For making test: '$qmake "CONFIG+=TEST" gui_wallet.pro'  , then '$make'
 
@@ -75,6 +76,8 @@ win32{
 }
 else {
     macx{
+        #QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+        LIBS += -isysroot$(DEVELOPER_SDK_DIR)/MacOSX$(MACOSX_DEPLOYMENT_TARGET).sdk
         SYSTEM_PATH = ../../../sys/mac
 
         OPEN_SSL_ROOT_PATH = $$(OPENSSL_ROOT_DIR)
