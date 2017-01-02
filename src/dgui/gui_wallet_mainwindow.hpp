@@ -29,10 +29,19 @@ namespace gui_wallet
         void CreateActions();
         void CreateMenues();
 
+    private:
+        void TaskDoneFunc(int err,const std::string& task,const std::string& result);
+        static void TaskDoneFunc(void* owner,int err,const std::string& task,const std::string& result);
+
     protected slots:
         void AboutSlot();
         void ConnectSlot();
         void InfoSlot();
+        void TaskDoneSlot(int err,std::string task, std::string result);
+
+    private:
+    signals:
+        void TaskDoneSig(int err,std::string task, std::string result);
 
     private:
         class QVBoxLayout*   m_pCentralAllLayout;

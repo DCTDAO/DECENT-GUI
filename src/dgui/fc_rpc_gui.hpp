@@ -15,6 +15,7 @@
 #include <mutex>
 
 typedef int (*TYPE_REPORTER)(void*owner,const char* form,...);
+typedef void (*TYPE_TASK_DONE)(void*owner,int err,const std::string& a_task, const std::string& task_result);
 
 namespace fc { namespace rpc {
 
@@ -36,7 +37,7 @@ namespace fc { namespace rpc {
          void wait();
          void format_result( const string& method, std::function<string(variant,const variants&)> formatter);
 
-         void SetNewTask(const std::string& a_line);
+         void SetNewTask(void* a_pOwner,TYPE_TASK_DONE a_fpTaskDone,const std::string& a_line);
          void SetOwner(void* owner);
          void SetInfoReporter(TYPE_REPORTER info_reporter);
          void SetWarnReporter(TYPE_REPORTER warn_reporter);
@@ -44,6 +45,7 @@ namespace fc { namespace rpc {
 
 
       private:
+         static void default_task_done(void*,int,const std::string&,const std::string&){}
          void run();
          /*
           *  return
@@ -56,11 +58,14 @@ namespace fc { namespace rpc {
          fc::future<void> _run_complete;
 
          /*typedef*/ struct taskListItem{
-             taskListItem(const std::string& a_str=""):next(NULL),line(a_str){}
+             taskListItem(void* a_owner = NULL,TYPE_TASK_DONE a_fn_tsk_dn=default_task_done,const std::string& a_str="")
+                 :next(NULL),owner(a_owner),fn_tsk_dn(a_fn_tsk_dn),line(a_str){}
              struct taskListItem* next;
+             void*  owner;
+             TYPE_TASK_DONE fn_tsk_dn;
              std::string line;
          }/*taskListItem*/;
-         gui::taskListItem* GetFirstTask();
+         bool GetFirstTask(gui::taskListItem* firstTaskBuffer);
 
          taskListItem                       m_InitialTaskBuffer;
          taskListItem*                      m_pFirstTask;

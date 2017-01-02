@@ -125,7 +125,7 @@ void gui::format_result( const string& method, std::function<string(variant,cons
 }
 
 
-void gui::SetNewTask(const std::string& a_line)
+void gui::SetNewTask(void* a_pOwner,TYPE_TASK_DONE a_fpTaskDone,const std::string& a_line)
 {
     //m_line = a_line;
     //taskListItem * pTaskNext;
@@ -133,12 +133,22 @@ void gui::SetNewTask(const std::string& a_line)
     m_task_mutex.lock();
     if(!m_pFirstTask)
     {
+        //m_InitialTaskBuffer.next = NULL;
         m_pFirstTask = m_pLastTask = &m_InitialTaskBuffer;
+#if 0
+        struct taskListItem* next;
+        void*  owner;
+        std::string line;
+        TYPE_TASK_DONE fn_tsk_dn;
+#endif
+        m_pLastTask->next = NULL;
+        m_pLastTask->owner = a_pOwner;
         m_pLastTask->line = a_line;
+        m_pLastTask->fn_tsk_dn = a_fpTaskDone;
     }
     else
     {
-        m_pLastTask->next = new taskListItem(a_line);
+        m_pLastTask->next = new taskListItem(a_pOwner,a_fpTaskDone, a_line);
         m_pLastTask = m_pLastTask->next;
     }
     m_task_mutex.unlock();
@@ -147,51 +157,51 @@ void gui::SetNewTask(const std::string& a_line)
 }
 
 
-gui::taskListItem* gui::GetFirstTask()
+bool gui::GetFirstTask(gui::taskListItem* a_pFirstTaskBuffer)
 {
-    struct taskListItem* pReturn = NULL;
+    bool bRet(false);
+    struct taskListItem* pTmp = NULL;
+
+    //printf("line=%d\n",__LINE__);
 
     m_task_mutex.lock();
     if(m_pFirstTask)
     {
-        pReturn = m_pFirstTask;
+        //printf("line=%d\n",__LINE__);
+        memcpy(a_pFirstTaskBuffer,m_pFirstTask,sizeof(gui::taskListItem));
         if(m_pFirstTask->next)
         {
+            pTmp = m_pFirstTask->next;
             memcpy(m_pFirstTask,m_pFirstTask->next,sizeof(struct taskListItem));
-            delete m_pFirstTask->next;
+            delete pTmp;
         }
-        else
-        {
-            m_pFirstTask = NULL;
-        }
+        else {m_pFirstTask = NULL;}
+        bRet = true;
     } // if(m_pFirstTask)
     m_task_mutex.unlock();
 
-    return pReturn;
+    return bRet;
 }
+
+#include <stdio.h>
 
 void gui::run()
 {
-   struct taskListItem* pTaskListItem;
+   struct taskListItem aTaskItem;
+   //int nIteration;
+   int err = 0;
 
    while( !_run_complete.canceled() )
    {
       try
       {
-         try
-         {
-            //getline( _prompt.c_str(), line );
-             m_semaphore.wait();
-         }
-         catch ( const fc::eof_exception& /*e*/ )
-         {
-            break;
-         }
+         m_semaphore.wait();
+         //nIteration = 0;
 
-         pTaskListItem = GetFirstTask();
-         while(pTaskListItem)
+         while(GetFirstTask(&aTaskItem))
          {
-             std::string line = pTaskListItem->line;
+             //printf("!!!!!!!!!!!! %d, aItem.line=%s\n",++nIteration,aTaskItem.line.c_str());
+             std::string line = aTaskItem.line;
              //std::cout << line << "\n";
              line += char(EOF);
              fc::variants args = fc::json::variants_from_string(line);
@@ -204,12 +214,14 @@ void gui::run()
              auto itr = _result_formatters.find( method );
              if( itr == _result_formatters.end() )
              {
-                std::cout << "!!!!!!!if\n"<<fc::json::to_pretty_string( result ) << "\n";
+                //std::cout << "!!!!!!!if\n"<<fc::json::to_pretty_string( result ) << "\n";
+                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,err,aTaskItem.line, fc::json::to_pretty_string( result ));
                 (*m_info_report)(m_pOwner,"%s\n",fc::json::to_pretty_string( result ).c_str());
              }
              else
              {
-                std::cout << "!!!!!!!!else\n"<<itr->second( result, args ) << "\n";
+                //std::cout << "!!!!!!!!else\n"<<itr->second( result, args ) << "\n";
+                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,err,aTaskItem.line, itr->second( result, args ));
                 (*m_info_report)(m_pOwner,"%s\n",itr->second( result, args ).c_str());
              }
          }

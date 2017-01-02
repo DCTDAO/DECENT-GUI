@@ -50,8 +50,11 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
     setCentralWidget(m_pCentralWidget);
 
-    m_info_textedit.setFixedSize(499,299);
-    m_info_dialog.setFixedSize(500,300);
+    m_info_textedit.setFixedSize(499,399);
+    m_info_dialog.setFixedSize(500,400);
+
+    qRegisterMetaType<std::string>( "std::string" );
+    connect(this, SIGNAL(TaskDoneSig(int,std::string, std::string)), this, SLOT(TaskDoneSlot(int,std::string, std::string)) );
 
 }
 
@@ -154,6 +157,33 @@ void Mainwindow_gui_wallet::AboutSlot()
 }
 
 
+void Mainwindow_gui_wallet::TaskDoneFunc(int a_err,const std::string& a_task,const std::string& a_result)
+{
+    emit TaskDoneSig(a_err,a_task,a_result);
+}
+
+
+void Mainwindow_gui_wallet::TaskDoneFunc(void* a_owner,int a_err,const std::string& a_task,const std::string& a_result)
+{
+    Mainwindow_gui_wallet* pOwner = (Mainwindow_gui_wallet*)a_owner;
+    pOwner->TaskDoneFunc(a_err,a_task,a_result);
+}
+
+
+void Mainwindow_gui_wallet::TaskDoneSlot(int a_err,std::string a_task, std::string a_result)
+{
+    QString aStrToDisplay(tr(a_task.c_str()));
+
+    aStrToDisplay += tr("(err=");
+    aStrToDisplay += QString::number(a_err,10);
+    aStrToDisplay += tr(")\n");
+    aStrToDisplay += tr(a_result.c_str());
+    m_info_textedit.setText(aStrToDisplay);
+    m_info_dialog.exec();
+}
+
+
+
 void Mainwindow_gui_wallet::InfoSlot()
 {
 
@@ -164,7 +194,7 @@ void Mainwindow_gui_wallet::InfoSlot()
     try
     {
         pApi = GetCurGuiApi();
-        if(pApi){pApi->SetNewTask("Info");}
+        if(pApi){pApi->SetNewTask(this,TaskDoneFunc,"info");}
     }
     catch(...)
     {
