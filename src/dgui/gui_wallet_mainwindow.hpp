@@ -14,6 +14,7 @@
 #include "gui_wallet_centralwigdet.hpp"
 #include <QAction>
 #include "gui_wallet_connectdlg.hpp"
+#include "text_display_dialog.hpp"
 
 namespace gui_wallet
 {
@@ -35,6 +36,7 @@ namespace gui_wallet
 
     protected slots:
         void AboutSlot();
+        void HelpSlot();
         void ConnectSlot();
         void InfoSlot();
         void TaskDoneSlot(int err,std::string task, std::string result);
@@ -48,21 +50,21 @@ namespace gui_wallet
         class QHBoxLayout*   m_pMenuLayout;
         CentralWigdet*       m_pCentralWidget;
 
-        QMenuBar *      m_barLeft ;
-        QMenuBar *      m_barRight;
-        QMenu*          m_pMenuFile;
-        QMenu*          m_pMenuSetting;
-        QMenu*          m_pMenuHelpL;
-        QMenu*          m_pMenuContent;
-        QMenu*          m_pMenuHelpR;
-        QMenu*          m_pMenuCreateTicket;
-        QAction         m_ActionExit;
-        QAction         m_ActionConnect;
-        QAction         m_ActionAbout;
-        QAction         m_ActionInfo;
-        ConnectDlg      m_ConnectDlg;
-        QDialog         m_info_dialog;
-        QTextEdit       m_info_textedit;
+        QMenuBar *          m_barLeft ;
+        QMenuBar *          m_barRight;
+        QMenu*              m_pMenuFile;
+        QMenu*              m_pMenuSetting;
+        QMenu*              m_pMenuHelpL;
+        QMenu*              m_pMenuContent;
+        QMenu*              m_pMenuHelpR;
+        QMenu*              m_pMenuCreateTicket;
+        QAction             m_ActionExit;
+        QAction             m_ActionConnect;
+        QAction             m_ActionAbout;
+        QAction             m_ActionInfo;
+        QAction             m_ActionHelp;
+        ConnectDlg          m_ConnectDlg;
+        TextDisplayDialog   m_info_dialog;
     };
 
 }

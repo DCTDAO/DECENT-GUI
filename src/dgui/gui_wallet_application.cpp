@@ -29,6 +29,7 @@ gui_wallet::application::application(int& argc, char** argv)
     :
       QApplication(argc,argv)
 {
+    qRegisterMetaType<std::string>( "std::string" );
     s_pWarner = new InGuiThreatCaller;
     connect( s_pWarner, SIGNAL(ShowMessageBoxSig(const QString&)),
              s_pWarner, SLOT(MakeShowMessageBoxSlot(const QString&)) );
@@ -113,11 +114,12 @@ static void SetCurrentApis(const StructApi* a_pApis)
 
 
 int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
-                                const std::string& a_wallet_file_name)
+                                const std::string& a_wallet_file_name,
+                                void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr)
 {
     try
     {
-        void* pOwner = NULL; // ???
+        void* pOwner = a_pOwner; // ???
         StructApi aApiToCreate;
         const graphene::wallet::wallet_data& wdata = *a_wdata;
         fc::path wallet_file( a_wallet_file_name );
@@ -144,12 +146,7 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
         SetCurrentApis(&aApiToCreate);
         for( auto& name_formatter : wapiptr->get_result_formatters() )
            wallet_gui->format_result( name_formatter.first, name_formatter.second );
-#if 0
-        void SetOwner(void* owner);
-        void SetInfoReporter(TYPE_REPORTER info_reporter);
-        void SetWarnReporter(TYPE_REPORTER warn_reporter);
-        void SetErrorReporter(TYPE_REPORTER err_reporter);
-#endif
+
         wallet_gui.get()->SetOwner(pOwner);  // ???
         wallet_gui.get()->SetInfoReporter(&InfoFunc);
         wallet_gui.get()->SetInfoReporter(&WarnFunc);
@@ -175,63 +172,12 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
         }));
 
 
-#if 0
-        auto _websocket_server = std::make_shared<fc::http::websocket_server>();
-        if( options.count("rpc-endpoint") )
-        {
-           _websocket_server->on_connection([&]( const fc::http::websocket_connection_ptr& c ){
-              std::cout << "here... \n";
-              wlog("." );
-              auto wsc = std::make_shared<fc::rpc::websocket_api_connection>(*c);
-              wsc->register_api(wapi);
-              c->set_session_data( wsc );
-           });
-           ilog( "Listening for incoming RPC requests on ${p}", ("p", options.at("rpc-endpoint").as<string>() ));
-           _websocket_server->listen( fc::ip::endpoint::from_string(options.at("rpc-endpoint").as<string>()) );
-           _websocket_server->start_accept();
-        }
-
-        string cert_pem = "server.pem";
-        if( options.count( "rpc-tls-certificate" ) )
-           cert_pem = options.at("rpc-tls-certificate").as<string>();
-
-        auto _websocket_tls_server = std::make_shared<fc::http::websocket_tls_server>(cert_pem);
-        if( options.count("rpc-tls-endpoint") )
-        {
-           _websocket_tls_server->on_connection([&]( const fc::http::websocket_connection_ptr& c ){
-              auto wsc = std::make_shared<fc::rpc::websocket_api_connection>(*c);
-              wsc->register_api(wapi);
-              c->set_session_data( wsc );
-           });
-           ilog( "Listening for incoming TLS RPC requests on ${p}", ("p", options.at("rpc-tls-endpoint").as<string>() ));
-           _websocket_tls_server->listen( fc::ip::endpoint::from_string(options.at("rpc-tls-endpoint").as<string>()) );
-           _websocket_tls_server->start_accept();
-        }
-
-        auto _http_server = std::make_shared<fc::http::server>();
-        if( options.count("rpc-http-endpoint" ) )
-        {
-           ilog( "Listening for incoming HTTP RPC requests on ${p}", ("p", options.at("rpc-http-endpoint").as<string>() ) );
-           _http_server->listen( fc::ip::endpoint::from_string( options.at( "rpc-http-endpoint" ).as<string>() ) );
-           //
-           // due to implementation, on_request() must come AFTER listen()
-           //
-           _http_server->on_request(
-              [&]( const fc::http::request& req, const fc::http::server::response& resp )
-              {
-                 std::shared_ptr< fc::rpc::http_api_connection > conn =
-                    std::make_shared< fc::rpc::http_api_connection>();
-                 conn->register_api( wapi );
-                 conn->on_request( req, resp );
-              } );
-        }
-#endif
-
         //if( !options.count( "daemon" ) )
         if(1)
         {
            wallet_gui->register_api( wapi );
            wallet_gui->start();
+           (*a_fpDone)(a_pOwner);
            wallet_gui->wait();
         }
         else
@@ -253,7 +199,8 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
     }
     catch(const fc::exception& a_fc)
     {
-        printf("%s\n",(a_fc.to_detail_string()).c_str());
+        //printf("%s\n",(a_fc.to_detail_string()).c_str());
+        (*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
     }
     catch(...)
     {}

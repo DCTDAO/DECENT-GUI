@@ -19,9 +19,9 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionConnect(tr("Connect"),this),
         m_ActionAbout(tr("About"),this),
         m_ActionInfo(tr("Info"),this),
+        m_ActionHelp(tr("Help"),this),
         m_ConnectDlg(this),
-        m_info_dialog(),
-        m_info_textedit(&m_info_dialog)
+        m_info_dialog()
 {
     m_barLeft = new QMenuBar;
     m_barRight = new QMenuBar;
@@ -50,10 +50,8 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
     setCentralWidget(m_pCentralWidget);
 
-    m_info_textedit.setFixedSize(499,399);
-    m_info_dialog.setFixedSize(500,400);
+    m_info_dialog.resize(0,0);
 
-    qRegisterMetaType<std::string>( "std::string" );
     connect(this, SIGNAL(TaskDoneSig(int,std::string, std::string)), this, SLOT(TaskDoneSlot(int,std::string, std::string)) );
 
 }
@@ -63,41 +61,100 @@ Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
 }
 
-#if 0
-static fc::variant_object static_about()
+
+void Mainwindow_gui_wallet::CreateActions()
 {
-  std::string client_version( graphene::utilities::git_revision_description );
-  const size_t pos = client_version.find( '/' );
-  if( pos != string::npos && client_version.size() > pos )
-     client_version = client_version.substr( pos + 1 );
+    //m_pActionLoadIniFile = new QAction( tr("&Load ini"), this );
+    //m_pActionLoadIniFile->setIcon( QIcon(":/images/open.png") );
+    //m_pActionLoadIniFile->setShortcut( QKeySequence::Open );
+    //m_pActionLoadIniFile->setStatusTip( tr("Load ini file") );
+    //connect( m_pActionLoadIniFile, SIGNAL(triggered()), this, SLOT(LoadIniFileSlot()) );
 
-  fc::mutable_variant_object result;
-  //result["blockchain_name"]        = BLOCKCHAIN_NAME;
-  //result["blockchain_description"] = BTS_BLOCKCHAIN_DESCRIPTION;
-  result["client_version"]           = client_version;
-  result["graphene_revision"]        = graphene::utilities::git_revision_sha;
-  result["graphene_revision_age"]    = fc::get_approximate_relative_time_string( fc::time_point_sec( graphene::utilities::git_revision_unix_timestamp ) );
-  result["fc_revision"]              = fc::git_revision_sha;
-  result["fc_revision_age"]          = fc::get_approximate_relative_time_string( fc::time_point_sec( fc::git_revision_unix_timestamp ) );
-  result["compile_date"]             = "compiled on " __DATE__ " at " __TIME__;
-  result["boost_version"]            = boost::replace_all_copy(std::string(BOOST_LIB_VERSION), "_", ".");
-  result["openssl_version"]          = OPENSSL_VERSION_TEXT;
+    /**************************************************************************///m_pActionPrint
 
-  std::string bitness = boost::lexical_cast<std::string>(8 * sizeof(int*)) + "-bit";
-#if defined(__APPLE__)
-  std::string os = "osx";
-#elif defined(__linux__)
-  std::string os = "linux";
-#elif defined(_MSC_VER)
-  std::string os = "win32";
-#else
-  std::string os = "other";
-#endif
-  result["build"] = os + " " + bitness;
+    //m_pActionPrint = new QAction( tr("&Print"), this );
+    //m_pActionLoadIniFile->setIcon( QIcon(":/images/open.png") );
+    //m_pActionLoadIniFile->setShortcut( QKeySequence::Open );
+    //m_pActionPrint->setStatusTip( tr("Print") );
+    //connect( m_pActionLoadIniFile, SIGNAL(triggered()), this, SLOT(LoadIniFileSlot()) );
 
-  return result;
+    /**************************************************************************///m_pActionGuiConf
+
+    m_ActionExit.setStatusTip( tr("Exit Program") );
+    connect( &m_ActionExit, SIGNAL(triggered()), this, SLOT(close()) );
+
+    /**************************************************************************/
+
+    m_ActionAbout.setStatusTip( tr("About") );
+    connect( &m_ActionAbout, SIGNAL(triggered()), this, SLOT(AboutSlot()) );
+
+    m_ActionHelp.setStatusTip( tr("Help") );
+    connect( &m_ActionHelp, SIGNAL(triggered()), this, SLOT(HelpSlot()) );
+
+    m_ActionInfo.setStatusTip( tr("Info") );
+    connect( &m_ActionInfo, SIGNAL(triggered()), this, SLOT(InfoSlot()) );
+
+    m_ActionConnect.setStatusTip( tr("Connect to witness node") );
+    connect( &m_ActionConnect, SIGNAL(triggered()), this, SLOT(ConnectSlot()) );
+
+    /**************************************************************************/
+
+    /**************************************************************************/
+
+    /**************************************************************************/
 }
-#endif
+
+
+
+
+void Mainwindow_gui_wallet::CreateMenues()
+{
+#define ADD_ACTION_TO_MENU_HELP(__action_ptr__) \
+    do{m_pMenuHelpL->addAction( (__action_ptr__) );m_pMenuHelpR->addAction( (__action_ptr__) );}while(0)
+
+    QMenuBar* pMenuBar = m_barLeft;
+
+    m_pMenuFile = pMenuBar->addMenu( tr("&File") );
+    //m_pMenuFile->addAction( m_pActionLoadIniFile );
+    //m_pMenuFile->addAction( m_pActionPrint );
+    m_pMenuFile->addAction( &m_ActionExit );
+    m_pMenuFile->addAction( &m_ActionConnect );
+
+    m_pMenuSetting = pMenuBar->addMenu( tr("&Setting") );
+    m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );
+    //m_pMenuHelpL->addAction( &m_ActionAbout );
+    //m_pMenuHelpL->addAction( &m_ActionInfo );
+    m_pMenuContent = pMenuBar->addMenu( tr("Content") );
+
+    //QMenu*          m_pMenuHelpR;
+    //QMenu*          m_pMenuCreateTicket;
+    pMenuBar = m_barRight;
+    m_pMenuHelpR = pMenuBar->addMenu( tr("Help") );
+    //m_pMenuHelpR->addAction( &m_ActionAbout );
+    //m_pMenuHelpR->addAction( &m_ActionInfo );
+    m_pMenuCreateTicket = pMenuBar->addMenu( tr("Create ticket") );
+
+    ADD_ACTION_TO_MENU_HELP(&m_ActionAbout);
+    ADD_ACTION_TO_MENU_HELP(&m_ActionInfo);
+    ADD_ACTION_TO_MENU_HELP(&m_ActionHelp);
+}
+
+
+void Mainwindow_gui_wallet::InfoSlot()
+{
+
+    fc::rpc::gui* pApi = NULL;
+
+    try
+    {
+        pApi = GetCurGuiApi();
+        if(pApi){pApi->SetNewTask(this,TaskDoneFunc,"info");}
+    }
+    catch(...)
+    {
+        //
+    }
+}
 
 
 void Mainwindow_gui_wallet::AboutSlot()
@@ -150,7 +207,47 @@ void Mainwindow_gui_wallet::AboutSlot()
         aStr += "Exception thrown!";
     }
 
-    m_info_textedit.setText(tr(aStr.c_str()));
+    m_info_dialog.setFixedSize(500,300);
+    m_info_dialog->setText(tr(aStr.c_str()));
+    m_info_dialog.exec();
+
+    if(bCreatedHere){delete pApi;}
+}
+
+
+
+void Mainwindow_gui_wallet::HelpSlot()
+{
+    graphene::wallet::wallet_api* pApi = NULL;
+    bool bCreatedHere = false;
+    std::string aStr;
+
+    try
+    {
+        aStr = "";
+        fc::variant_object var_obj_about;
+        pApi = GetCurWalletApi();
+
+        if(pApi)
+        {
+            aStr = pApi->help();
+        } // if(pApi)
+        else
+        {
+            //var_obj_about = static_about();
+            aStr = "First connect to the witness node, then require again info!";
+        }
+
+
+    }
+    catch(...)
+    {
+        aStr += "Exception thrown!";
+    }
+
+    m_info_dialog.setMaximumSize(QSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX));
+    m_info_dialog.resize(500,500);
+    m_info_dialog->setText(tr(aStr.c_str()));
     m_info_dialog.exec();
 
     if(bCreatedHere){delete pApi;}
@@ -178,143 +275,15 @@ void Mainwindow_gui_wallet::TaskDoneSlot(int a_err,std::string a_task, std::stri
     aStrToDisplay += QString::number(a_err,10);
     aStrToDisplay += tr(")\n");
     aStrToDisplay += tr(a_result.c_str());
-    m_info_textedit.setText(aStrToDisplay);
+
+    m_info_dialog.setFixedSize(600,500);
+    m_info_dialog->setText(aStrToDisplay);
     m_info_dialog.exec();
 }
 
-
-
-void Mainwindow_gui_wallet::InfoSlot()
-{
-
-#if 1
-
-    fc::rpc::gui* pApi = NULL;
-
-    try
-    {
-        pApi = GetCurGuiApi();
-        if(pApi){pApi->SetNewTask(this,TaskDoneFunc,"info");}
-    }
-    catch(...)
-    {
-        //
-    }
-#else
-
-    graphene::wallet::wallet_api* pApi = NULL;
-    bool bCreatedHere = false;
-    std::string aStr;
-
-    try
-    {
-        aStr = "";
-        fc::variant variant_info;
-        pApi = m_ConnectDlg.GetCurApi();
-
-        if(pApi)
-        {
-            variant_info = pApi->info();
-            aStr += variant_info.as_string();
-
-        } // if(pApi)
-        else
-        {
-            //var_obj_about = static_about();
-            aStr = "First connect to the witness node, then require again info!";
-        }
-
-
-    }
-    catch(...)
-    {
-        aStr += "Exception thrown!";
-    }
-
-
-    m_info_textedit.setText(tr(aStr.c_str()));
-    m_info_dialog.exec();
-
-    if(bCreatedHere){delete pApi;}
-#endif
-}
 
 
 void Mainwindow_gui_wallet::ConnectSlot()
 {
     m_ConnectDlg.exec();
-}
-
-
-void Mainwindow_gui_wallet::CreateActions()
-{
-    //m_pActionLoadIniFile = new QAction( tr("&Load ini"), this );
-    //m_pActionLoadIniFile->setIcon( QIcon(":/images/open.png") );
-    //m_pActionLoadIniFile->setShortcut( QKeySequence::Open );
-    //m_pActionLoadIniFile->setStatusTip( tr("Load ini file") );
-    //connect( m_pActionLoadIniFile, SIGNAL(triggered()), this, SLOT(LoadIniFileSlot()) );
-
-    /**************************************************************************///m_pActionPrint
-
-    //m_pActionPrint = new QAction( tr("&Print"), this );
-    //m_pActionLoadIniFile->setIcon( QIcon(":/images/open.png") );
-    //m_pActionLoadIniFile->setShortcut( QKeySequence::Open );
-    //m_pActionPrint->setStatusTip( tr("Print") );
-    //connect( m_pActionLoadIniFile, SIGNAL(triggered()), this, SLOT(LoadIniFileSlot()) );
-
-    /**************************************************************************///m_pActionGuiConf
-
-    m_ActionExit.setStatusTip( tr("Exit Program") );
-    connect( &m_ActionExit, SIGNAL(triggered()), this, SLOT(close()) );
-
-    /**************************************************************************/
-
-    m_ActionAbout.setStatusTip( tr("About") );
-    connect( &m_ActionAbout, SIGNAL(triggered()), this, SLOT(AboutSlot()) );
-
-    m_ActionInfo.setStatusTip( tr("Info") );
-    connect( &m_ActionInfo, SIGNAL(triggered()), this, SLOT(InfoSlot()) );
-
-    m_ActionConnect.setStatusTip( tr("Connect to witness node") );
-    connect( &m_ActionConnect, SIGNAL(triggered()), this, SLOT(ConnectSlot()) );
-
-    /**************************************************************************/
-
-    /**************************************************************************/
-
-    /**************************************************************************/
-}
-
-
-
-
-void Mainwindow_gui_wallet::CreateMenues()
-{
-#define ADD_ACTION_TO_MENU_HELP(__action_ptr__) \
-    do{m_pMenuHelpL->addAction( (__action_ptr__) );m_pMenuHelpR->addAction( (__action_ptr__) );}while(0)
-
-    QMenuBar* pMenuBar = m_barLeft;
-
-    m_pMenuFile = pMenuBar->addMenu( tr("&File") );
-    //m_pMenuFile->addAction( m_pActionLoadIniFile );
-    //m_pMenuFile->addAction( m_pActionPrint );
-    m_pMenuFile->addAction( &m_ActionExit );
-    m_pMenuFile->addAction( &m_ActionConnect );
-
-    m_pMenuSetting = pMenuBar->addMenu( tr("&Setting") );
-    m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );
-    //m_pMenuHelpL->addAction( &m_ActionAbout );
-    //m_pMenuHelpL->addAction( &m_ActionInfo );
-    m_pMenuContent = pMenuBar->addMenu( tr("Content") );
-
-    //QMenu*          m_pMenuHelpR;
-    //QMenu*          m_pMenuCreateTicket;
-    pMenuBar = m_barRight;
-    m_pMenuHelpR = pMenuBar->addMenu( tr("Help") );
-    //m_pMenuHelpR->addAction( &m_ActionAbout );
-    //m_pMenuHelpR->addAction( &m_ActionInfo );
-    m_pMenuCreateTicket = pMenuBar->addMenu( tr("Create ticket") );
-
-    ADD_ACTION_TO_MENU_HELP(&m_ActionAbout);
-    ADD_ACTION_TO_MENU_HELP(&m_ActionInfo);
 }

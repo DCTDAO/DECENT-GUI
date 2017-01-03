@@ -36,14 +36,25 @@ public:
     ConnectDlg(QWidget* parent);
     virtual ~ConnectDlg();
 
-    //graphene::wallet::wallet_api* GetCurApi();
-    //fc::rpc::gui* GetCurGuiApi();
+private:
+    static void error_function(void* a_pOwner, const std::string& a_err, const std::string& a_details);
+    void error_function(const std::string& a_err, const std::string& a_details);
+
+    static void done_function(void* a_pOwner);
+    void done_function();
 
 protected:
     void resizeEvent ( QResizeEvent * event );
 
 protected slots:
     void ConnectPushedSlot();
+    void ConnectDoneSlot();
+    void ConnectErrorSlot(const std::string a_err, const std::string a_details);
+
+private:
+signals:
+    void ConnectDoneSig();
+    void ConnectErrorSig(const std::string a_err, const std::string a_details);
 
 private:
     std::string                       m_wallet_file_name;

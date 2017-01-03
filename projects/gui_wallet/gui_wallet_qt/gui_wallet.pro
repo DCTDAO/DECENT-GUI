@@ -189,3 +189,9 @@ HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/connected_api_instance.hpp
 
 }
+
+SOURCES += \
+    ../../../src/dgui/text_display_dialog.cpp
+
+HEADERS += \
+    ../../../src/dgui/text_display_dialog.hpp
