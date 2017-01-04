@@ -15,6 +15,7 @@
 #include <QAction>
 #include "gui_wallet_connectdlg.hpp"
 #include "text_display_dialog.hpp"
+#include "walletcontentdlg.hpp"
 
 namespace gui_wallet
 {
@@ -34,22 +35,31 @@ namespace gui_wallet
         void TaskDoneFunc(int err,const std::string& task,const std::string& result);
         static void TaskDoneFunc(void* owner,int err,const std::string& task,const std::string& result);
 
-    private: /* Instead of this 3 one line functions, probably should be used lambda functions? */
-        void CallInfoFunction(StructApi* pApi);
-        void CallAboutFunction(StructApi* a_pApi);
-        void CallHelpFunction(StructApi* a_pApi);
+    private:
+        void CallInfoFunction(struct StructApi* pApi);
+        void CallAboutFunction(struct StructApi* a_pApi);
+        void CallHelpFunction(struct StructApi* a_pApi);
 
-    protected slots:
+    protected slots:/* Instead of these one line slots
+                     *, probably should be used lambda functions?
+                     * Is it possible to do?
+                     */
         void AboutSlot();
         void HelpSlot();
-        void ConnectSlot();
         void InfoSlot();
+
         void ShowWalletContentSlot();
+
+    protected slots:
+        void ConnectSlot();
         void TaskDoneSlot(int err,std::string task, std::string result);
 
     private:
     signals:
         void TaskDoneSig(int err,std::string task, std::string result);
+
+    protected:
+        virtual void moveEvent(QMoveEvent *) _OVERRIDE_ ;
 
     private:
         class QVBoxLayout*   m_pCentralAllLayout;
@@ -72,6 +82,7 @@ namespace gui_wallet
         QAction             m_ActionWalletContent;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
+        WalletContentDlg    m_wallet_content_dlg;
     };
 
 }

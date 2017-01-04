@@ -10,6 +10,7 @@
 #include "gui_wallet_mainwindow.hpp"
 #include <QMenuBar>
 #include "connected_api_instance.hpp"
+#include <QMoveEvent>
 
 using namespace gui_wallet;
 
@@ -60,6 +61,13 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
 Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
+}
+
+
+void Mainwindow_gui_wallet::moveEvent(QMoveEvent * a_event)
+{
+    //m_wallet_content_dlg.move( mapToGlobal(a_event->pos()));
+    m_wallet_content_dlg.move( /*mapToGlobal*/(a_event->pos()));
 }
 
 
@@ -148,12 +156,11 @@ void Mainwindow_gui_wallet::CreateMenues()
 
 void Mainwindow_gui_wallet::ShowWalletContentSlot()
 {
-    //Mainwindow_gui_wallet
-    //vector<account_object> aAccObj =           list_my_accounts();
+    m_wallet_content_dlg.exec();
 }
 
 
-void Mainwindow_gui_wallet::CallInfoFunction(StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallInfoFunction(struct StructApi* a_pApi)
 {
     try
     {
@@ -172,7 +179,7 @@ void Mainwindow_gui_wallet::InfoSlot()
 }
 
 
-void Mainwindow_gui_wallet::CallAboutFunction(StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallAboutFunction(struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pApi = NULL;
     bool bCreatedHere = false;
@@ -236,7 +243,7 @@ void Mainwindow_gui_wallet::AboutSlot()
 }
 
 
-void Mainwindow_gui_wallet::CallHelpFunction(StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallHelpFunction(struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pApi = NULL;
     bool bCreatedHere = false;

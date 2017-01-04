@@ -29,7 +29,7 @@
  */
 struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wallet_api* wal_api; fc::rpc::gui* gui_api;};
 
-typedef void (__THISCALL__ *WaletFncType)(void*user_data,StructApi* pApi);
+typedef void (__THISCALL__ *WaletFncType)(void*user_data,struct StructApi* pApi);
 typedef void (*DoneFuncType)(void*user_data);
 typedef void (*ErrFuncType)(void*user_data,const std::string& err,const std::string& details);
 
@@ -42,7 +42,7 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
 void UseConnectedApiInstance_base(void* a_pUserData,...);
 void UseConnectedApiInstance(void* a_pUserData,WaletFncType a_fpFunction);
 template <typename Type>
-static void UseConnectedApiInstance(Type* obj_ptr,void (Type::*a_fpFunction)(StructApi* pApi))
+static void UseConnectedApiInstance(Type* obj_ptr,void (Type::*a_fpFunction)(struct StructApi* pApi))
 {
     UseConnectedApiInstance_base(obj_ptr,a_fpFunction);
 }

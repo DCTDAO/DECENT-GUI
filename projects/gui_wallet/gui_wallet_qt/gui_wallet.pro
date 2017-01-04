@@ -191,7 +191,9 @@ HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
 }
 
 SOURCES += \
-    ../../../src/dgui/text_display_dialog.cpp
+    ../../../src/dgui/text_display_dialog.cpp \
+    ../../../src/dgui/walletcontentdlg.cpp
 
 HEADERS += \
-    ../../../src/dgui/text_display_dialog.hpp
+    ../../../src/dgui/text_display_dialog.hpp \
+    ../../../src/dgui/walletcontentdlg.hpp
