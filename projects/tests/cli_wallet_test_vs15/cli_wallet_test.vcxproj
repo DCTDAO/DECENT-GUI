@@ -159,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\app\application.cpp" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\app\database_api.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\asset_object.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\account.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\chain\protocol\assert.cpp" />
@@ -245,6 +247,7 @@
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\variant.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\src\variant_object.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\fc\vendor\secp256k1-zkp\src\secp256k1.c" />
+    <ClCompile Include="..\..\..\..\DECENT-Network\libraries\net\node.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\utilities\key_conversion.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\utilities\words.cpp" />
     <ClCompile Include="..\..\..\..\DECENT-Network\libraries\wallet\api_documentation.cpp" />
@@ -253,8 +256,17 @@
     <ClCompile Include="..\..\..\src\tests\utilites_git_revision.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\app\include\graphene\app\database_api.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\chain\include\graphene\chain\account_object.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\chain\include\graphene\chain\asset_object.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\chain\include\graphene\chain\content_object.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\chain\include\graphene\chain\protocol\asset.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\chain\include\graphene\chain\protocol\base.hpp" />
     <ClInclude Include="..\..\..\..\DECENT-Network\libraries\fc\src\crypto\_digest_common.hpp" />
     <ClInclude Include="..\..\..\..\DECENT-Network\libraries\fc\vendor\websocketpp\websocketpp\extensions\permessage_deflate\disabled.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\net\include\graphene\net\core_messages.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\net\include\graphene\net\node.hpp" />
+    <ClInclude Include="..\..\..\..\DECENT-Network\libraries\wallet\include\graphene\wallet\wallet.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

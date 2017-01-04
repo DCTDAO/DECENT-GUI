@@ -14,12 +14,13 @@
 #include <string>
 #include "fc_rpc_gui.hpp"
 
-typedef void (*WaletFncType)(graphene::wallet::wallet_api* wa,void*ud);
-typedef void (*DoneFuncType)(void*user_data);
-typedef void (*ErrFuncType)(void*user_data,const std::string& err,const std::string& details);
-
-namespace gui_wallet
-{
+#ifndef __THISCALL__
+#ifdef __MSC_VER
+#define __THISCALL__ __thiscall
+#else  // #ifdef __MSC_VER
+#define __THISCALL__
+#endif  // #ifdef __MSC_VER
+#endif  // #ifndef __THISCALL__
 
 /*
  *  struncture that conatins all necessary pointers for api-s
@@ -28,12 +29,23 @@ namespace gui_wallet
  */
 struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wallet_api* wal_api; fc::rpc::gui* gui_api;};
 
-graphene::wallet::wallet_api* GetCurWalletApi();
-fc::rpc::gui* GetCurGuiApi();
+typedef void (__THISCALL__ *WaletFncType)(void*user_data,StructApi* pApi);
+typedef void (*DoneFuncType)(void*user_data);
+typedef void (*ErrFuncType)(void*user_data,const std::string& err,const std::string& details);
+
+namespace gui_wallet
+{
+
 int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,
                                 void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr);
-void UseConnectedApiInstance(WaletFncType a_fpFunction, void* a_pUserData);
+void UseConnectedApiInstance_base(void* a_pUserData,...);
+void UseConnectedApiInstance(void* a_pUserData,WaletFncType a_fpFunction);
+template <typename Type>
+static void UseConnectedApiInstance(Type* obj_ptr,void (Type::*a_fpFunction)(StructApi* pApi))
+{
+    UseConnectedApiInstance_base(obj_ptr,a_fpFunction);
+}
 
 }
 

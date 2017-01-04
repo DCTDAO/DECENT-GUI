@@ -20,6 +20,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionAbout(tr("About"),this),
         m_ActionInfo(tr("Info"),this),
         m_ActionHelp(tr("Help"),this),
+        m_ActionWalletContent(tr("Wallet content"),this),
         m_ConnectDlg(this),
         m_info_dialog()
 {
@@ -97,6 +98,9 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionConnect.setStatusTip( tr("Connect to witness node") );
     connect( &m_ActionConnect, SIGNAL(triggered()), this, SLOT(ConnectSlot()) );
 
+    m_ActionWalletContent.setStatusTip( tr("Wallet content") );
+    connect( &m_ActionWalletContent, SIGNAL(triggered()), this, SLOT(ShowWalletContentSlot()) );
+
     /**************************************************************************/
 
     /**************************************************************************/
@@ -124,7 +128,9 @@ void Mainwindow_gui_wallet::CreateMenues()
     m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );
     //m_pMenuHelpL->addAction( &m_ActionAbout );
     //m_pMenuHelpL->addAction( &m_ActionInfo );
+
     m_pMenuContent = pMenuBar->addMenu( tr("Content") );
+    m_pMenuContent->addAction( &m_ActionWalletContent );
 
     //QMenu*          m_pMenuHelpR;
     //QMenu*          m_pMenuCreateTicket;
@@ -140,15 +146,18 @@ void Mainwindow_gui_wallet::CreateMenues()
 }
 
 
-void Mainwindow_gui_wallet::InfoSlot()
+void Mainwindow_gui_wallet::ShowWalletContentSlot()
 {
+    //Mainwindow_gui_wallet
+    //vector<account_object> aAccObj =           list_my_accounts();
+}
 
-    fc::rpc::gui* pApi = NULL;
 
+void Mainwindow_gui_wallet::CallInfoFunction(StructApi* a_pApi)
+{
     try
     {
-        pApi = GetCurGuiApi();
-        if(pApi){pApi->SetNewTask(this,TaskDoneFunc,"info");}
+        if(a_pApi && (a_pApi->gui_api)){(a_pApi->gui_api)->SetNewTask(this,TaskDoneFunc,"info");}
     }
     catch(...)
     {
@@ -157,7 +166,13 @@ void Mainwindow_gui_wallet::InfoSlot()
 }
 
 
-void Mainwindow_gui_wallet::AboutSlot()
+void Mainwindow_gui_wallet::InfoSlot()
+{
+    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,&Mainwindow_gui_wallet::CallInfoFunction);
+}
+
+
+void Mainwindow_gui_wallet::CallAboutFunction(StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pApi = NULL;
     bool bCreatedHere = false;
@@ -167,7 +182,7 @@ void Mainwindow_gui_wallet::AboutSlot()
     {
         aStr = "";
         fc::variant_object var_obj_about;
-        pApi = GetCurWalletApi();
+        pApi = a_pApi ? a_pApi->wal_api : NULL;
 #if 0
         if(!pApi){
             graphene::wallet::wallet_data wdata;
@@ -212,11 +227,16 @@ void Mainwindow_gui_wallet::AboutSlot()
     m_info_dialog.exec();
 
     if(bCreatedHere){delete pApi;}
+
+}
+
+void Mainwindow_gui_wallet::AboutSlot()
+{
+    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,&Mainwindow_gui_wallet::CallAboutFunction);
 }
 
 
-
-void Mainwindow_gui_wallet::HelpSlot()
+void Mainwindow_gui_wallet::CallHelpFunction(StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pApi = NULL;
     bool bCreatedHere = false;
@@ -225,8 +245,8 @@ void Mainwindow_gui_wallet::HelpSlot()
     try
     {
         aStr = "";
-        fc::variant_object var_obj_about;
-        pApi = GetCurWalletApi();
+        //fc::variant_object var_obj_about;
+        pApi = a_pApi ? a_pApi->wal_api : NULL;
 
         if(pApi)
         {
@@ -251,6 +271,11 @@ void Mainwindow_gui_wallet::HelpSlot()
     m_info_dialog.exec();
 
     if(bCreatedHere){delete pApi;}
+}
+
+void Mainwindow_gui_wallet::HelpSlot()
+{
+    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,&Mainwindow_gui_wallet::CallHelpFunction);
 }
 
 

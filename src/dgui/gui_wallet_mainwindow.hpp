@@ -34,11 +34,17 @@ namespace gui_wallet
         void TaskDoneFunc(int err,const std::string& task,const std::string& result);
         static void TaskDoneFunc(void* owner,int err,const std::string& task,const std::string& result);
 
+    private: /* Instead of this 3 one line functions, probably should be used lambda functions? */
+        void CallInfoFunction(StructApi* pApi);
+        void CallAboutFunction(StructApi* a_pApi);
+        void CallHelpFunction(StructApi* a_pApi);
+
     protected slots:
         void AboutSlot();
         void HelpSlot();
         void ConnectSlot();
         void InfoSlot();
+        void ShowWalletContentSlot();
         void TaskDoneSlot(int err,std::string task, std::string result);
 
     private:
@@ -63,6 +69,7 @@ namespace gui_wallet
         QAction             m_ActionAbout;
         QAction             m_ActionInfo;
         QAction             m_ActionHelp;
+        QAction             m_ActionWalletContent;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
     };

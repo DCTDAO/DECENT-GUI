@@ -18,6 +18,7 @@
 #include <mutex>
 #include <QMessageBox>
 #include <QWidget>
+#include <stdarg.h>
 
 using namespace graphene::wallet;
 using namespace fc::http;
@@ -83,27 +84,9 @@ static int ErrorFunc(void*,const char*, ...)
     return 0;
 }
 
-static std::mutex   s_mutex_for_cur_api;
+static std::mutex   s_mutex_for_cur_api; // It is better to use here rw mutex
 static StructApi    s_CurrentApi;
 
-
-graphene::wallet::wallet_api* GetCurWalletApi()
-{
-    graphene::wallet::wallet_api* pCurWalletApi;
-    s_mutex_for_cur_api.lock();
-    pCurWalletApi = s_CurrentApi.wal_api;
-    s_mutex_for_cur_api.unlock();
-    return pCurWalletApi;
-}
-
-fc::rpc::gui* GetCurGuiApi()
-{
-    fc::rpc::gui*  pCurGuiApi;
-    s_mutex_for_cur_api.lock();
-    pCurGuiApi = s_CurrentApi.gui_api;
-    s_mutex_for_cur_api.unlock();
-    return pCurGuiApi;
-}
 
 static void SetCurrentApis(const StructApi* a_pApis)
 {
@@ -209,11 +192,25 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
 }
 
 
-void UseConnectedApiInstance(WaletFncType /*a_fpFunction*/, void* /*a_pUserData*/)
+void UseConnectedApiInstance(void* a_pUserData,WaletFncType a_fpFunction)
 {
-    //s_wallet_mutex.lock();
-    //(*a_fpFunction)(s_pWallet_api,a_pUserData);
-    //s_wallet_mutex.unlock();
+    UseConnectedApiInstance_base(a_pUserData,a_fpFunction);
+}
+
+
+void UseConnectedApiInstance_base(void* a_pUserData,...)
+{
+    WaletFncType fpFunction;
+    va_list aFunc;
+
+    va_start( aFunc, a_pUserData );  /* Initialize variable arguments. */
+    fpFunction = va_arg( aFunc, WaletFncType);
+    va_end( aFunc );                /* Reset variable arguments.      */
+
+    s_mutex_for_cur_api.lock();
+    (*fpFunction)(a_pUserData,&s_CurrentApi);
+    s_mutex_for_cur_api.unlock();
+
 }
 
 
