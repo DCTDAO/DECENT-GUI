@@ -55,6 +55,7 @@ signals:
 
 private:
     vector<account_object>  m_vAccounts;
+    vector<vector<asset>>   m_vAccountsBalances;
     QVBoxLayout             m_main_layout;
     QLabel                  m_num_acc_or_error_label;
     int                     m_nError;

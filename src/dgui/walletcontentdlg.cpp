@@ -53,10 +53,11 @@ void gui_wallet::WalletContentDlg::CallShowWalletContentFunction(struct StructAp
             account_object* pAcc;
             m_vAccounts = pWapi->list_my_accounts();
             const int cnNumOfAccounts(m_vAccounts.size());
+            m_vAccountsBalances.reserve(cnNumOfAccounts);
             for(int i(0); i<cnNumOfAccounts;++i)
             {
                 pAcc = &(m_vAccounts[i]);
-                pWapi->list_account_balances(((std::string)(pAcc->id)));
+                m_vAccountsBalances[i] = pWapi->list_account_balances(((std::string)(pAcc->id)));
             }
         }
     }
