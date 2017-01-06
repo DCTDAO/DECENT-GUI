@@ -18,18 +18,27 @@
 #include <thread>
 #include <QLabel>
 
+#ifndef DEFAULT_WALLET_FILE_NAME
+#define DEFAULT_WALLET_FILE_NAME       "wallet.json"
+#endif
+
+extern int g_nDebugApplication ;
+
 
 /* ///////////////////////////////////  */
 gui_wallet::ConnectDlg::ConnectDlg(QWidget* a_parent)
     :
       QDialog(a_parent),
-      m_wallet_file_name("wallet.json"),
-      m_main_table(NUM_OF_FIELDS,2)
+      m_main_table(NUM_OF_FIELDS,2),
+      m_wallet_file_name(DEFAULT_WALLET_FILE_NAME)
 {
     //m_wdata.chain_id = (chain_id_type)0;
 
     m_main_table.setItem(RPC_ENDPOINT_FIELD,0,new QTableWidgetItem(tr("rpc-endpoint")));
     m_main_table.setCellWidget(RPC_ENDPOINT_FIELD,1,new QLineEdit(tr("ws://127.0.0.1:8090")));
+
+    m_main_table.setItem(WALLET_FILE_FIELD,0,new QTableWidgetItem(tr("wallet file")));
+    m_main_table.setCellWidget(WALLET_FILE_FIELD,1,new QLineEdit(tr(DEFAULT_WALLET_FILE_NAME)));
 
     m_main_table.setItem(CHAIN_ID_FIELD,0,new QTableWidgetItem(tr("chain-id")));
     //m_main_table.setCellWidget(CHAIN_ID_FIELD,1,new QLineEdit(tr("d9561465fd1aab95eb6fec9a60705e983b7759ea4c9892ac4acd30737f5079b4")));
@@ -58,6 +67,29 @@ gui_wallet::ConnectDlg::ConnectDlg(QWidget* a_parent)
 
 gui_wallet::ConnectDlg::~ConnectDlg()
 {
+    UseConnectedApiInstance(this,&gui_wallet::ConnectDlg::CallSaveWalletFile);
+}
+
+
+void gui_wallet::ConnectDlg::CallSaveWalletFile(struct StructApi* a_pApi)
+{
+    try{
+        if(a_pApi && a_pApi->wal_api)
+        {
+            (a_pApi->wal_api)->save_wallet_file(m_wallet_file_name);
+        }
+    }
+    catch(const fc::exception& a_fc)
+    {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
+    }
+    catch(...)
+    {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        if(g_nDebugApplication){printf("Unknown exception\n");}
+    }
 }
 
 
@@ -117,16 +149,62 @@ void gui_wallet::ConnectDlg::ConnectDoneSlot()
 }
 
 
+std::string gui_wallet::ConnectDlg::GetWalletFileName()const
+{
+    if(isVisible())
+    {
+        QString cWalletFileName = ((QLineEdit*)m_main_table.cellWidget(WALLET_FILE_FIELD,1))->text();
+        QByteArray cLatin = cWalletFileName.toLatin1();
+        m_wallet_file_name = cLatin.data();
+    }
+
+    return m_wallet_file_name;
+}
+
+
+void gui_wallet::ConnectDlg::SetWalletFileName(const std::string& a_wallet_file_name)
+{
+    m_wallet_file_name = a_wallet_file_name;
+    ((QLineEdit*)m_main_table.cellWidget(WALLET_FILE_FIELD,1))->setText(tr(m_wallet_file_name.c_str()));
+}
+
+
+void gui_wallet::ConnectDlg::SetPassword(void* a_owner,int a_answer,/*string**/void* a_str_ptr)
+{
+    std::string* pcsPassword = (std::string*)a_str_ptr;
+    *pcsPassword = "";
+
+    switch(a_answer)
+    {
+    case QMessageBox::Yes: case QMessageBox::Ok:
+    {
+        gui_wallet::ConnectDlg* pThisCon = (gui_wallet::ConnectDlg*)a_owner;
+        PasswordDialog* pThis = &pThisCon->m_PasswdDialog;
+        pThis->move(pThisCon->pos());
+        pThis->exec();
+        QString cqsPassword = pThis->m_password.text();
+        QByteArray cLatin = cqsPassword.toLatin1();
+        *pcsPassword = cLatin.data();
+    }
+        break;
+
+    default:
+        break;
+    }
+
+}
+
+
 void gui_wallet::ConnectDlg::ConnectPushedSlot()
 {
-
     DoneFuncType fpDone = &ConnectDlg::done_function;
     ErrFuncType fpErr = &ConnectDlg::error_function;
+    WarnYesOrNoFuncType fpPasswdFunc = &ConnectDlg::SetPassword;
     QString aRpcEndPointAStr = ((QLineEdit*)m_main_table.cellWidget(RPC_ENDPOINT_FIELD,1))->text();
     QByteArray aLatin=aRpcEndPointAStr.toLatin1();
     m_wdata.ws_server = aLatin.data();
     m_wdata.chain_id = chain_id_type( std::string( (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ) );
-    std::thread aThread(&CreateConnectedApiInstance,&m_wdata,m_wallet_file_name,this,fpDone, fpErr);
+    std::thread aThread(&CreateConnectedApiInstance,&m_wdata,GetWalletFileName(),this,fpDone, fpErr,fpPasswdFunc);
     aThread.detach();
     //close();
 }

@@ -10,7 +10,9 @@
 
 #include "walletcontentdlg.hpp"
 #include <thread>
+#include <iostream>
 
+extern int g_nDebugApplication;
 
 gui_wallet::WalletContentDlg::WalletContentDlg()
 {
@@ -42,6 +44,12 @@ void gui_wallet::WalletContentDlg::ListAccountThreadFunc()
 }
 
 
+static void acount_balance_done_fnc(void*/*owner*/,int /*err*/,const std::string& /*a_task*/, const std::string& a_task_result)
+{
+    if(g_nDebugApplication){printf("%s\n", a_task_result.c_str());}
+}
+
+
 void gui_wallet::WalletContentDlg::CallShowWalletContentFunction(struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pWapi = a_pApi ? a_pApi->wal_api : NULL;
@@ -57,20 +65,34 @@ void gui_wallet::WalletContentDlg::CallShowWalletContentFunction(struct StructAp
             for(int i(0); i<cnNumOfAccounts;++i)
             {
                 pAcc = &(m_vAccounts[i]);
+#if 0
                 m_vAccountsBalances[i] = pWapi->list_account_balances(((std::string)(pAcc->id)));
+#else
+                if(a_pApi->gui_api)
+                {
+                    std::string csTaskString = "list_account_balances " + ((std::string)(pAcc->id));
+                    (a_pApi->gui_api)->SetNewTask(this,acount_balance_done_fnc,csTaskString);
+                }
+#endif
             }
         }
     }
     catch(const fc::exception& a_fc)
     {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
         m_nError = 1;
         m_error_string = a_fc.to_detail_string();
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
     }
     catch(...)
     {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
         m_nError = 2;
         m_error_string = "Unknown exception!";
+        if(g_nDebugApplication){printf("Unknown exception\n");}
     }
+
+    emit WalletContentReadySig();
 }
 
 

@@ -43,6 +43,7 @@ namespace gui_wallet
         void SetAccountBalanceGUI(int ballance=-1); /* arg_in <0 means only update on GUI*/
 
         const int& GetAccountBalance()const;
+        QComboBox&  GetUsersList(){return m_users_list;}
 
     protected:
         virtual void showEvent ( QShowEvent * event ) ;

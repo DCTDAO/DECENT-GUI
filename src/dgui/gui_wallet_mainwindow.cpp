@@ -13,6 +13,7 @@
 #include <QMoveEvent>
 
 using namespace gui_wallet;
+extern int g_nDebugApplication;
 
 Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
@@ -22,6 +23,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionInfo(tr("Info"),this),
         m_ActionHelp(tr("Help"),this),
         m_ActionWalletContent(tr("Wallet content"),this),
+        m_ActionImportKey(tr("Import key"),this),
         m_ConnectDlg(this),
         m_info_dialog()
 {
@@ -109,6 +111,9 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionWalletContent.setStatusTip( tr("Wallet content") );
     connect( &m_ActionWalletContent, SIGNAL(triggered()), this, SLOT(ShowWalletContentSlot()) );
 
+    m_ActionImportKey.setStatusTip( tr("Import key") );
+    connect( &m_ActionImportKey, SIGNAL(triggered()), this, SLOT(ImportKeySlot()) );
+
     /**************************************************************************/
 
     /**************************************************************************/
@@ -131,6 +136,7 @@ void Mainwindow_gui_wallet::CreateMenues()
     //m_pMenuFile->addAction( m_pActionPrint );
     m_pMenuFile->addAction( &m_ActionExit );
     m_pMenuFile->addAction( &m_ActionConnect );
+    m_pMenuFile->addAction( &m_ActionImportKey );
 
     m_pMenuSetting = pMenuBar->addMenu( tr("&Setting") );
     m_pMenuHelpL = pMenuBar->addMenu( tr("&Help") );
@@ -154,6 +160,12 @@ void Mainwindow_gui_wallet::CreateMenues()
 }
 
 
+void Mainwindow_gui_wallet::ImportKeySlot()
+{
+    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CallImportKeyFunction);
+}
+
+
 void Mainwindow_gui_wallet::ShowWalletContentSlot()
 {
     m_wallet_content_dlg.exec();
@@ -166,9 +178,69 @@ void Mainwindow_gui_wallet::CallInfoFunction(struct StructApi* a_pApi)
     {
         if(a_pApi && (a_pApi->gui_api)){(a_pApi->gui_api)->SetNewTask(this,TaskDoneFunc,"info");}
     }
+    catch(const fc::exception& a_fc)
+    {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
+    }
     catch(...)
     {
-        //
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        if(g_nDebugApplication){printf("Unknown exception\n");}
+    }
+}
+
+
+static void task_done_function(void*,int /*err*/,const std::string&, const std::string&)
+{
+    //
+}
+
+
+void Mainwindow_gui_wallet::CallImportKeyFunction(struct StructApi* a_pApi)
+{
+    try
+    {
+        if(a_pApi && (a_pApi->wal_api))
+        {
+            QByteArray cLatin;
+            QString cqsUserName;
+            QString cqsKey(tr("0000000000000000000000000000000000000000000000000000000000000000"));
+            std::string csUser_name, csKey;
+            QComboBox& cUsersCombo = m_pCentralWidget->GetUsersList();
+
+            if(cUsersCombo.count())
+            {
+                cqsUserName = cUsersCombo.currentText();
+            }
+
+            m_import_key_dlg.exec(pos(),cqsUserName,cqsKey);
+            cLatin = cqsUserName.toLatin1();
+            csUser_name = cLatin.data();
+            cLatin = cqsKey.toLatin1();
+            csKey = cLatin.data();
+#if 0
+            (a_pApi->wal_api)->import_key(csUser_name,csKey);
+#else
+            if(a_pApi->gui_api)
+            {
+                std::string csTaskStr = "import_key " + csUser_name + " " + csKey;
+                if(g_nDebugApplication){printf("!!!task: %s\n",csTaskStr.c_str());}
+                (a_pApi->gui_api)->SetNewTask(this,task_done_function,csTaskStr);
+            }
+#endif
+
+        } // if(a_pApi && (a_pApi->wal_api))
+    } // try
+    catch(const fc::exception& a_fc)
+    {
+        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
+    }
+    catch(...)
+    {
+        if(g_nDebugApplication){printf("Unknown exception\n");}
     }
 }
 
@@ -224,9 +296,16 @@ void Mainwindow_gui_wallet::CallAboutFunction(struct StructApi* a_pApi)
 
 
     }
+    catch(const fc::exception& a_fc)
+    {
+        aStr += a_fc.to_detail_string();
+        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
+    }
     catch(...)
     {
-        aStr += "Exception thrown!";
+        aStr += "Unknown Exception thrown!";
+        if(g_nDebugApplication){printf("Unknown exception\n");}
     }
 
     m_info_dialog.setFixedSize(500,300);
@@ -267,9 +346,16 @@ void Mainwindow_gui_wallet::CallHelpFunction(struct StructApi* a_pApi)
 
 
     }
+    catch(const fc::exception& a_fc)
+    {
+        aStr += a_fc.to_detail_string();
+        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
+    }
     catch(...)
     {
-        aStr += "Exception thrown!";
+        aStr += "Unknown Exception thrown!";
+        if(g_nDebugApplication){printf("Unknown exception\n");}
     }
 
     m_info_dialog.setMaximumSize(QSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX));

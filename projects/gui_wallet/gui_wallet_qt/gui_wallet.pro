@@ -127,8 +127,8 @@ LIBS += $$DECENT_LIB/chain/libgraphene_chain.a
 LIBS += $$DECENT_LIB/contrib/pbc/.libs/libpbc.a
 LIBS += $$DECENT_LIB/wallet/libgraphene_wallet.a
 LIBS += $$DECENT_LIB/encrypt/libdecent_encrypt.a
-LIBS += $$DECENT_LIB/fc/libfc_debug.a
-LIBS += $$DECENT_LIB/fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a
+LIBS += $$DECENT_LIB/contrib/fc/libfc_debug.a
+LIBS += $$DECENT_LIB/contrib/fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a
 
 # http://askubuntu.com/questions/486006/cannot-find-boost-thread-mt-library
 

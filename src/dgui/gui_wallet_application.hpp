@@ -13,6 +13,7 @@
 
 #include <QApplication>
 #include "fc_rpc_gui.hpp"
+#include "connected_api_instance.hpp"
 
 
 namespace gui_wallet
@@ -44,19 +45,25 @@ class InGuiThreatCaller : public QObject
 
 public:
     class QWidget*                      m_pParent2;
+    union
+    {
     int                                 m_nRes;
+    std::string                         m_csRes;
+    };
     decent_tools::UnnamedSemaphoreLite  m_sema;
 public:
-    void EmitShowMessageBox(const QString& a_str);
+    InGuiThreatCaller();
+    ~InGuiThreatCaller();
+    void EmitShowMessageBox(const QString& a_str,WarnYesOrNoFuncType a_fpYesOrNo,void* a_pDataForYesOrNo);
     void EmitCallFunc(SInGuiThreadCallInfo a_call_info);
 
 public slots:
-    void MakeShowMessageBoxSlot(const QString& a_str);
+    void MakeShowMessageBoxSlot(const QString& a_str,WarnYesOrNoFuncType a_fpYesOrNo,void* a_pDataForYesOrNo);
     void MakeCallFuncSlot(SInGuiThreadCallInfo a_call_info);
 
 private:
 signals:
-    void ShowMessageBoxSig(const QString& a_str);
+    void ShowMessageBoxSig(const QString& a_str,WarnYesOrNoFuncType a_fpYesOrNo,void* a_pDataForYesOrNo);
     void CallFuncSig(SInGuiThreadCallInfo a_call_info);
 };
 

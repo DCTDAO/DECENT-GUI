@@ -24,3 +24,5 @@ projects/tests/cli_wallet_test_vs13/*
 .DS_Store
 .qmake.stash
 gui_wallet.app
+*wallet.json
+*after-import-key-*.wallet

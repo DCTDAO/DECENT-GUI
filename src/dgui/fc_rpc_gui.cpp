@@ -11,9 +11,11 @@
 #include "fc_rpc_gui.hpp"
 #include <fc/io/json.hpp>
 #include <iostream>
+#include <stdio.h>
 
 using namespace fc::rpc;
 using namespace fc;
+extern int g_nDebugApplication ;
 
 #if 0
 std::map<string,std::function<string(variant,const variants&)> > _result_formatters;
@@ -229,8 +231,15 @@ void gui::run()
       }
       catch ( const fc::exception& e )
       {
-         //std::cout << e.to_detail_string() << "\n";
+         if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+         if(g_nDebugApplication){std::cout << e.to_detail_string() << "\n";}
          (*m_error_report)(m_pOwner,"%s\n",e.to_detail_string().c_str());
+      }
+      catch(...)
+      {
+          if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+          if(g_nDebugApplication){std::cout << "Unknown exception!\n";}
+          (*m_error_report)(m_pOwner,"Unknown exception!\n");
       }
    }
 }

@@ -32,13 +32,16 @@ struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wal
 typedef void (__THISCALL__ *WaletFncType)(void*user_data,struct StructApi* pApi);
 typedef void (*DoneFuncType)(void*user_data);
 typedef void (*ErrFuncType)(void*user_data,const std::string& err,const std::string& details);
+//SetPasswdFuncGUI
+typedef void (*WarnYesOrNoFuncType)(void*owner,int answer,/*string**/void* str_ptr);
 
 namespace gui_wallet
 {
 
 int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,
-                                void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr);
+                                void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr,
+                                WarnYesOrNoFuncType a_fpFunc);
 void UseConnectedApiInstance_base(void* a_pUserData,...);
 void UseConnectedApiInstance(void* a_pUserData,WaletFncType a_fpFunction);
 template <typename Type>

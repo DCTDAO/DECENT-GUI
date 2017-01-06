@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
     {
         if((strcmp(argv[i],"--debug-application")==0)||(strcmp(argv[i],"-dba")==0))
         {
+            g_nDebugApplication = 1;
             if (i<(--argc))
             {
                 memmove(argv+i,argv+i+1,(argc-i)*sizeof(char*));

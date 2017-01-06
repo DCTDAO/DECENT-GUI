@@ -22,6 +22,7 @@
 
 using namespace graphene::wallet;
 using namespace fc::http;
+extern int g_nDebugApplication ;
 
 static InGuiThreatCaller* s_pWarner = NULL;
 
@@ -31,11 +32,12 @@ gui_wallet::application::application(int& argc, char** argv)
       QApplication(argc,argv)
 {
     qRegisterMetaType<std::string>( "std::string" );
+    qRegisterMetaType<WarnYesOrNoFuncType>( "WarnYesOrNoFuncType" );
     s_pWarner = new InGuiThreatCaller;
-    connect( s_pWarner, SIGNAL(ShowMessageBoxSig(const QString&)),
-             s_pWarner, SLOT(MakeShowMessageBoxSlot(const QString&)) );
-    connect( s_pWarner, SIGNAL(CallFuncSig(SInGuiThreadCallInfo)),
-             s_pWarner, SLOT(MakeCallFuncSlot(SInGuiThreadCallInfo)) );
+    if(!s_pWarner)
+    {
+        throw "No enough memory";
+    }
 }
 
 
@@ -61,7 +63,9 @@ static int WarnFunc(void*,const char*, ...)
 
 
 
-static int WarnAndWaitFunc(void* a_pOwner,const char* a_form,...)
+static int WarnAndWaitFunc(void* a_pOwner,
+                           WarnYesOrNoFuncType a_fpYesOrNo,void* a_pDataForYesOrNo,
+                           const char* a_form,...)
 {
     QString aString;
 
@@ -73,18 +77,39 @@ static int WarnAndWaitFunc(void* a_pOwner,const char* a_form,...)
 
     s_pWarner->m_nRes = -1;
     s_pWarner->m_pParent2 = (QWidget*)a_pOwner;
+    s_pWarner->EmitShowMessageBox(aString,a_fpYesOrNo,a_pDataForYesOrNo);
+    s_pWarner->m_sema.wait();
+
+    return s_pWarner->m_nRes;
+}
+
+#if 0
+static std::string GetPasswordFromOwner(void* a_pOwner)
+{
+    s_pWarner->m_csRes = "";
+    s_pWarner->m_pParent2 = (QWidget*)a_pOwner;
     s_pWarner->EmitShowMessageBox(aString);
     s_pWarner->m_sema.wait();
 
     return s_pWarner->m_nRes;
 }
+#endif
+
 
 static int ErrorFunc(void*,const char*, ...)
 {
     return 0;
 }
 
-static std::mutex   s_mutex_for_cur_api; // It is better to use here rw mutex
+class NewTestMutex : public std::mutex
+{
+public:
+    void lock(){if(g_nDebugApplication){printf("++locking!\n");}std::mutex::lock();if(g_nDebugApplication){printf("++locked!\n");}}
+    void unlock(){if(g_nDebugApplication){printf("--unlocking!\n");}std::mutex::unlock();if(g_nDebugApplication){printf("--unlocked!\n");}}
+};
+
+//static std::mutex   s_mutex_for_cur_api; // It is better to use here rw mutex
+static NewTestMutex   s_mutex_for_cur_api; // It is better to use here rw mutex
 static StructApi    s_CurrentApi;
 
 
@@ -98,7 +123,7 @@ static void SetCurrentApis(const StructApi* a_pApis)
 
 int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,
-                                void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr)
+                                void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr,WarnYesOrNoFuncType a_fpFunc)
 {
     try
     {
@@ -144,9 +169,15 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
 
         if( wapiptr->is_new() )
         {
+           std::string aPassword("");
            //std::cout << "Please use the set_password method to initialize a new wallet before continuing\n";
            //wallet_cli->set_prompt( "new >>> " );
-           WarnAndWaitFunc(pOwner,"Please use the set_password method to initialize a new wallet before continuing\n");
+           WarnAndWaitFunc(pOwner,a_fpFunc,&aPassword,"Please use the set_password method to initialize a new wallet before continuing\n");
+           if(aPassword != "")
+           {
+               wapiptr->set_password(aPassword);
+               wapiptr->unlock(aPassword);
+           }
         } else
            {/*wallet_cli->set_prompt( "locked >>> " );*/}
 
@@ -182,11 +213,16 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
     }
     catch(const fc::exception& a_fc)
     {
-        //printf("%s\n",(a_fc.to_detail_string()).c_str());
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
         (*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
     }
     catch(...)
-    {}
+    {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        (*a_fpErr)(a_pOwner,"Unknown exception","Unknown exception");
+        if(g_nDebugApplication){printf("Unknown exception\n");}
+    }
 
     return 0;
 }
@@ -207,23 +243,35 @@ void UseConnectedApiInstance_base(void* a_pUserData,...)
     fpFunction = va_arg( aFunc, WaletFncType);
     va_end( aFunc );                /* Reset variable arguments.      */
 
-    s_mutex_for_cur_api.lock();
+    std::lock_guard<NewTestMutex> lock(s_mutex_for_cur_api);
     (*fpFunction)(a_pUserData,&s_CurrentApi);
-    s_mutex_for_cur_api.unlock();
+    //s_mutex_for_cur_api.unlock();
 
 }
 
 
 } /* namespace gui_wallet */
 
+InGuiThreatCaller::InGuiThreatCaller()
+{
+    connect( this, SIGNAL(ShowMessageBoxSig(const QString&,WarnYesOrNoFuncType,void*)),
+             this, SLOT(MakeShowMessageBoxSlot(const QString&,WarnYesOrNoFuncType,void*)) );
+    connect( this, SIGNAL(CallFuncSig(SInGuiThreadCallInfo)),
+             this, SLOT(MakeCallFuncSlot(SInGuiThreadCallInfo)) );
+}
 
-void InGuiThreatCaller::EmitShowMessageBox(const QString& a_str)
-{emit ShowMessageBoxSig(a_str);}
+InGuiThreatCaller::~InGuiThreatCaller()
+{
+    //
+}
+
+void InGuiThreatCaller::EmitShowMessageBox(const QString& a_str,WarnYesOrNoFuncType a_fpYesOrNo,void* a_pDataForYesOrNo)
+{emit ShowMessageBoxSig(a_str,a_fpYesOrNo,a_pDataForYesOrNo);}
 
 void InGuiThreatCaller::EmitCallFunc(SInGuiThreadCallInfo a_call_info)
 {emit CallFuncSig(a_call_info);}
 
-void InGuiThreatCaller::MakeShowMessageBoxSlot(const QString& a_str)
+void InGuiThreatCaller::MakeShowMessageBoxSlot(const QString& a_str,WarnYesOrNoFuncType a_fpYesOrNo,void* a_pDataForYesOrNo)
 {
     QMessageBox aMessageBox(QMessageBox::Warning,QObject::tr("WARNING"),
                             a_str,
@@ -231,8 +279,13 @@ void InGuiThreatCaller::MakeShowMessageBoxSlot(const QString& a_str)
                             m_pParent2);
     aMessageBox.setDetailedText(QObject::tr("Should be implemented"));
     m_nRes = aMessageBox.exec();
+
+    //if(QMessageBox::Yes){}
+    (*a_fpYesOrNo)(m_pParent2,m_nRes,a_pDataForYesOrNo);
+
     m_sema.post();
 }
+
 
 void InGuiThreatCaller::MakeCallFuncSlot(SInGuiThreadCallInfo a_call_info)
 {

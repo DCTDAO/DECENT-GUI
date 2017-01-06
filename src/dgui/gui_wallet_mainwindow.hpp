@@ -13,6 +13,9 @@
 #include <QMainWindow>
 #include "gui_wallet_centralwigdet.hpp"
 #include <QAction>
+#include <QLineEdit>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include "gui_wallet_connectdlg.hpp"
 #include "text_display_dialog.hpp"
 #include "walletcontentdlg.hpp"
@@ -39,6 +42,7 @@ namespace gui_wallet
         void CallInfoFunction(struct StructApi* pApi);
         void CallAboutFunction(struct StructApi* a_pApi);
         void CallHelpFunction(struct StructApi* a_pApi);
+        void CallImportKeyFunction(struct StructApi* a_pApi);
 
     protected slots:/* Instead of these one line slots
                      *, probably should be used lambda functions?
@@ -52,6 +56,7 @@ namespace gui_wallet
 
     protected slots:
         void ConnectSlot();
+        void ImportKeySlot();
         void TaskDoneSlot(int err,std::string task, std::string result);
 
     private:
@@ -80,9 +85,33 @@ namespace gui_wallet
         QAction             m_ActionInfo;
         QAction             m_ActionHelp;
         QAction             m_ActionWalletContent;
+        QAction             m_ActionImportKey;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
+
+    private:
+        class ImportKeyDialog : private QDialog
+        {
+        public:
+            ImportKeyDialog():m_us_name_lab(tr("Username")),m_pub_key_lab(tr("private_wif_key")){
+                m_us_name_lay.addWidget(&m_us_name_lab); m_us_name_lay.addWidget(&m_user_name);
+                m_pub_key_lay.addWidget(&m_pub_key_lab); m_pub_key_lay.addWidget(&m_pub_key);
+                m_layout.addLayout(&m_us_name_lay);m_layout.addLayout(&m_pub_key_lay);
+                setLayout(&m_layout);
+            }
+
+            void exec(const QPoint& a_move,QString& a_us_nm, QString& a_pub_k)
+            {
+                m_user_name.setText(a_us_nm);m_pub_key.setText(a_pub_k);
+                QDialog::move(a_move); QDialog::exec();
+                a_us_nm = m_user_name.text();a_pub_k=m_pub_key.text();
+            }
+            QHBoxLayout m_layout;
+            QVBoxLayout m_us_name_lay, m_pub_key_lay;
+            QLabel m_us_name_lab,m_pub_key_lab;
+            QLineEdit m_user_name, m_pub_key;
+        }m_import_key_dlg;
     };
 
 }
