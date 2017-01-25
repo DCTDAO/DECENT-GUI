@@ -25,6 +25,8 @@
 #include <QLabel>
 #include <QComboBox>
 
+#define __TEMPORARY__
+
 extern int g_nDebugApplication;
 
 struct qtWidget_test : public QWidget{~qtWidget_test(){if(g_nDebugApplication){printf("qtWidget_test::~qtWidget_test();\n");}}};
@@ -40,10 +42,13 @@ namespace gui_wallet
         virtual ~CentralWigdet(); /* virtual because may be this class will be */
                                   /* used by inheritance */
 
-        void SetAccountBalanceGUI(int ballance=-1); /* arg_in <0 means only update on GUI*/
+        void SetAccountBalanceGUI(int ballance=-1, const std::string& balance_name="DTC"); /* arg_in <0 means only update on GUI*/
 
         const int& GetAccountBalance()const;
         QComboBox&  GetUsersList(){return m_users_list;}
+        void AddNewUserGUI(const std::string& user_name);
+
+        __TEMPORARY__ QComboBox& usersCombo(){return m_users_list;}
 
     protected:
         virtual void showEvent ( QShowEvent * event ) ;

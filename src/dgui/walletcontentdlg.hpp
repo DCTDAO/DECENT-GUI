@@ -39,27 +39,25 @@ public:
     WalletContentDlg();
     virtual ~WalletContentDlg();
 
-    virtual int exec() _OVERRIDE_ ;
+    virtual int exec(vector<account_object>& a_pAcc, vector<vector<asset>>& a_pBl, int& err, std::string& err_str ) /*_OVERRIDE_*/ ;
 
 protected:
-    void ListAccountThreadFunc();
-    void CallShowWalletContentFunction(struct StructApi* a_pApi);
+    //void ListAccountThreadFunc();
+    //void CallShowWalletContentFunction(struct StructApi* a_pApi);
 
 protected slots:
-    void WalletContentReadySlot();
+    //void WalletContentReadySlot();
 
 protected:
 signals:
-    void WalletContentReadySig();
+    //void WalletContentReadySig();
 
 
 private:
-    vector<account_object>  m_vAccounts;
-    vector<vector<asset>>   m_vAccountsBalances;
+    vector<account_object>* m_pvAccounts;
+    vector<vector<asset>>*  m_pvAccountsBalances;
     QVBoxLayout             m_main_layout;
     QLabel                  m_num_acc_or_error_label;
-    int                     m_nError;
-    std::string             m_error_string;
 };
 
 }

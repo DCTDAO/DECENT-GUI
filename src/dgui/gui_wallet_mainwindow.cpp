@@ -57,6 +57,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     m_info_dialog.resize(0,0);
 
     connect(this, SIGNAL(TaskDoneSig(int,std::string, std::string)), this, SLOT(TaskDoneSlot(int,std::string, std::string)) );
+    connect(this, SIGNAL(WalletContentReadySig(int)), this, SLOT(WalletContentReadySlot(int)) );
 
 }
 
@@ -160,6 +161,103 @@ void Mainwindow_gui_wallet::CreateMenues()
 }
 
 
+void Mainwindow_gui_wallet::ListAccountThreadFunc(int a_nDetailed)
+{
+    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CallShowWalletContentFunction);
+    emit WalletContentReadySig(a_nDetailed);
+}
+
+
+void Mainwindow_gui_wallet::WalletContentReadySlot(int a_nDetailed)
+{
+    if(_LIKELY_(!m_nError))
+    {
+        std::string csBalanceName;
+        asset* pAccountBalance;
+        account_object* pAccount;
+        QComboBox& cAccountsCombo = m_pCentralWidget->usersCombo();
+        int nCount = cAccountsCombo.count();
+        const int cnNumOfAccounts(m_vAccounts.size());
+        int j,nNumbOfBalances;
+
+        while(nCount>0){cAccountsCombo.removeItem(0);--nCount;}
+
+        for(int i(0); i<cnNumOfAccounts;++i)
+        {
+            pAccount = &m_vAccounts[i];
+            cAccountsCombo.addItem(tr(pAccount->name.c_str()));
+            nNumbOfBalances = m_vAccountsBalances[i].size();
+            for(j=0;j<nNumbOfBalances;++j)
+            {
+                //
+            }
+
+            if(nNumbOfBalances>0)
+            {
+                pAccountBalance = &((m_vAccountsBalances[i])[0]);
+                //csBalanceName = (std::string)pAccountBalance->asset_id;
+                csBalanceName = "DECENT";
+                m_pCentralWidget->SetAccountBalanceGUI( pAccountBalance->amount.value,csBalanceName);
+            }
+        }
+    }
+
+    if(a_nDetailed){m_wallet_content_dlg.exec(m_vAccounts,m_vAccountsBalances,m_nError,m_error_string);}
+
+}
+
+
+static void acount_balance_done_fnc(void*/*owner*/,int /*err*/,const std::string& /*a_task*/, const std::string& a_task_result)
+{
+    if(g_nDebugApplication){printf("%s\n", a_task_result.c_str());}
+}
+
+
+void Mainwindow_gui_wallet::CallShowWalletContentFunction(struct StructApi* a_pApi)
+{
+    graphene::wallet::wallet_api* pWapi = a_pApi ? a_pApi->wal_api : NULL;
+
+    try
+    {
+        if(pWapi)
+        {
+            account_object* pAcc;
+            m_vAccounts = pWapi->list_my_accounts();
+            const int cnNumOfAccounts(m_vAccounts.size());
+            m_vAccountsBalances.reserve(cnNumOfAccounts);
+            for(int i(0); i<cnNumOfAccounts;++i)
+            {
+                pAcc = &(m_vAccounts[i]);
+#if 0
+                m_vAccountsBalances[i] = pWapi->list_account_balances(((std::string)(pAcc->id)));
+#else
+                if(a_pApi->gui_api)
+                {
+                    std::string csTaskString = "list_account_balances " + ((std::string)(pAcc->id));
+                    (a_pApi->gui_api)->SetNewTask(this,acount_balance_done_fnc,csTaskString);
+                }
+#endif
+            }
+        }
+    }
+    catch(const fc::exception& a_fc)
+    {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        m_nError = 1;
+        m_error_string = a_fc.to_detail_string();
+        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
+    }
+    catch(...)
+    {
+        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
+        m_nError = 2;
+        m_error_string = "Unknown exception!";
+        if(g_nDebugApplication){printf("Unknown exception\n");}
+    }
+
+}
+
+
 void Mainwindow_gui_wallet::ImportKeySlot()
 {
     UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CallImportKeyFunction);
@@ -168,7 +266,12 @@ void Mainwindow_gui_wallet::ImportKeySlot()
 
 void Mainwindow_gui_wallet::ShowWalletContentSlot()
 {
-    m_wallet_content_dlg.exec();
+    //m_wallet_content_dlg.exec();
+
+    m_nError = 0;
+    m_error_string = "";
+    std::thread aListAccountThread(&Mainwindow_gui_wallet::ListAccountThreadFunc,this,1);
+    aListAccountThread.detach();
 }
 
 
@@ -242,6 +345,8 @@ void Mainwindow_gui_wallet::CallImportKeyFunction(struct StructApi* a_pApi)
     {
         if(g_nDebugApplication){printf("Unknown exception\n");}
     }
+
+    emit WalletContentReadySig(0);
 }
 
 
@@ -404,4 +509,5 @@ void Mainwindow_gui_wallet::TaskDoneSlot(int a_err,std::string a_task, std::stri
 void Mainwindow_gui_wallet::ConnectSlot()
 {
     m_ConnectDlg.exec();
+    WalletContentReadySlot(0);
 }

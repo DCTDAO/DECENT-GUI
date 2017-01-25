@@ -43,6 +43,9 @@ namespace gui_wallet
         void CallAboutFunction(struct StructApi* a_pApi);
         void CallHelpFunction(struct StructApi* a_pApi);
         void CallImportKeyFunction(struct StructApi* a_pApi);
+        void CallShowWalletContentFunction(struct StructApi* a_pApi);
+
+        void ListAccountThreadFunc(int a_nDetailed);
 
     protected slots:/* Instead of these one line slots
                      *, probably should be used lambda functions?
@@ -53,6 +56,7 @@ namespace gui_wallet
         void InfoSlot();
 
         void ShowWalletContentSlot();
+        void WalletContentReadySlot(int a_nDetailed);
 
     protected slots:
         void ConnectSlot();
@@ -62,6 +66,7 @@ namespace gui_wallet
     private:
     signals:
         void TaskDoneSig(int err,std::string task, std::string result);
+        void WalletContentReadySig(int a_nDetailed);
 
     protected:
         virtual void moveEvent(QMoveEvent *) _OVERRIDE_ ;
@@ -89,6 +94,13 @@ namespace gui_wallet
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
+
+        vector<account_object>  m_vAccounts;
+        vector<vector<asset>>   m_vAccountsBalances;
+        QVBoxLayout             m_main_layout;
+        QLabel                  m_num_acc_or_error_label;
+        int                     m_nError;
+        std::string             m_error_string;
 
     private:
         class ImportKeyDialog : private QDialog

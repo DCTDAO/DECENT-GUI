@@ -47,10 +47,10 @@ CentralWigdet::~CentralWigdet()
 }
 
 
-void CentralWigdet::SetAccountBalanceGUI(int a_nBallance)
+void CentralWigdet::SetAccountBalanceGUI(int a_nBallance,const std::string& a_balance_name)
 {
     if(a_nBallance>=0){m_nBalance = a_nBallance;}
-    QString aBalance = QString::number(m_nBalance,10) + tr(" DTC");
+    QString aBalance = QString::number(m_nBalance,10) + tr(" ") + tr(a_balance_name.c_str());
     m_balanceLabel.setText(aBalance);
 }
 
@@ -256,7 +256,7 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
     aPal.setColor(QPalette::Window, Qt::red);
     aPal.setColor(QPalette::WindowText, Qt::white);
     m_users_list.setPalette(aPal);
-    m_users_list.addItem(tr("Username"));
+    //m_users_list.addItem(tr("Username"));
     m_first_line_layout.addWidget(&m_users_list);
 
     m_first_line_widget.setLayout(&m_first_line_layout);
@@ -265,6 +265,12 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
     m_main_layout.addWidget(&m_main_tabs);
     //setLayout(&m_main_layout);
     a_pAllLayout->addLayout(&m_main_layout);
+}
+
+
+void CentralWigdet::AddNewUserGUI(const std::string& a_user_name)
+{
+    m_users_list.addItem(tr(a_user_name.c_str()));
 }
 
 
