@@ -81,15 +81,15 @@ const long long int& CentralWigdet::GetAccountBalance()const
 #include <unistd.h>
 #endif
 
-static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _image_name_)
+
+static void SetImageToLabelStaticFixedPath(bool& _bRet_,QPixmap& _image_,const char* _image_name_, const std::string& a_csCurDir)
 {
-    char vcBuffer[512];
     std::string::size_type nPosFound;
     std::string cFullPath;
-    std::string cCurDir(std::string(getcwd(vcBuffer,511)) + "/" + g_cApplicationPath);
+    std::string cCurDir(a_csCurDir);
 
     //printf("g_nDebugApplication=%d\n",g_nDebugApplication);
-    if(g_nDebugApplication){printf("!!! cur_dir=\"%s\"\n",cCurDir.c_str());}
+    if(g_nDebugApplication){printf("!!! dir_to_search=\"%s\"\n",cCurDir.c_str());}
 
     for(;;)
     {
@@ -106,6 +106,18 @@ static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _ima
         if(nPosFound == std::string::npos){_bRet_ = false;return;} // Not found!
         cCurDir.erase(nPosFound,std::string::npos);
     }
+}
+
+
+static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _image_name_)
+{
+    char vcBuffer[512];
+    std::string csCurDir(std::string(getcwd(vcBuffer,511)));
+
+    _bRet_ = false;
+    SetImageToLabelStaticFixedPath(_bRet_,_image_,_image_name_,csCurDir);
+    if(_bRet_){return;}
+    SetImageToLabelStaticFixedPath(_bRet_,_image_,_image_name_,g_cApplicationPath);
 }
 
 
