@@ -439,8 +439,8 @@ void Mainwindow_gui_wallet::CallImportKeyFunction(struct StructApi* a_pApi)
         if(a_pApi && (a_pApi->wal_api))
         {
             QByteArray cLatin;
-            QString cqsUserName;
-            QString cqsKey(tr("0000000000000000000000000000000000000000000000000000000000000000"));
+            QString cqsUserName(tr("nathan"));
+            QString cqsKey(tr("5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"));
             std::string csUser_name, csKey;
             QComboBox& cUsersCombo = m_pCentralWidget->GetUsersList();
 
