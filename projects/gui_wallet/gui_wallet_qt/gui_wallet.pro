@@ -11,6 +11,9 @@
 #CONFIG += TEST
 # For making test: '$qmake "CONFIG+=TEST" gui_wallet.pro'  , then '$make'
 
+#DEFINES += WALLET_API_DIRECT_CALLS
+#DEFINES += LIST_ACCOUNT_BALANCES_DIRECT_CALL
+
 options = $$find(CONFIG, "TEST")
 
 count(options, 1) {
@@ -53,7 +56,7 @@ INCLUDEPATH += $$DECENT_LIB/app/include
 INCLUDEPATH += $$DECENT_LIB/encrypt/include
 
 INCLUDEPATH += $$BOOST_ROOT_QT/include
-INCLUDEPATH += $$DECENT_LIB/fc/include
+INCLUDEPATH += $$DECENT_LIB/contrib/fc/include
 INCLUDEPATH += $$DECENT_LIB/app/include
 INCLUDEPATH += $$DECENT_LIB/chain/include
 INCLUDEPATH += $$DECENT_LIB/db/include
@@ -63,9 +66,9 @@ INCLUDEPATH += $$DECENT_LIB/plugins/debug_witness/include
 INCLUDEPATH += $$DECENT_LIB/egenesis/include
 INCLUDEPATH += $$DECENT_LIB/utilities/include
 INCLUDEPATH += $$DECENT_LIB/wallet/include
-INCLUDEPATH += $$DECENT_LIB/fc/vendor/secp256k1-zkp/include
-INCLUDEPATH += $$DECENT_LIB/fc/vendor/websocketpp
-INCLUDEPATH += $$DECENT_LIB/fc/vendor/secp256k1-zkp
+INCLUDEPATH += $$DECENT_LIB/contrib/fc/vendor/secp256k1-zkp/include
+INCLUDEPATH += $$DECENT_LIB/contrib/fc/vendor/websocketpp
+INCLUDEPATH += $$DECENT_LIB/contrib/fc/vendor/secp256k1-zkp
 INCLUDEPATH += ../../../include
 
 DEFINES += USE_NUM_GMP

@@ -34,6 +34,12 @@ namespace gui_wallet
         void CreateActions();
         void CreateMenues();
 
+        void task_done_function(int err,const std::string& task, const std::string& result);
+
+#ifndef LIST_ACCOUNT_BALANCES_DIRECT_CALL
+        void __EmitWalletcontentReadyFnc(int det);
+#endif
+
     private:
         void TaskDoneFunc(int err,const std::string& task,const std::string& result);
         static void TaskDoneFunc(void* owner,int err,const std::string& task,const std::string& result);
@@ -44,8 +50,11 @@ namespace gui_wallet
         void CallHelpFunction(struct StructApi* a_pApi);
         void CallImportKeyFunction(struct StructApi* a_pApi);
         void CallShowWalletContentFunction(struct StructApi* a_pApi);
+        void UnlockFunction(struct StructApi* a_pApi);
 
         void ListAccountThreadFunc(int a_nDetailed);
+
+        void CurrentUserBalanceFunction(struct StructApi* a_pApi);
 
     protected slots:/* Instead of these one line slots
                      *, probably should be used lambda functions?
@@ -57,11 +66,14 @@ namespace gui_wallet
 
         void ShowWalletContentSlot();
         void WalletContentReadySlot(int a_nDetailed);
+        void CurrentUserBalanceSlot(int index );
 
     protected slots:
         void ConnectSlot();
         void ImportKeySlot();
+        void UnlockSlot();
         void TaskDoneSlot(int err,std::string task, std::string result);
+        void ConnectDoneSlot();
 
     private:
     signals:
@@ -90,17 +102,21 @@ namespace gui_wallet
         QAction             m_ActionInfo;
         QAction             m_ActionHelp;
         QAction             m_ActionWalletContent;
+        QAction             m_ActionUnlock;
         QAction             m_ActionImportKey;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
 
         vector<account_object>  m_vAccounts;
+    public:
         vector<vector<asset>>   m_vAccountsBalances;
+    private:
         QVBoxLayout             m_main_layout;
         QLabel                  m_num_acc_or_error_label;
         int                     m_nError;
         std::string             m_error_string;
+        PasswordDialog          m_PasswdDialog2;
 
     private:
         class ImportKeyDialog : private QDialog

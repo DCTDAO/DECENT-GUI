@@ -28,6 +28,30 @@
 namespace gui_wallet
 {
 
+class PasswordDialog : private QDialog
+{
+public:
+    PasswordDialog(QWidget* a_pMove):m_pMove(a_pMove),m_password_lab(tr("password:")){
+        m_password.setEchoMode(QLineEdit::Password);
+        m_layout.addWidget(&m_password_lab);
+        m_layout.addWidget(&m_password);
+        setLayout(&m_layout);
+    }
+
+    std::string execN(){
+        if(m_pMove){move(m_pMove->pos());}
+        QDialog::exec();
+        QString cqsPassword = m_password.text();
+        QByteArray cLatin = cqsPassword.toLatin1();
+        return cLatin.data();
+    }
+private:
+    QWidget*    m_pMove;
+    QLabel      m_password_lab;
+    QLineEdit   m_password;
+    QHBoxLayout m_layout;
+};
+
 class ConnectDlg : public QDialog
 {
     Q_OBJECT
@@ -77,19 +101,7 @@ private:
     //std::vector<graphene::wallet::wallet_api*>   m_vAllApis;
 
 private:
-    class PasswordDialog : public QDialog
-    {
-    public:
-        PasswordDialog():m_password_lab(tr("password:")){
-            m_password.setEchoMode(QLineEdit::Password);
-            m_layout.addWidget(&m_password_lab);
-            m_layout.addWidget(&m_password);
-            setLayout(&m_layout);
-        }
-        QLabel      m_password_lab;
-        QLineEdit   m_password;
-        QHBoxLayout m_layout;
-    }m_PasswdDialog;
+    PasswordDialog m_PasswdDialog;
 };
 
 }

@@ -26,3 +26,4 @@ projects/tests/cli_wallet_test_vs13/*
 gui_wallet.app
 *wallet.json
 *after-import-key-*.wallet
+*.wallet

@@ -17,6 +17,7 @@
 #include <QHeaderView>
 #include <thread>
 #include <QLabel>
+#include <stdio.h>
 
 #ifndef DEFAULT_WALLET_FILE_NAME
 #define DEFAULT_WALLET_FILE_NAME       "wallet.json"
@@ -30,7 +31,8 @@ gui_wallet::ConnectDlg::ConnectDlg(QWidget* a_parent)
     :
       QDialog(a_parent),
       m_main_table(NUM_OF_FIELDS,2),
-      m_wallet_file_name(DEFAULT_WALLET_FILE_NAME)
+      m_wallet_file_name(DEFAULT_WALLET_FILE_NAME),
+      m_PasswdDialog(this)
 {
     //m_wdata.chain_id = (chain_id_type)0;
 
@@ -141,6 +143,23 @@ void gui_wallet::ConnectDlg::ConnectErrorSlot(const std::string a_err, const std
 
 void gui_wallet::ConnectDlg::ConnectDoneSlot()
 {
+    std::string csWalletFileName = GetWalletFileName();
+    FILE* fpWallFile = fopen(csWalletFileName.c_str(),"r");
+    if(g_nDebugApplication){printf("fpWallFile=%p, chain_id=%s\n",fpWallFile,m_wdata.chain_id.str().c_str());}
+
+    if(fpWallFile)
+    {
+        fclose(fpWallFile);
+        m_wdata = fc::json::from_file( csWalletFileName ).as< graphene::wallet::wallet_data >();
+        //m_wdata.chain_id.str();
+    }
+    else
+    {
+        //save_wallet_file
+    }
+
+    ((QLineEdit*)(m_main_table.cellWidget(CHAIN_ID_FIELD,1)))->setText(tr(m_wdata.chain_id.str().c_str()));
+
     //ConnectDlg* pParent = (ConnectDlg*)a_pOwner;
     QMessageBox aMessageBox(QMessageBox::Information,QObject::tr("connected"),QObject::tr("connected"),
                             QMessageBox::Ok,this);
@@ -180,11 +199,12 @@ void gui_wallet::ConnectDlg::SetPassword(void* a_owner,int a_answer,/*string**/v
     {
         gui_wallet::ConnectDlg* pThisCon = (gui_wallet::ConnectDlg*)a_owner;
         PasswordDialog* pThis = &pThisCon->m_PasswdDialog;
-        pThis->move(pThisCon->pos());
+        /*pThis->move(pThisCon->pos());
         pThis->exec();
         QString cqsPassword = pThis->m_password.text();
         QByteArray cLatin = cqsPassword.toLatin1();
-        *pcsPassword = cLatin.data();
+        *pcsPassword = cLatin.data();*/
+        *pcsPassword = pThis->execN();
     }
         break;
 
@@ -202,9 +222,21 @@ void gui_wallet::ConnectDlg::ConnectPushedSlot()
     WarnYesOrNoFuncType fpPasswdFunc = &ConnectDlg::SetPassword;
     QString aRpcEndPointAStr = ((QLineEdit*)m_main_table.cellWidget(RPC_ENDPOINT_FIELD,1))->text();
     QByteArray aLatin=aRpcEndPointAStr.toLatin1();
-    m_wdata.ws_server = aLatin.data();
-    m_wdata.chain_id = chain_id_type( std::string( (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ) );
-    std::thread aThread(&CreateConnectedApiInstance,&m_wdata,GetWalletFileName(),this,fpDone, fpErr,fpPasswdFunc);
+    std::string csWalletFileName = GetWalletFileName();
+    FILE* fpWallFile = fopen(csWalletFileName.c_str(),"r");
+
+    if(fpWallFile)
+    {
+        fclose(fpWallFile);
+        m_wdata = fc::json::from_file( csWalletFileName ).as< graphene::wallet::wallet_data >();
+    }
+    else
+    {
+        m_wdata.ws_server = aLatin.data();
+        m_wdata.chain_id = chain_id_type( std::string( (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ) );
+    }
+
+    std::thread aThread(&CreateConnectedApiInstance,&m_wdata,csWalletFileName,this,fpDone, fpErr,fpPasswdFunc);
     aThread.detach();
     //close();
 }
