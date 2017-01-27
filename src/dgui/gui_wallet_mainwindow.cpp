@@ -25,6 +25,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionWalletContent(tr("Wallet content"),this),
         m_ActionUnlock(tr("Unlock"),this),
         m_ActionImportKey(tr("Import key"),this),
+        m_ActionShowDigitalContextes(tr("show dig. contexes"),this),
         m_ConnectDlg(this),
         m_info_dialog(),
         m_import_key_dlg(2)
@@ -177,6 +178,9 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionImportKey.setStatusTip( tr("Import key") );
     connect( &m_ActionImportKey, SIGNAL(triggered()), this, SLOT(ImportKeySlot()) );
 
+    //m_ActionShowDigitalContextes
+    connect( &m_ActionShowDigitalContextes, SIGNAL(triggered()), this, SLOT(ShowDigitalContextesSlot()) );
+
     /**************************************************************************/
 
     /**************************************************************************/
@@ -216,9 +220,38 @@ void Mainwindow_gui_wallet::CreateMenues()
     //m_pMenuHelpR->addAction( &m_ActionInfo );
     m_pMenuCreateTicket = pMenuBar->addMenu( tr("Create ticket") );
 
+    m_pMenuTempFunctions = pMenuBar->addMenu(tr("temp. functions start"));
+    m_pMenuTempFunctions->addAction(&m_ActionShowDigitalContextes);
+
     ADD_ACTION_TO_MENU_HELP(&m_ActionAbout);
     ADD_ACTION_TO_MENU_HELP(&m_ActionInfo);
     ADD_ACTION_TO_MENU_HELP(&m_ActionHelp);
+}
+
+
+void Mainwindow_gui_wallet::ShowDigitalContextesSlot()
+{
+    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::ShowDigitalContextesFunction);
+}
+
+
+void Mainwindow_gui_wallet::ShowDigitalContextesFunction(struct StructApi* a_pApi)
+{
+    if(a_pApi && a_pApi->wal_api)
+    {
+        optional<content_object> cContent;
+        std::vector<content_object> cvContents = a_pApi->wal_api->list_content("a",5);
+
+        const int nSize = cvContents.size();
+        if(g_nDebugApplication){printf("Number of digital contents = %d\n",nSize);}
+        for(int i(0); i<nSize;++i)
+        {
+            if(g_nDebugApplication){printf("%d, uri=\"%s\"\n",i,cvContents[i].URI.c_str());}
+            cContent = a_pApi->wal_api->get_content(cvContents[i].URI);
+            if(g_nDebugApplication){printf("valid=%d\n",(int)cContent.valid());}
+        }
+
+    }
 }
 
 

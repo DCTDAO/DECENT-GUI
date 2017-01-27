@@ -52,6 +52,7 @@ namespace gui_wallet
         void CallImportKeyFunction(struct StructApi* a_pApi);
         void CallShowWalletContentFunction(struct StructApi* a_pApi);
         void UnlockFunction(struct StructApi* a_pApi);
+        void ShowDigitalContextesFunction(struct StructApi* a_pApi);
 
         void ListAccountThreadFunc(int a_nDetailed);
 
@@ -75,6 +76,7 @@ namespace gui_wallet
         void UnlockSlot();
         void TaskDoneSlot(int err,std::string task, std::string result);
         void ConnectDoneSlot();
+        void ShowDigitalContextesSlot();
 
     private:
     signals:
@@ -97,6 +99,7 @@ namespace gui_wallet
         QMenu*              m_pMenuContent;
         QMenu*              m_pMenuHelpR;
         QMenu*              m_pMenuCreateTicket;
+        QMenu*              m_pMenuTempFunctions;
         QAction             m_ActionExit;
         QAction             m_ActionConnect;
         QAction             m_ActionAbout;
@@ -105,6 +108,7 @@ namespace gui_wallet
         QAction             m_ActionWalletContent;
         QAction             m_ActionUnlock;
         QAction             m_ActionImportKey;
+        QAction             m_ActionShowDigitalContextes;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
