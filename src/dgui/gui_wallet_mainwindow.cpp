@@ -27,7 +27,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionImportKey(tr("Import key"),this),
         m_ConnectDlg(this),
         m_info_dialog(),
-        m_PasswdDialog2(this)
+        m_import_key_dlg(2)
 {
     m_barLeft = new QMenuBar;
     m_barRight = new QMenuBar;
@@ -246,8 +246,10 @@ void Mainwindow_gui_wallet::UnlockFunction(struct StructApi* a_pApi)
     {
         if(pWapi)
         {
-            std::string csPassword = m_PasswdDialog2.execN();
-            pWapi->unlock(csPassword);
+            QPoint thisPos = pos();
+            std::vector<std::string> cvsPassword(1);
+            decent::gui::tools::RET_TYPE rtRet = m_PasswdDialog2.execRD(&thisPos,cvsPassword);
+            if(rtRet == decent::gui::tools::RDB_OK){pWapi->unlock(cvsPassword[0]);}
         } // if(pWapi)
     }
     catch(const fc::exception& a_fc)
@@ -438,28 +440,36 @@ void Mainwindow_gui_wallet::CallImportKeyFunction(struct StructApi* a_pApi)
     {
         if(a_pApi && (a_pApi->wal_api))
         {
-            QByteArray cLatin;
-            QString cqsUserName(tr("nathan"));
-            QString cqsKey(tr("5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"));
-            std::string csUser_name, csKey;
+            //QByteArray cLatin;
+            std::vector<std::string> cvsUsKey(2);
+            //QString cqsUserName(tr("nathan"));
+            //QString cqsKey(tr("5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"));
+            //std::string csUser_name, csKey;
             QComboBox& cUsersCombo = m_pCentralWidget->GetUsersList();
+
+            cvsUsKey[0] = "nathan";
+            cvsUsKey[1] = "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3";
 
             if(cUsersCombo.count())
             {
-                cqsUserName = cUsersCombo.currentText();
+                QString cqsUserName = cUsersCombo.currentText();
+                QByteArray cbaResult = cqsUserName.toLatin1();
+                cvsUsKey[0] = cbaResult.data();
             }
 
-            m_import_key_dlg.exec(pos(),cqsUserName,cqsKey);
-            cLatin = cqsUserName.toLatin1();
-            csUser_name = cLatin.data();
-            cLatin = cqsKey.toLatin1();
-            csKey = cLatin.data();
+            QPoint thisPos = pos();
+            decent::gui::tools::RET_TYPE aRet = m_import_key_dlg.execRD(&thisPos,cvsUsKey);
+            if(aRet == decent::gui::tools::RDB_CANCEL){return ;}
+            //cLatin = cqsUserName.toLatin1();
+            //csUser_name = cLatin.data();
+            //cLatin = cqsKey.toLatin1();
+            //csKey = cLatin.data();
 #ifdef WALLET_API_DIRECT_CALLS
-            (a_pApi->wal_api)->import_key(csUser_name,csKey);
+            (a_pApi->wal_api)->import_key(cvsUsKey[0],cvsUsKey[1]);
 #else  // #ifdef WALLET_API_DIRECT_CALLS
             if(a_pApi->gui_api)
             {
-                std::string csTaskStr = "import_key " + csUser_name + " " + csKey;
+                std::string csTaskStr = "import_key " + cvsUsKey[0] + " " + cvsUsKey[1];
                 if(g_nDebugApplication){printf("!!!task: %s\n",csTaskStr.c_str());}
                 (a_pApi->gui_api)->SetNewTask(this,task_done_static_function,csTaskStr);
             }

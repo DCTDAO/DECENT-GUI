@@ -31,8 +31,7 @@ gui_wallet::ConnectDlg::ConnectDlg(QWidget* a_parent)
     :
       QDialog(a_parent),
       m_main_table(NUM_OF_FIELDS,2),
-      m_wallet_file_name(DEFAULT_WALLET_FILE_NAME),
-      m_PasswdDialog(this)
+      m_wallet_file_name(DEFAULT_WALLET_FILE_NAME)
 {
     //m_wdata.chain_id = (chain_id_type)0;
 
@@ -204,7 +203,10 @@ void gui_wallet::ConnectDlg::SetPassword(void* a_owner,int a_answer,/*string**/v
         QString cqsPassword = pThis->m_password.text();
         QByteArray cLatin = cqsPassword.toLatin1();
         *pcsPassword = cLatin.data();*/
-        *pcsPassword = pThis->execN();
+        std::vector<std::string> vsPassword(1);
+        QPoint thisPos = pThisCon->pos();
+        decent::gui::tools::RET_TYPE rtRet = pThis->execRD(&thisPos,vsPassword);
+        if(rtRet != decent::gui::tools::RDB_CANCEL){*pcsPassword = vsPassword[0];}
     }
         break;
 

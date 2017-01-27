@@ -19,6 +19,7 @@
 #include "gui_wallet_connectdlg.hpp"
 #include "text_display_dialog.hpp"
 #include "walletcontentdlg.hpp"
+#include "richdialog.hpp"
 
 namespace gui_wallet
 {
@@ -119,7 +120,7 @@ namespace gui_wallet
         PasswordDialog          m_PasswdDialog2;
 
     private:
-        class ImportKeyDialog : private QDialog
+        /*class ImportKeyDialog : private QDialog
         {
         public:
             ImportKeyDialog():m_us_name_lab(tr("Username")),m_pub_key_lab(tr("private_wif_key")){
@@ -139,7 +140,8 @@ namespace gui_wallet
             QVBoxLayout m_us_name_lay, m_pub_key_lay;
             QLabel m_us_name_lab,m_pub_key_lab;
             QLineEdit m_user_name, m_pub_key;
-        }m_import_key_dlg;
+        }m_import_key_dlg;*/
+        decent::gui::tools::RichDialog m_import_key_dlg;
     };
 
 }

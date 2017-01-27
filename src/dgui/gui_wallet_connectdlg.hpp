@@ -24,10 +24,12 @@
 #include <thread>
 #include <vector>
 #include "connected_api_instance.hpp"
+#include "richdialog.hpp"
 
 namespace gui_wallet
 {
 
+#if 0
 class PasswordDialog : private QDialog
 {
 public:
@@ -50,6 +52,13 @@ private:
     QLabel      m_password_lab;
     QLineEdit   m_password;
     QHBoxLayout m_layout;
+};
+#endif
+
+class PasswordDialog : public decent::gui::tools::RichDialog
+{
+public:
+    PasswordDialog() : decent::gui::tools::RichDialog(1){m_pTextBoxes[0].setEchoMode(QLineEdit::Password);}
 };
 
 class ConnectDlg : public QDialog
