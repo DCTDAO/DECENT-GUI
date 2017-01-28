@@ -652,7 +652,7 @@ void Mainwindow_gui_wallet::ConnectSlot()
 void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_task, std::string a_result)
 {
 
-    if(g_nDebugApplication){printf("fnc:%s, result=%s\n",__FUNCTION__,a_result.c_str());}
+    if(g_nDebugApplication){printf("fnc:%s, task=%s, result=%s\n",__FUNCTION__,a_task.c_str(),a_result.c_str());}
 
     if( strstr(a_task.c_str(),"info"))
     {

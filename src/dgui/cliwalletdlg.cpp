@@ -47,7 +47,7 @@ void gui_wallet::CliTextEdit::keyPressEvent( QKeyEvent * a_event )
     QTextCursor cCursor = textCursor();
     int nColumnNumber = cCursor.columnNumber();
 
-    if(g_nDebugApplication){printf("CliTextEdit::keyPressEvent: key=0x%x, col_num=%d\n",(int)a_event->key(),nColumnNumber);}
+    //if(g_nDebugApplication){printf("CliTextEdit::keyPressEvent: key=0x%x, col_num=%d\n",(int)a_event->key(),nColumnNumber);}
 
     if(nColumnNumber<3){return;}
 
@@ -61,7 +61,7 @@ void gui_wallet::CliTextEdit::keyPressEvent( QKeyEvent * a_event )
         QString cqsLastLine = cLastBlock.text();
         QByteArray cbaBlock = cqsLastLine.toLatin1();
         std::string csLastBlockStr = cbaBlock.data();
-        if(g_nDebugApplication){printf("Qt::Key_Enter, nLastLinePlus1=%d\n",nLastLinePlus1);}
+        //if(g_nDebugApplication){printf("Qt::Key_Enter, nLastLinePlus1=%d\n",nLastLinePlus1);}
         QTextEdit::keyPressEvent(a_event);
         append(tr(">>>"));
         moveCursor(QTextCursor::End);
@@ -71,7 +71,7 @@ void gui_wallet::CliTextEdit::keyPressEvent( QKeyEvent * a_event )
     }
     case Qt::Key_Backspace:
     {
-        if(g_nDebugApplication){printf("Qt::Key_Backspace:\n");}
+        //if(g_nDebugApplication){printf("Qt::Key_Backspace:\n");}
         if(nColumnNumber>3)
         {
             QTextEdit::keyPressEvent(a_event);
@@ -79,7 +79,7 @@ void gui_wallet::CliTextEdit::keyPressEvent( QKeyEvent * a_event )
     }
         break;
     default:
-        if(g_nDebugApplication){printf("default\n");}
+        //if(g_nDebugApplication){printf("default\n");}
         QTextEdit::keyPressEvent(a_event);
         break;
     }
