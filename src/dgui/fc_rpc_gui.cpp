@@ -12,6 +12,7 @@
 #include <fc/io/json.hpp>
 #include <iostream>
 #include <stdio.h>
+#include <stdarg.h>
 
 using namespace fc::rpc;
 using namespace fc;
@@ -127,30 +128,39 @@ void gui::format_result( const string& method, std::function<string(variant,cons
 }
 
 
-void gui::SetNewTask(void* a_pOwner,TYPE_TASK_DONE a_fpTaskDone,const std::string& a_line)
+void gui::SetNewTask(void* a_owner,void* a_callbackArg,const std::string& a_line,TYPE_TASK_DONE2 a_fpTaskDone)
+{
+    SetNewTask_base(a_owner,a_callbackArg,a_line,a_fpTaskDone);
+}
+
+
+void gui::SetNewTask_base(void* a_pOwner,void* a_clbkArg,const std::string& a_line,...)
 {
     //m_line = a_line;
     //taskListItem * pTaskNext;
+
+    TYPE_TASK_DONE2 fpTaskDone;
+    va_list aFunc;
+
+    va_start( aFunc, a_line );  /* Initialize variable arguments. */
+    fpTaskDone = va_arg( aFunc, TYPE_TASK_DONE2);
+    va_end( aFunc );                /* Reset variable arguments.      */
 
     m_task_mutex.lock();
     if(!m_pFirstTask)
     {
         //m_InitialTaskBuffer.next = NULL;
         m_pFirstTask = m_pLastTask = &m_InitialTaskBuffer;
-#if 0
-        struct taskListItem* next;
-        void*  owner;
-        std::string line;
-        TYPE_TASK_DONE fn_tsk_dn;
-#endif
+
         m_pLastTask->next = NULL;
         m_pLastTask->owner = a_pOwner;
+        m_pLastTask->callbackArg = a_clbkArg;
         m_pLastTask->line = a_line;
-        m_pLastTask->fn_tsk_dn = a_fpTaskDone;
+        m_pLastTask->fn_tsk_dn = fpTaskDone;
     }
     else
     {
-        m_pLastTask->next = new taskListItem(a_pOwner,a_fpTaskDone, a_line);
+        m_pLastTask->next = new taskListItem(a_pOwner,a_clbkArg,a_line,fpTaskDone);
         m_pLastTask = m_pLastTask->next;
     }
     m_task_mutex.unlock();
@@ -217,13 +227,13 @@ void gui::run()
              if( itr == _result_formatters.end() )
              {
                 //std::cout << "!!!!!!!if\n"<<fc::json::to_pretty_string( result ) << "\n";
-                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,err,aTaskItem.line, fc::json::to_pretty_string( result ));
+                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,err,aTaskItem.line, fc::json::to_pretty_string( result ));
                 (*m_info_report)(m_pOwner,"%s\n",fc::json::to_pretty_string( result ).c_str());
              }
              else
              {
                 //std::cout << "!!!!!!!!else\n"<<itr->second( result, args ) << "\n";
-                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,err,aTaskItem.line, itr->second( result, args ));
+                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,err,aTaskItem.line, itr->second( result, args ));
                 (*m_info_report)(m_pOwner,"%s\n",itr->second( result, args ).c_str());
              }
          }

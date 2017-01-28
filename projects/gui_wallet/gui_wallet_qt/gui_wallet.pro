@@ -196,9 +196,11 @@ HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
 SOURCES += \
     ../../../src/dgui/text_display_dialog.cpp \
     ../../../src/dgui/walletcontentdlg.cpp \
-    ../../../src/utils/richdialog.cpp
+    ../../../src/utils/richdialog.cpp \
+    ../../../src/dgui/cliwalletdlg.cpp
 
 HEADERS += \
     ../../../src/dgui/text_display_dialog.hpp \
     ../../../src/dgui/walletcontentdlg.hpp \
-    ../../../include/richdialog.hpp
+    ../../../include/richdialog.hpp \
+    ../../../src/dgui/cliwalletdlg.hpp

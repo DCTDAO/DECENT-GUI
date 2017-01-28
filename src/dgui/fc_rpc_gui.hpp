@@ -14,8 +14,17 @@
 #include <unnamedsemaphorelite.hpp>
 #include <mutex>
 
+#ifndef __THISCALL__
+#ifdef __MSC_VER
+#define __THISCALL__ __thiscall
+#else  // #ifdef __MSC_VER
+#define __THISCALL__
+#endif  // #ifdef __MSC_VER
+#endif  // #ifndef __THISCALL__
+
+//typedef void (__THISCALL__ *WaletFncType)(void*user_data,struct StructApi* pApi);
 typedef int (*TYPE_REPORTER)(void*owner,const char* form,...);
-typedef void (*TYPE_TASK_DONE)(void*owner,int err,const std::string& a_task, const std::string& task_result);
+typedef void (__THISCALL__ *TYPE_TASK_DONE2)(void*owner,void*arg,int err,const std::string& a_task, const std::string& task_result);
 
 namespace fc { namespace rpc {
 
@@ -37,7 +46,16 @@ namespace fc { namespace rpc {
          void wait();
          void format_result( const string& method, std::function<string(variant,const variants&)> formatter);
 
-         void SetNewTask(void* a_pOwner,TYPE_TASK_DONE a_fpTaskDone,const std::string& a_line);
+         void SetNewTask(void* owner,void* callbackArg,const std::string& line,TYPE_TASK_DONE2 fpTaskDone);
+
+         // void TaskDoneSlot(void*arg,int err,std::string task, std::string result);
+         template <typename Type>
+         void SetNewTask(Type* a_obj_ptr,void* a_callbackArg,const std::string& a_line,
+                                void (Type::*a_fpFunction)(void*arg,int err,const std::string& task, const std::string& task_result))
+         {
+             SetNewTask_base(a_obj_ptr,a_callbackArg,a_line,a_fpFunction);
+         }
+
          void SetOwner(void* owner);
          void SetInfoReporter(TYPE_REPORTER info_reporter);
          void SetWarnReporter(TYPE_REPORTER warn_reporter);
@@ -45,7 +63,8 @@ namespace fc { namespace rpc {
 
 
       private:
-         static void default_task_done(void*,int,const std::string&,const std::string&){}
+         void SetNewTask_base(void* owner,void* callbackArg,const std::string& line,...);
+         static void default_task_done(void*,void*,int,const std::string&,const std::string&){}
          void run();
          /*
           *  return
@@ -58,12 +77,14 @@ namespace fc { namespace rpc {
          fc::future<void> _run_complete;
 
          /*typedef*/ struct taskListItem{
-             taskListItem(void* a_owner = NULL,TYPE_TASK_DONE a_fn_tsk_dn=default_task_done,const std::string& a_str="")
-                 :next(NULL),owner(a_owner),fn_tsk_dn(a_fn_tsk_dn),line(a_str){}
+             taskListItem(void* a_owner = NULL,void* a_clbArg=NULL,const std::string& a_str="",
+                          TYPE_TASK_DONE2 a_fn_tsk_dn=default_task_done)
+                 :next(NULL),owner(a_owner),callbackArg(a_clbArg),line(a_str),fn_tsk_dn(a_fn_tsk_dn){}
              struct taskListItem* next;
              void*  owner;
-             TYPE_TASK_DONE fn_tsk_dn;
+             void*  callbackArg;
              std::string line;
+             TYPE_TASK_DONE2 fn_tsk_dn;
          }/*taskListItem*/;
          bool GetFirstTask(gui::taskListItem* firstTaskBuffer);
 

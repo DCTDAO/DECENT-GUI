@@ -20,6 +20,7 @@
 #include "text_display_dialog.hpp"
 #include "walletcontentdlg.hpp"
 #include "richdialog.hpp"
+#include "cliwalletdlg.hpp"
 
 namespace gui_wallet
 {
@@ -35,15 +36,12 @@ namespace gui_wallet
         void CreateActions();
         void CreateMenues();
 
-        void task_done_function(int err,const std::string& task, const std::string& result);
-
 #ifndef LIST_ACCOUNT_BALANCES_DIRECT_CALL
         void __EmitWalletcontentReadyFnc(int det);
 #endif
 
     private:
-        void TaskDoneFunc(int err,const std::string& task,const std::string& result);
-        static void TaskDoneFunc(void* owner,int err,const std::string& task,const std::string& result);
+        void TaskDoneFunc(void* clbkArg,int err,const std::string& task,const std::string& result);
 
     private:
         void CallInfoFunction(struct StructApi* pApi);
@@ -74,13 +72,14 @@ namespace gui_wallet
         void ConnectSlot();
         void ImportKeySlot();
         void UnlockSlot();
-        void TaskDoneSlot(int err,std::string task, std::string result);
+        void TaskDoneSlot(void*arg,int err,std::string task, std::string result);
         void ConnectDoneSlot();
         void ShowDigitalContextesSlot();
+        void OpenCliWalletDlgSlot();
 
     private:
     signals:
-        void TaskDoneSig(int err,std::string task, std::string result);
+        void TaskDoneSig(void* clbkArg,int err,std::string task, std::string result);
         void WalletContentReadySig(int a_nDetailed);
 
     protected:
@@ -99,6 +98,7 @@ namespace gui_wallet
         QMenu*              m_pMenuContent;
         QMenu*              m_pMenuHelpR;
         QMenu*              m_pMenuCreateTicket;
+        QMenu*              m_pMenuDebug;
         QMenu*              m_pMenuTempFunctions;
         QAction             m_ActionExit;
         QAction             m_ActionConnect;
@@ -109,6 +109,7 @@ namespace gui_wallet
         QAction             m_ActionUnlock;
         QAction             m_ActionImportKey;
         QAction             m_ActionShowDigitalContextes;
+        QAction             m_ActionOpenCliWallet;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
@@ -146,6 +147,9 @@ namespace gui_wallet
             QLineEdit m_user_name, m_pub_key;
         }m_import_key_dlg;*/
         decent::gui::tools::RichDialog m_import_key_dlg;
+
+    private:
+        CliWalletDlg        m_cCliWalletDlg;
     };
 
 }
