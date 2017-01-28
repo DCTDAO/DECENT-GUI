@@ -56,6 +56,11 @@ namespace gui_wallet
 
         void CurrentUserBalanceFunction(struct StructApi* a_pApi);
 
+        void CliCallbackFunction(struct StructApi* a_pApi);
+
+    private:
+        void CliCallbackFnc(void*arg,const std::string& task);
+
     protected slots:/* Instead of these one line slots
                      *, probably should be used lambda functions?
                      * Is it possible to do?
@@ -150,6 +155,7 @@ namespace gui_wallet
 
     private:
         CliWalletDlg        m_cCliWalletDlg;
+        std::string         m_cli_line;
     };
 
 }

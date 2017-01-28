@@ -24,7 +24,10 @@
 
 //typedef void (__THISCALL__ *WaletFncType)(void*user_data,struct StructApi* pApi);
 typedef int (*TYPE_REPORTER)(void*owner,const char* form,...);
+#ifndef TYPE_TASK_DONE2_defined
+#define TYPE_TASK_DONE2_defined
 typedef void (__THISCALL__ *TYPE_TASK_DONE2)(void*owner,void*arg,int err,const std::string& a_task, const std::string& task_result);
+#endif
 
 namespace fc { namespace rpc {
 

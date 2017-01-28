@@ -163,9 +163,25 @@ void Mainwindow_gui_wallet::CreateMenues()
 }
 
 
+void Mainwindow_gui_wallet::CliCallbackFunction(struct StructApi* a_pApi)
+{
+    if(a_pApi && a_pApi->gui_api)
+    {
+        (a_pApi->gui_api)->SetNewTask(this,(void*)1,m_cli_line,&Mainwindow_gui_wallet::TaskDoneFunc);
+    }
+}
+
+
+void Mainwindow_gui_wallet::CliCallbackFnc(void*/*arg*/,const std::string& a_task)
+{
+    m_cli_line = a_task;
+    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CliCallbackFunction);
+}
+
+
 void Mainwindow_gui_wallet::OpenCliWalletDlgSlot()
 {
-    m_cCliWalletDlg.exec();
+    m_cCliWalletDlg.execCli(this,NULL,&Mainwindow_gui_wallet::CliCallbackFnc);
 }
 
 
