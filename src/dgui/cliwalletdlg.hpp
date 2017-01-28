@@ -10,6 +10,9 @@
 #ifndef CLIWALLETDLG_HPP
 #define CLIWALLETDLG_HPP
 
+#define NUM_OF_RING_STR_BUFFER_MIN_ONE  0xf
+#define NUM_OF_RING_STR_BUFFER  0x10
+
 #include <QDialog>
 #include <QTextEdit>
 #include <string>
@@ -46,6 +49,9 @@ protected:
     void*               m_pOwner;
     void*               m_pCallbackArg;
     CLI_NEW_LINE_FNC    m_fpTaskDone;
+    int                 m_nIndex;
+    int                 m_nIndexFollower;
+    std::string         m_vStrings[NUM_OF_RING_STR_BUFFER_MIN_ONE+1];
 };
 
 
