@@ -51,7 +51,6 @@ namespace fc { namespace rpc {
 
          void SetNewTask(void* owner,void* callbackArg,const std::string& line,TYPE_TASK_DONE2 fpTaskDone);
 
-         // void TaskDoneSlot(void*arg,int err,std::string task, std::string result);
          template <typename Type>
          void SetNewTask(Type* a_obj_ptr,void* a_callbackArg,const std::string& a_line,
                                 void (Type::*a_fpFunction)(void*arg,int err,const std::string& task, const std::string& task_result))

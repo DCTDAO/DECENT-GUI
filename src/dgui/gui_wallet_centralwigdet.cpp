@@ -34,7 +34,7 @@ using namespace gui_wallet;
 
 CentralWigdet::CentralWigdet(class QBoxLayout* a_pAllLayout)
     :
-      m_llnBalance(0)
+      m_lfBalance(0.)
 {
     m_imageLabel = new QLabel;
     PrepareGUIprivate(a_pAllLayout);
@@ -47,17 +47,17 @@ CentralWigdet::~CentralWigdet()
 }
 
 
-void CentralWigdet::SetAccountBalanceGUI(long long int a_llnBallance,const std::string& a_balance_name)
+void CentralWigdet::SetAccountBalanceGUI(double a_lfBallance,const std::string& a_balance_name)
 {
-    if(a_llnBallance>=0){m_llnBalance = a_llnBallance;}
-    QString aBalance = QString::number(m_llnBalance,10) + tr(" ") + tr(a_balance_name.c_str());
+    if(a_lfBallance>=0.){m_lfBalance = a_lfBallance;}
+    QString aBalance = QString::number(m_lfBalance) + tr(" ") + tr(a_balance_name.c_str());
     m_balanceLabel.setText(aBalance);
 }
 
 
-const long long int& CentralWigdet::GetAccountBalance()const
+const double& CentralWigdet::GetAccountBalance()const
 {
-    return m_llnBalance;
+    return m_lfBalance;
 }
 
 

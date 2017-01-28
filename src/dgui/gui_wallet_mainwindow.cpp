@@ -169,6 +169,10 @@ void Mainwindow_gui_wallet::CliCallbackFunction(struct StructApi* a_pApi)
     {
         (a_pApi->gui_api)->SetNewTask(this,(void*)1,m_cli_line,&Mainwindow_gui_wallet::TaskDoneFunc);
     }
+    else
+    {
+        m_cCliWalletDlg.appentText("first connect the api!\n>>>");
+    }
 }
 
 
@@ -652,7 +656,7 @@ void Mainwindow_gui_wallet::ConnectSlot()
 void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_task, std::string a_result)
 {
 
-    if(g_nDebugApplication){printf("fnc:%s, task=%s, result=%s\n",__FUNCTION__,a_task.c_str(),a_result.c_str());}
+    if(g_nDebugApplication){printf("fnc:%s, arg=%p, task=%s, result=%s\n",__FUNCTION__,a_arg,a_task.c_str(),a_result.c_str());}
 
     if( strstr(a_task.c_str(),"info"))
     {
@@ -671,14 +675,14 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
     {
         struct SAccountBalanceStruct* pStr = (struct SAccountBalanceStruct*)a_arg;
         Mainwindow_gui_wallet* pWnd = pStr->pWnd;
-        long long int llnDecents = strtoll(a_result.c_str(),NULL,10);
+        double lfDecents = strtod(a_result.c_str(),NULL);
         int nIndex = pStr->index;
         int nUpdate = pStr->nUpdate;
         std::vector<asset> vAssets;
 
-        if(llnDecents){vAssets.push_back(asset(llnDecents)); pWnd->m_vAccountsBalances[nIndex]=vAssets;}
+        if(lfDecents>0){vAssets.push_back(asset(lfDecents)); pWnd->m_vAccountsBalances[nIndex]=vAssets;}
 
-        if(g_nDebugApplication){printf("llnDecents=%lld, nIndex=%d, string=\"%s\"\n", llnDecents,nIndex,a_result.c_str());}
+        if(g_nDebugApplication){printf("lfDecents=%lf, nIndex=%d, string=\"%s\"\n", lfDecents,nIndex,a_result.c_str());}
 
         delete pStr;
 
@@ -697,6 +701,13 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
     {
         std::thread aListAccountThread(&Mainwindow_gui_wallet::ListAccountThreadFunc,this,0);
         aListAccountThread.detach();
+    }
+
+    if(a_arg == ((void*)1))
+    {
+        //a_result += "\n";
+        a_result += "\n>>>";
+        m_cCliWalletDlg.appentText(a_result);
     }
 
 }

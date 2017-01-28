@@ -42,9 +42,9 @@ namespace gui_wallet
         virtual ~CentralWigdet(); /* virtual because may be this class will be */
                                   /* used by inheritance */
 
-        void SetAccountBalanceGUI(long long int ballance=-1, const std::string& balance_name="DECENT"); /* arg_in <0 means only update on GUI*/
+        void SetAccountBalanceGUI(double ballance=-1., const std::string& balance_name="DECENT"); /* arg_in <0 means only update on GUI*/
 
-        const long long int& GetAccountBalance()const;
+        const double& GetAccountBalance()const;
         QComboBox&  GetUsersList(){return m_users_list;}
         void AddNewUserGUI(const std::string& user_name);
 
@@ -76,7 +76,7 @@ namespace gui_wallet
         class QLabel*       m_imageLabel;
         QLabel              m_balanceLabel;
         /* 'm_nBalance' to have this filed in order to skip parsing the text each time balance is needed*/
-        long long int       m_llnBalance;
+        double              m_lfBalance;
         QComboBox           m_users_list;
 
     };

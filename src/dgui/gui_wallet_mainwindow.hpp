@@ -21,6 +21,7 @@
 #include "walletcontentdlg.hpp"
 #include "richdialog.hpp"
 #include "cliwalletdlg.hpp"
+#include <unnamedsemaphorelite.hpp>
 
 namespace gui_wallet
 {
@@ -154,8 +155,8 @@ namespace gui_wallet
         decent::gui::tools::RichDialog m_import_key_dlg;
 
     private:
-        CliWalletDlg        m_cCliWalletDlg;
-        std::string         m_cli_line;
+        CliWalletDlg                        m_cCliWalletDlg;
+        std::string                         m_cli_line;
     };
 
 }

@@ -136,9 +136,6 @@ void gui::SetNewTask(void* a_owner,void* a_callbackArg,const std::string& a_line
 
 void gui::SetNewTask_base(void* a_pOwner,void* a_clbkArg,const std::string& a_line,...)
 {
-    //m_line = a_line;
-    //taskListItem * pTaskNext;
-
     TYPE_TASK_DONE2 fpTaskDone;
     va_list aFunc;
 
@@ -236,9 +233,11 @@ void gui::run()
                 (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,err,aTaskItem.line, itr->second( result, args ));
                 (*m_info_report)(m_pOwner,"%s\n",itr->second( result, args ).c_str());
              }
-         }
 
-      }
+
+         } // while(GetFirstTask(&aTaskItem))
+
+      }  // try
       catch ( const fc::exception& e )
       {
          if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
@@ -251,7 +250,7 @@ void gui::run()
           if(g_nDebugApplication){std::cout << "Unknown exception!\n";}
           (*m_error_report)(m_pOwner,"Unknown exception!\n");
       }
-   }
+   } // while( !_run_complete.canceled() )
 }
 
 #include <stdio.h>

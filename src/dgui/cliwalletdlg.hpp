@@ -32,19 +32,20 @@ namespace gui_wallet
 
 class CliTextEdit : public QTextEdit
 {
-    Q_OBJECT
-
 public:
     CliTextEdit(QWidget* pParent);
     virtual ~CliTextEdit();
 
-public:
-signals:
-    void NewCommandSig(std::string line);
+    void SetCallbackStuff(void* owner,void*clbk_data,CLI_NEW_LINE_FNC clbk);
 
 protected:
     virtual void keyReleaseEvent ( QKeyEvent * event );
     virtual void keyPressEvent( QKeyEvent * a_event );
+
+protected:
+    void*               m_pOwner;
+    void*               m_pCallbackArg;
+    CLI_NEW_LINE_FNC    m_fpTaskDone;
 };
 
 
@@ -52,7 +53,6 @@ protected:
 
 class CliWalletDlg : protected QDialog
 {
-    Q_OBJECT
 
 public:
     CliWalletDlg();
@@ -66,8 +66,7 @@ public:
 
     void execCli(void* owner, void* callbackArg,CLI_NEW_LINE_FNC fpCallback);
 
-protected slots:
-    void NewCommandSlot(std::string line);
+    void appentText(const std::string& a_text);
 
 protected:
     virtual void resizeEvent(QResizeEvent * event );
@@ -75,9 +74,6 @@ protected:
 
 protected:
     CliTextEdit         m_main_textbox;
-    void*               m_pOwner;
-    void*               m_pCallbackArg;
-    CLI_NEW_LINE_FNC    m_fpTaskDone;
 };
 
 }
