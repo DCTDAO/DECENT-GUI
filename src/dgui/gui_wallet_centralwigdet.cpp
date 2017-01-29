@@ -50,7 +50,11 @@ CentralWigdet::~CentralWigdet()
 void CentralWigdet::SetAccountBalanceGUI(double a_lfBallance,const std::string& a_balance_name)
 {
     if(a_lfBallance>=0.){m_lfBalance = a_lfBallance;}
-    QString aBalance = QString::number(m_lfBalance) + tr(" ") + tr(a_balance_name.c_str());
+    QString aBalanceAmount = QString::number(m_lfBalance,'f');
+    aBalanceAmount.remove( QRegExp("0+$") ); // Remove any number of trailing 0's
+    aBalanceAmount.remove( QRegExp("\\.$") ); // If the last character is just a '.' then remove it
+
+    QString aBalance = aBalanceAmount + tr(" ") + tr(a_balance_name.c_str());
     m_balanceLabel.setText(aBalance);
 }
 

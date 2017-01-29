@@ -23,11 +23,6 @@ gui_wallet::CliTextEdit::CliTextEdit(QWidget* a_pParent)
       QTextEdit(a_pParent),
       m_nIndex(0)
 {
-    Qt::WindowFlags flags = windowFlags();
-    flags |= Qt::WindowMaximizeButtonHint;
-    flags |= Qt::WindowMinimizeButtonHint;
-    setWindowFlags( flags );
-
     setText(tr(">>>"));
     moveCursor(QTextCursor::End);
 }
@@ -63,8 +58,8 @@ void gui_wallet::CliTextEdit::keyPressEvent( QKeyEvent * a_event )
     int nNumOfLines = pTextDoc->lineCount();
     int nKey = a_event->key();
 
-    if(g_nDebugApplication){printf("CliTextEdit::keyPressEvent: key=0x%x, col_num=%d, line_num=%d\n",
-                                   nKey,nCurrentColumn,nCurrentLine);}
+    /*if(g_nDebugApplication){printf("CliTextEdit::keyPressEvent: key=0x%x, col_num=%d, line_num=%d\n",
+                                   nKey,nCurrentColumn,nCurrentLine);}*/
 
     if((nKey==Qt::Key_Up) /*&& (nCurrentColumn==3)*/)
     {
@@ -179,6 +174,17 @@ void gui_wallet::CliTextEdit::keyPressEvent( QKeyEvent * a_event )
 gui_wallet::CliWalletDlg::CliWalletDlg()
     : m_main_textbox(this)
 {
+    //
+    Qt::WindowFlags flags;
+
+    flags = windowFlags();
+    flags = 0;
+    flags |= Qt::WindowMaximizeButtonHint;
+    flags |= Qt::WindowMinimizeButtonHint;
+
+    //flags = Qt::Windowl;
+
+    setWindowFlags( flags );
     resize(500,300);
 }
 

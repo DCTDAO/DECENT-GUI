@@ -63,6 +63,8 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     m_nError = 0;
     m_error_string = "";
 
+    setUnifiedTitleAndToolBarOnMac(true);
+
     QComboBox* pUsersCombo = &(m_pCentralWidget->usersCombo());
 
     connect(this, SIGNAL(TaskDoneSig(void*,int,std::string, std::string)), this, SLOT(TaskDoneSlot(void*,int,std::string, std::string)) );
@@ -690,6 +692,10 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
         if(nUpdate){pWnd->__EmitWalletcontentReadyFnc(0);}
     }
     else if(strstr(a_task.c_str(),"list_content "))
+    {
+        //
+    }
+    else if(strstr(a_task.c_str(),"get_content "))
     {
         //
     }
