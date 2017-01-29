@@ -360,7 +360,7 @@ void Mainwindow_gui_wallet::WalletContentReadySlot(int a_nDetailed)
         }
     }
 
-    if(a_nDetailed){m_wallet_content_dlg.exec(m_vAccounts,m_vAccountsBalances,m_nError,m_error_string);}
+    if(a_nDetailed){m_wallet_content_dlg.execWCt(m_vAccounts,m_vAccountsBalances,m_nError,m_error_string);}
 
 }
 

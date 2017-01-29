@@ -23,6 +23,11 @@ gui_wallet::CliTextEdit::CliTextEdit(QWidget* a_pParent)
       QTextEdit(a_pParent),
       m_nIndex(0)
 {
+    Qt::WindowFlags flags = windowFlags();
+    flags |= Qt::WindowMaximizeButtonHint;
+    flags |= Qt::WindowMinimizeButtonHint;
+    setWindowFlags( flags );
+
     setText(tr(">>>"));
     moveCursor(QTextCursor::End);
 }

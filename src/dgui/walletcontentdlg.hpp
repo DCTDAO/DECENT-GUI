@@ -39,7 +39,7 @@ public:
     WalletContentDlg();
     virtual ~WalletContentDlg();
 
-    virtual int exec(vector<account_object>& a_pAcc, vector<vector<asset>>& a_pBl, int& err, std::string& err_str ) /*_OVERRIDE_*/ ;
+    virtual int execWCt(vector<account_object>& a_pAcc, vector<vector<asset>>& a_pBl, int& err, std::string& err_str ) /*_OVERRIDE_*/ ;
 
 protected:
     //void ListAccountThreadFunc();
