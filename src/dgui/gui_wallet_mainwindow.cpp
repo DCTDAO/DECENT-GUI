@@ -63,7 +63,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     m_nError = 0;
     m_error_string = "";
 
-    setUnifiedTitleAndToolBarOnMac(true);
+    setUnifiedTitleAndToolBarOnMac(false);
 
     QComboBox* pUsersCombo = &(m_pCentralWidget->usersCombo());
 
