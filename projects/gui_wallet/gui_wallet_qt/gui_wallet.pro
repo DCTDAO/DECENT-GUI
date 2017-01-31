@@ -133,6 +133,34 @@ LIBS += $$DECENT_LIB/encrypt/libdecent_encrypt.a
 LIBS += $$DECENT_LIB/contrib/fc/libfc_debug.a
 LIBS += $$DECENT_LIB/contrib/fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a
 
+LIBS += $$DECENT_LIB/package/libpackage_manager.a
+LIBS += $$DECENT_LIB/contrib/libtorrent/libtorrent-rasterbar.a
+
+
+#LIBS += ../../../../DECENT-Network/libraries/app/libgraphene_app.a
+#LIBS += ../../../../DECENT-Network/libraries/chain/libgraphene_chain.a
+#LIBS += ../../../../DECENT-Network/libraries/contrib/fc/libfc_debug.a
+#LIBS += ../../../../DECENT-Network/libraries/contrib/fc/vendor/secp256k1-zkp/src/project_secp256k1-build/.libs/libsecp256k1.a
+#LIBS += ../../../../DECENT-Network/libraries/contrib/fc/vendor/udt4/libudt_debug.a
+#LIBS += ../../../../DECENT-Network/libraries/contrib/libtorrent/libtorrent-rasterbar.a
+#LIBS += ../../../../DECENT-Network/libraries/db/libgraphene_db.a
+#LIBS += ../../../../DECENT-Network/libraries/deterministic_openssl_rand/libdeterministic_openssl_rand.a
+#LIBS += ../../../../DECENT-Network/libraries/egenesis/libgraphene_egenesis_brief.a
+#LIBS += ../../../../DECENT-Network/libraries/egenesis/libgraphene_egenesis_full.a
+#LIBS += ../../../../DECENT-Network/libraries/egenesis/libgraphene_egenesis_none.a
+LIBS += ../../../../DECENT-Network/libraries/encrypt/libdecent_encrypt.a
+#LIBS += ../../../../DECENT-Network/libraries/net/libgraphene_net.a
+#LIBS += ../../../../DECENT-Network/libraries/package/libpackage_manager.a
+#LIBS += ../../../../DECENT-Network/libraries/plugins/account_history/libgraphene_account_history.a
+#LIBS += ../../../../DECENT-Network/libraries/plugins/debug_witness/libgraphene_debug_witness.a
+#LIBS += ../../../../DECENT-Network/libraries/plugins/delayed_node/libgraphene_delayed_node.a
+#LIBS += ../../../../DECENT-Network/libraries/plugins/market_history/libgraphene_market_history.a
+#LIBS += ../../../../DECENT-Network/libraries/plugins/seeding/libdecent_seeding.a
+#LIBS += ../../../../DECENT-Network/libraries/plugins/witness/libgraphene_witness.a
+#LIBS += ../../../../DECENT-Network/libraries/time/libgraphene_time.a
+#LIBS += ../../../../DECENT-Network/libraries/utilities/libgraphene_utilities.a
+#LIBS += ../../../../DECENT-Network/libraries/wallet/libgraphene_wallet.a
+
 # http://askubuntu.com/questions/486006/cannot-find-boost-thread-mt-library
 
 exists( $$BOOST_ROOT_QT/lib/libboost_thread-mt* ) {
@@ -156,6 +184,9 @@ LIBS += -lboost_chrono
 LIBS += -lboost_coroutine
 LIBS += -lboost_date_time
 LIBS += -lboost_filesystem
+
+LIBS += -lboost_iostreams
+LIBS += -lgmp
 
 #LIBS += -lgmp
 LIBS += -lssl
@@ -204,3 +235,37 @@ HEADERS += \
     ../../../src/dgui/walletcontentdlg.hpp \
     ../../../include/richdialog.hpp \
     ../../../src/dgui/cliwalletdlg.hpp
+
+INCLUDEPATH += /usr/local/include
+INCLUDEPATH += $$DECENT_LIB/contrib/pbc/include
+INCLUDEPATH += $$DECENT_LIB/contrib/pbc
+
+SOURCES += \
+    $$DECENT_LIB/contrib/pbc/ecc/curve.c \
+    $$DECENT_LIB/contrib/pbc/misc/extend_printf.c \
+    $$DECENT_LIB/contrib/pbc/arith/field.c \
+    $$DECENT_LIB/contrib/pbc/arith/multiz.c \
+    $$DECENT_LIB/contrib/pbc/misc/darray.c \
+    $$DECENT_LIB/contrib/pbc/ecc/pairing.c \
+    $$DECENT_LIB/contrib/pbc/misc/utils.c \
+    $$DECENT_LIB/contrib/pbc/misc/memory.c \
+    $$DECENT_LIB/contrib/pbc/arith/random.c \
+    $$DECENT_LIB/contrib/pbc/arith/init_random.c \
+    $$DECENT_LIB/contrib/pbc/ecc/param.c \
+    $$DECENT_LIB/contrib/pbc/arith/fieldquadratic.c \
+    $$DECENT_LIB/contrib/pbc/arith/fp.c \
+    $$DECENT_LIB/contrib/pbc/arith/fastfp.c \
+    $$DECENT_LIB/contrib/pbc/arith/fasterfp.c \
+    $$DECENT_LIB/contrib/pbc/arith/montfp.c \
+    $$DECENT_LIB/contrib/pbc/arith/naivefp.c \
+    $$DECENT_LIB/contrib/pbc/arith/poly.c \
+    $$DECENT_LIB/contrib/pbc/ecc/hilbert.c \
+    $$DECENT_LIB/contrib/pbc/ecc/mpc.c \
+    $$DECENT_LIB/contrib/pbc/ecc/a_param.c \
+    $$DECENT_LIB/contrib/pbc/ecc/d_param.c \
+    $$DECENT_LIB/contrib/pbc/ecc/e_param.c \
+    $$DECENT_LIB/contrib/pbc/ecc/f_param.c \
+    $$DECENT_LIB/contrib/pbc/ecc/g_param.c \
+    $$DECENT_LIB/contrib/pbc/ecc/eta_T_3.c \
+    $$DECENT_LIB/contrib/pbc/arith/ternary_extension_field.c \
+    $$DECENT_LIB/contrib/pbc/misc/symtab.c
