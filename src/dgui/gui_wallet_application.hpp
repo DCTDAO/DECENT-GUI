@@ -14,6 +14,7 @@
 #include <QApplication>
 #include "fc_rpc_gui.hpp"
 #include "connected_api_instance.hpp"
+#include "qt_commonheader.hpp"
 
 
 namespace gui_wallet
@@ -21,12 +22,23 @@ namespace gui_wallet
 
 class application : public QApplication
 {
+    Q_OBJECT
 public:
     application(int& argc, char** argv);
     virtual ~application();
 
+    void ConnectToSigFnc(QObject* a_pObject,const char* method);
+
+protected:
+    void MenegerThreadFunc();
+
+protected:
+signals:
+    void UpdateGuiStateSig(int state);
+
 private:
     fc::rpc::gui    m_gui_app;
+    volatile int    m_nRun;
 };
 
 }

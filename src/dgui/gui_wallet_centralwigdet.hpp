@@ -50,6 +50,10 @@ namespace gui_wallet
 
         __TEMPORARY__ QComboBox& usersCombo(){return m_users_list;}
 
+        QString getFilterText()const;
+
+        QTableWidget& getDigitalContentsTable();
+
     protected:
         virtual void showEvent ( QShowEvent * event ) ;
         virtual void resizeEvent ( QResizeEvent * event );

@@ -27,3 +27,5 @@ gui_wallet.app
 *wallet.json
 *after-import-key-*.wallet
 *.wallet
+prj/gui_wallet/build-gui_wallet-Qt_5_7_1_clang_64-Debug
+prj/gui_wallet/gui_wallet_qt/Makefile

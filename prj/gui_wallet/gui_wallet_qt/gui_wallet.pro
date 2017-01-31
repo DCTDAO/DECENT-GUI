@@ -234,7 +234,8 @@ HEADERS += \
     ../../../src/dgui/text_display_dialog.hpp \
     ../../../src/dgui/walletcontentdlg.hpp \
     ../../../include/richdialog.hpp \
-    ../../../src/dgui/cliwalletdlg.hpp
+    ../../../src/dgui/cliwalletdlg.hpp \
+    ../../../src/dgui/qt_commonheader.hpp
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += $$DECENT_LIB/contrib/pbc/include

@@ -24,6 +24,8 @@ namespace gui_wallet
 
         void showEvent ( QShowEvent * event )  ;
 
+        QTableWidget& getDigitalContentsTable();
+
     private:
         QVBoxLayout     m_main_layout;
         QTableWidget    m_TableWidget;

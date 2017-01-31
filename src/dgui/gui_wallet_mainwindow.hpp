@@ -37,10 +37,6 @@ namespace gui_wallet
         void CreateActions();
         void CreateMenues();
 
-#ifndef LIST_ACCOUNT_BALANCES_DIRECT_CALL
-        void __EmitWalletcontentReadyFnc(int det);
-#endif
-
     private:
         void TaskDoneFunc(void* clbkArg,int err,const std::string& task,const std::string& result);
 
@@ -80,8 +76,10 @@ namespace gui_wallet
         void UnlockSlot();
         void TaskDoneSlot(void*arg,int err,std::string task, std::string result);
         void ConnectDoneSlot();
-        void ShowDigitalContextesSlot();
+        void ShowDigitalContextesSlot(QString filter);
         void OpenCliWalletDlgSlot();
+
+        void StateUpdateSlot(int state);
 
     private:
     signals:
@@ -157,6 +155,9 @@ namespace gui_wallet
     private:
         CliWalletDlg                        m_cCliWalletDlg;
         std::string                         m_cli_line;
+
+        QString                            m_cqsCurrentFilter;
+        QString                            m_cqsPreviousFilter;
     };
 
 }

@@ -284,9 +284,21 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
 }
 
 
+QTableWidget& CentralWigdet::getDigitalContentsTable()
+{
+    return m_browse_cont_tab.getDigitalContentsTable();
+}
+
+
 void CentralWigdet::AddNewUserGUI(const std::string& a_user_name)
 {
     m_users_list.addItem(tr(a_user_name.c_str()));
+}
+
+
+QString CentralWigdet::getFilterText()const
+{
+    return m_search_box.text();
 }
 
 

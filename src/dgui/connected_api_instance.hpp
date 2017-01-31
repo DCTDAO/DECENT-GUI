@@ -27,6 +27,9 @@
  *   most probably this will be moved to the cpp file, because it is needed only by
  *   one source file
  */
+
+typedef unsigned long long int __ulli64;
+
 struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wallet_api* wal_api; fc::rpc::gui* gui_api;};
 
 typedef void (__THISCALL__ *WaletFncType)(void*user_data,struct StructApi* pApi);
@@ -37,6 +40,8 @@ typedef void (*WarnYesOrNoFuncType)(void*owner,int answer,/*string**/void* str_p
 
 namespace gui_wallet
 {
+
+enum _API_STATE{DEFAULT_ST=0,UNLOCKED_ST,_API_STATE_SIZE};
 
 int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,

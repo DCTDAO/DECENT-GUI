@@ -19,31 +19,111 @@
 #include <QMessageBox>
 #include <QWidget>
 #include <stdarg.h>
+#include <thread>
+
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#define Sleep(__ms__) usleep(1000*(__ms__))
+#endif
 
 using namespace graphene::wallet;
 using namespace fc::http;
 extern int g_nDebugApplication ;
 
 static InGuiThreatCaller* s_pWarner = NULL;
+static std::thread*        s_pMenegerThread = NULL;
+
+class NewTestMutex : public std::mutex{
+public:
+    void lock(){/*if(g_nDebugApplication){printf("++locking!\n");}*/std::mutex::lock();/*if(g_nDebugApplication){printf("++locked!\n");}*/}
+    void unlock(){/*if(g_nDebugApplication){printf("--unlocking!\n");}*/std::mutex::unlock();/*if(g_nDebugApplication){printf("--unlocked!\n");}*/}
+};
+
+//static std::mutex   s_mutex_for_cur_api; // It is better to use here rw mutex
+static NewTestMutex   s_mutex_for_cur_api; // It is better to use here rw mutex
+static StructApi    s_CurrentApi;
+
+namespace gui_wallet{
+
+static gui_wallet::application* s_pcqoManagerSignalingObject = NULL;
+
+void ConnectToStateChangeUpdate(QObject* a_pObject,const char* a_method)
+{
+    s_pcqoManagerSignalingObject->ConnectToSigFnc(a_pObject,a_method);
+}
+
+}
 
 
 gui_wallet::application::application(int& argc, char** argv)
     :
       QApplication(argc,argv)
 {
+    s_pcqoManagerSignalingObject = this;
+
     qRegisterMetaType<std::string>( "std::string" );
     qRegisterMetaType<WarnYesOrNoFuncType>( "WarnYesOrNoFuncType" );
+    qRegisterMetaType<__ulli64>( "__ulli64" );
     s_pWarner = new InGuiThreatCaller;
     if(!s_pWarner)
     {
         throw "No enough memory";
     }
+
+    m_nRun = 1;
+    s_pMenegerThread = new std::thread(&gui_wallet::application::MenegerThreadFunc,this);
 }
 
 
 gui_wallet::application::~application()
 {
+    m_nRun = 0;
+    s_pMenegerThread->join();
+    delete s_pMenegerThread;
     delete s_pWarner;
+}
+
+
+void gui_wallet::application::ConnectToSigFnc(QObject* a_pObject,const char* a_method)
+{
+    connect(this,SIGNAL(UpdateGuiStateSig(int)),a_pObject,a_method);
+}
+
+
+void gui_wallet::application::MenegerThreadFunc()
+{
+
+
+    char vnOpt[_API_STATE_SIZE];
+    int i;
+
+    memset(vnOpt,0,sizeof(vnOpt));
+
+    while(m_nRun)
+    {
+        // make checks
+        s_mutex_for_cur_api.lock();
+
+        if(s_CurrentApi.wal_api && !(s_CurrentApi.wal_api)->is_new() && !(s_CurrentApi.wal_api)->is_new())
+        {
+            vnOpt[UNLOCKED_ST] = 1;
+        }
+
+        s_mutex_for_cur_api.unlock();
+
+        for(i=0;i<_API_STATE_SIZE;++i)
+        {
+            if(vnOpt[i])
+            {
+                emit UpdateGuiStateSig(i);
+                vnOpt[i] = 0;
+            }
+        }
+
+        Sleep(1000);
+    }
 }
 
 
@@ -100,17 +180,6 @@ static int ErrorFunc(void*,const char*, ...)
 {
     return 0;
 }
-
-class NewTestMutex : public std::mutex
-{
-public:
-    void lock(){if(g_nDebugApplication){printf("++locking!\n");}std::mutex::lock();if(g_nDebugApplication){printf("++locked!\n");}}
-    void unlock(){if(g_nDebugApplication){printf("--unlocking!\n");}std::mutex::unlock();if(g_nDebugApplication){printf("--unlocked!\n");}}
-};
-
-//static std::mutex   s_mutex_for_cur_api; // It is better to use here rw mutex
-static NewTestMutex   s_mutex_for_cur_api; // It is better to use here rw mutex
-static StructApi    s_CurrentApi;
 
 
 static void SetCurrentApis(const StructApi* a_pApis)

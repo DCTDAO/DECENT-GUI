@@ -86,3 +86,9 @@ void Browse_content_tab::showEvent ( QShowEvent * event )
     QWidget::showEvent(event);
 }
 
+
+
+QTableWidget& Browse_content_tab::getDigitalContentsTable()
+{
+    return m_TableWidget;
+}
