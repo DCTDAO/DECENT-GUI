@@ -143,7 +143,7 @@ static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _ima
 
 #endif // #if 1/0
 
-
+int GuiWalletInfoWarnErrGlobal(int a_nType,const char* a_form, ...);
 
 void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
 {
@@ -184,18 +184,24 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
     SetImageToLabelStatic(bImageFound,image,DECENT_LOGO_FILE_NAME);
     if(bImageFound){m_imageLabel->setPixmap(image);}
     else
-    {   
+    {
+        std::string csWarningDetails(
+                    "file '" DECENT_LOGO_FILE_NAME "' could not be found\n"
+                    "The search paths are the following:\n"
+                    "1. the current directory \n"
+                    "2. the 'image'' folder in the current directory\n"
+                    "3. the folder" DECENT_IMGS_INITIAL_PATH "\n"
+                    "To see the logo, please put the logo file to the directories\n"
+                    "mentioned above and then rerun the application");
         m_DelayedWaringTitle = tr("no logo file");
         m_DelayedWaringText = tr(DECENT_LOGO_FILE_NAME " file can not be found!");
-        m_DelayedWaringDetails = tr(
-                "file '" DECENT_LOGO_FILE_NAME "' could not be found\n"
-                "The search paths are the following:\n"
-                "1. the current directory \n"
-                "2. the 'image'' folder in the current directory\n"
-                "3. the folder" DECENT_IMGS_INITIAL_PATH "\n"
-                "To see the logo, please put the logo file to the directories\n"
-                "mentioned above and then rerun the application");
+        m_DelayedWaringDetails = tr(csWarningDetails.c_str());
+#if 1
+        if(g_nDebugApplication){fprintf(stdout,"%s\n",csWarningDetails.c_str());}
+        GuiWalletInfoWarnErrGlobal(1,csWarningDetails.c_str());
+#else // #if 1
         QTimer::singleShot(100, this, SLOT(make_deleyed_warning()));
+#endif // #if 1
         m_imageLabel->setText("DC");
     }
 

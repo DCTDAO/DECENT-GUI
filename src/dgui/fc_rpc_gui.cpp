@@ -198,7 +198,6 @@ void gui::run()
 {
    struct taskListItem aTaskItem;
    //int nIteration;
-   int err = 0;
 
    while( !_run_complete.canceled() )
    {
@@ -224,13 +223,13 @@ void gui::run()
              if( itr == _result_formatters.end() )
              {
                 //std::cout << "!!!!!!!if\n"<<fc::json::to_pretty_string( result ) << "\n";
-                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,err,aTaskItem.line, fc::json::to_pretty_string( result ));
+                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,0,aTaskItem.line, fc::json::to_pretty_string( result ));
                 (*m_info_report)(m_pOwner,"%s\n",fc::json::to_pretty_string( result ).c_str());
              }
              else
              {
                 //std::cout << "!!!!!!!!else\n"<<itr->second( result, args ) << "\n";
-                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,err,aTaskItem.line, itr->second( result, args ));
+                (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,0,aTaskItem.line, itr->second( result, args ));
                 (*m_info_report)(m_pOwner,"%s\n",itr->second( result, args ).c_str());
              }
 
@@ -242,12 +241,14 @@ void gui::run()
       {
          if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
          if(g_nDebugApplication){std::cout << e.to_detail_string() << "\n";}
+         (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,(int)e.code(),aTaskItem.line,e.to_detail_string());
          (*m_error_report)(m_pOwner,"%s\n",e.to_detail_string().c_str());
       }
       catch(...)
       {
           if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
           if(g_nDebugApplication){std::cout << "Unknown exception!\n";}
+          (*aTaskItem.fn_tsk_dn)(aTaskItem.owner,aTaskItem.callbackArg,-1,aTaskItem.line,"Unknown exception!\n");
           (*m_error_report)(m_pOwner,"Unknown exception!\n");
       }
    } // while( !_run_complete.canceled() )
@@ -256,8 +257,9 @@ void gui::run()
 #include <stdio.h>
 #include <stdarg.h>
 
-static int default_reporter_function(void* a_owner,const char* a_form,...)
+static int default_reporter_function(void* /*a_owner*/,const char* /*a_form*/,...)
 {
+#if 0
     va_list args;
     int nRet(printf("owner=%p\n",a_owner));
 
@@ -265,4 +267,7 @@ static int default_reporter_function(void* a_owner,const char* a_form,...)
     nRet += vprintf(a_form,args);
     va_end( args );
     return nRet;
+#else
+    return 0;
+#endif
 }

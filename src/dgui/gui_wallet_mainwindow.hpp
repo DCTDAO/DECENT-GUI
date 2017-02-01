@@ -22,6 +22,7 @@
 #include "richdialog.hpp"
 #include "cliwalletdlg.hpp"
 #include <unnamedsemaphorelite.hpp>
+#include <stdarg.h>
 
 namespace gui_wallet
 {
@@ -33,11 +34,13 @@ namespace gui_wallet
     public:
         Mainwindow_gui_wallet();
         virtual ~Mainwindow_gui_wallet();   // virtual because may be this class will be
-                                            // used by inheritance
+                                            // used by inheritanc
+        int GuiWalletInfoWarnErr(int type,const char* form, va_list args);
+
+    private:
         void CreateActions();
         void CreateMenues();
 
-    private:
         void TaskDoneFunc(void* clbkArg,int err,const std::string& task,const std::string& result);
 
     private:
@@ -52,8 +55,12 @@ namespace gui_wallet
         void ListAccountThreadFunc(int a_nDetailed);
 
         void CurrentUserBalanceFunction(struct StructApi* a_pApi);
+        void SetupInfoWarnErrrFunctions(struct StructApi* api);
 
         void CliCallbackFunction(struct StructApi* a_pApi);
+        static int GuiWalletInfoStatic(void* owner,const char* form, ...);
+        static int GuiWalletWarnStatic(void* owner,const char* form, ...);
+        static int GuiWalletErrrStatic(void* owner,const char* form, ...);
 
     private:
         void CliCallbackFnc(void*arg,const std::string& task);
@@ -78,13 +85,16 @@ namespace gui_wallet
         void ConnectDoneSlot();
         void ShowDigitalContextesSlot(QString filter);
         void OpenCliWalletDlgSlot();
+        void OpenInfoDlgSlot();
 
         void StateUpdateSlot(int state);
+        void GuiWalletInfoWarnErrSlot(int type,std::string);
 
     private:
     signals:
         void TaskDoneSig(void* clbkArg,int err,std::string task, std::string result);
         void WalletContentReadySig(int a_nDetailed);
+        void GuiWalletInfoWarnErrSig(int type,std::string);
 
     protected:
         virtual void moveEvent(QMoveEvent *) _OVERRIDE_ ;
@@ -114,6 +124,7 @@ namespace gui_wallet
         QAction             m_ActionImportKey;
         QAction             m_ActionShowDigitalContextes;
         QAction             m_ActionOpenCliWallet;
+        QAction             m_ActionOpenInfoDlg;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
@@ -158,6 +169,8 @@ namespace gui_wallet
 
         QString                            m_cqsCurrentFilter;
         QString                            m_cqsPreviousFilter;
+        QTextEdit*                          m_pInfoTextEdit;
+        CliWalletDlg*                        m_pcInfoDlg;
     };
 
 }

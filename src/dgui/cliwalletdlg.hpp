@@ -36,14 +36,23 @@ namespace gui_wallet
 class CliTextEdit : public QTextEdit
 {
 public:
-    CliTextEdit(QWidget* pParent);
+   // CliTextEdit(QWidget* pParent);
+    CliTextEdit();
     virtual ~CliTextEdit();
 
-    void SetCallbackStuff(void* owner,void*clbk_data,CLI_NEW_LINE_FNC clbk);
+    template <typename Type>
+    void SetCallbackStuff2(Type* a_obj_ptr,void* a_callbackArg,void (Type::*a_fpFunction)(void*arg,const std::string& task))
+    {
+        SetCallbackStuff2_base(a_obj_ptr,a_callbackArg,a_fpFunction);
+    }
+
+    void SetCallbackStuff2(void* owner, void* callbackArg,CLI_NEW_LINE_FNC fpCallback);
 
 protected:
     virtual void keyReleaseEvent ( QKeyEvent * event );
     virtual void keyPressEvent( QKeyEvent * a_event );
+
+    void SetCallbackStuff2_base(void* owner, void* callbackArg,...);
 
 protected:
     void*               m_pOwner;
@@ -57,29 +66,23 @@ protected:
 
 /**************************************************************/
 
-class CliWalletDlg : protected QDialog
+class CliWalletDlg : public QDialog
 {
-
 public:
-    CliWalletDlg();
+    CliWalletDlg(QTextEdit* pTextEdit=NULL);
     virtual ~CliWalletDlg();
-
-    template <typename Type>
-    void execCli(Type* a_obj_ptr,void* a_callbackArg,void (Type::*a_fpFunction)(void*arg,const std::string& task))
-    {
-        execCli_base(a_obj_ptr,a_callbackArg,a_fpFunction);
-    }
-
-    void execCli(void* owner, void* callbackArg,CLI_NEW_LINE_FNC fpCallback);
 
     void appentText(const std::string& a_text);
 
-protected:
-    virtual void resizeEvent(QResizeEvent * event );
-    void execCli_base(void* owner, void* callbackArg,...);
+    QTextEdit* operator->();
 
 protected:
-    CliTextEdit         m_main_textbox;
+    virtual void resizeEvent(QResizeEvent * event );
+
+protected:
+    //CliTextEdit         m_main_textbox;
+    QTextEdit*            m_pMainTextBox;
+    unsigned int          m_nCreatedInside : 1;
 };
 
 }

@@ -12,9 +12,16 @@
 #include "connected_api_instance.hpp"
 #include <QMoveEvent>
 #include "qt_commonheader.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+
+#define __INFO__ 0
+#define __WARN__ 1
+#define __ERRR__ 2
 
 using namespace gui_wallet;
 extern int g_nDebugApplication;
+static Mainwindow_gui_wallet* s_pMainWindow = NULL;
 
 Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
@@ -28,11 +35,24 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionImportKey(tr("Import key"),this),
         m_ActionShowDigitalContextes(tr("show dig. contexes"),this),
         m_ActionOpenCliWallet(tr("cli_wallet"),this),
+        m_ActionOpenInfoDlg(tr("Open info dlg."),this),
         m_ConnectDlg(this),
         m_info_dialog(),
         m_import_key_dlg(2),
         m_cqsPreviousFilter(tr("nf"))
 {
+    m_pInfoTextEdit = new QTextEdit;
+    if(!m_pInfoTextEdit){throw "Low memory";}
+    m_pInfoTextEdit->setReadOnly(true);
+    m_pcInfoDlg = new CliWalletDlg(m_pInfoTextEdit);
+    if(!m_pcInfoDlg){throw "Low memory";}
+
+    s_pMainWindow = this;
+    connect(this, SIGNAL(GuiWalletInfoWarnErrSig(int,std::string)), this, SLOT(GuiWalletInfoWarnErrSlot(int,std::string)) );
+
+    CliTextEdit* pCliTextEdit = (CliTextEdit*)m_cCliWalletDlg.operator ->();
+    pCliTextEdit->SetCallbackStuff2(this,NULL,&Mainwindow_gui_wallet::CliCallbackFnc);
+
     m_barLeft = new QMenuBar;
     m_barRight = new QMenuBar;
 
@@ -73,6 +93,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     connect(this, SIGNAL(WalletContentReadySig(int)), this, SLOT(WalletContentReadySlot(int)) );
     connect(&m_ConnectDlg, SIGNAL(ConnectDoneSig()), this, SLOT(ConnectDoneSlot()) );
     //connect(pUsersCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(CurrentUserBalanceSlot(int)) );
+    //void GuiWalletInfoWarnErrSlot(std::string);
 
     ConnectToStateChangeUpdate(this,SLOT(StateUpdateSlot(int)));
 
@@ -81,6 +102,9 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
 Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
+    disconnect(this, SIGNAL(GuiWalletInfoWarnErrSig(int,std::string)), this, SLOT(GuiWalletInfoWarnErrSlot(int,std::string)) );
+    delete m_pInfoTextEdit;
+    delete m_pcInfoDlg;
 }
 
 
@@ -129,6 +153,9 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionOpenCliWallet.setStatusTip( tr("Open CLI wallet dialog") );
     connect( &m_ActionOpenCliWallet, SIGNAL(triggered()), this, SLOT(OpenCliWalletDlgSlot()) );
 
+    m_ActionOpenInfoDlg.setStatusTip( tr("Open Info dialog") );
+    connect( &m_ActionOpenInfoDlg, SIGNAL(triggered()), this, SLOT(OpenInfoDlgSlot()) );
+
 }
 
 
@@ -153,6 +180,7 @@ void Mainwindow_gui_wallet::CreateMenues()
 
     m_pMenuDebug = pMenuBar->addMenu( tr("Debug") );
     m_pMenuDebug->addAction(&m_ActionOpenCliWallet);
+    m_pMenuDebug->addAction(&m_ActionOpenInfoDlg);
     m_pMenuTempFunctions = m_pMenuDebug->addMenu(tr("temp. functions start"));
     m_pMenuTempFunctions->addAction(&m_ActionShowDigitalContextes);
 
@@ -197,6 +225,114 @@ void Mainwindow_gui_wallet::StateUpdateSlot(int a_state)
 }
 
 
+int GuiWalletInfoWarnErrGlobal(int a_nType,const char* a_form, ...)
+{
+    va_list aArgs ;
+    va_start(aArgs,a_form);
+    int nReturn = s_pMainWindow->GuiWalletInfoWarnErr(a_nType,a_form,aArgs);
+    va_end (aArgs);
+    return nReturn;
+}
+
+
+int Mainwindow_gui_wallet::GuiWalletInfoStatic(void* a_owner,const char* a_form, ...)
+{
+    va_list aArgs ;
+    va_start(aArgs,a_form);
+    int nReturn = ((Mainwindow_gui_wallet*)a_owner)->GuiWalletInfoWarnErr(__INFO__,a_form,aArgs);
+    va_end (aArgs);
+    return nReturn;
+}
+
+
+int Mainwindow_gui_wallet::GuiWalletWarnStatic(void* a_owner,const char* a_form, ...)
+{
+    va_list aArgs ;
+    va_start(aArgs,a_form);
+    int nReturn = ((Mainwindow_gui_wallet*)a_owner)->GuiWalletInfoWarnErr(__WARN__,a_form,aArgs);
+    va_end (aArgs);
+    return nReturn;
+}
+
+
+int Mainwindow_gui_wallet::GuiWalletErrrStatic(void* a_owner,const char* a_form, ...)
+{
+    va_list aArgs ;
+    va_start(aArgs,a_form);
+    int nReturn = ((Mainwindow_gui_wallet*)a_owner)->GuiWalletInfoWarnErr(__ERRR__,a_form,aArgs);
+    va_end (aArgs);
+    return nReturn;
+}
+
+
+int Mainwindow_gui_wallet::GuiWalletInfoWarnErr(int a_nType,const char* a_form, va_list a_args)
+{
+    char* pcBuffer(NULL);
+    int nReturn (0), nFreeBuffer;
+    if(g_nDebugApplication){vprintf(a_form,a_args);}
+
+#ifdef WIN32
+//#if 1
+    int nBuffSize(0);
+    char *pcTemp;
+
+    do{
+        nBuffSize += 1024;
+        pcTemp =  (char*)realloc(pcBuffer,nBuffSize);
+        if(!pcTemp){free(pcBuffer);return 0;}
+        pcBuffer = pcTemp;
+        nReturn = _vsnprintf(pcBuffer,nBuffSize,a_form,a_args);
+    }while(nReturn<0);
+
+    nFreeBuffer = 1;
+
+#else  // #ifdef WIN32
+    nReturn = vsnprintf(NULL,0,a_form,a_args);
+
+    if(nReturn<4095) // There will not be stack overflow
+    {
+        pcBuffer = (char*)alloca(nReturn+2);
+        nFreeBuffer = 0;
+    }
+    else
+    {
+        pcBuffer = (char*)malloc(nReturn + 2);
+        nFreeBuffer = 1;
+    }
+
+    nReturn = vsnprintf(pcBuffer,nReturn+1,a_form,a_args);
+    std::string csTextToHandle(pcBuffer);
+    emit GuiWalletInfoWarnErrSig(a_nType,csTextToHandle);
+
+#endif // #ifdef WIN32
+
+    if(nFreeBuffer)
+    {
+        free(pcBuffer);
+    }
+
+    return nReturn;
+}
+
+void Mainwindow_gui_wallet::GuiWalletInfoWarnErrSlot(int a_type,std::string a_csTextToHandle)
+{
+    switch(a_type)
+    {
+    case __WARN__:
+        (*m_pcInfoDlg)->setTextColor(Qt::darkYellow);
+        break;
+    case __ERRR__:
+        (*m_pcInfoDlg)->setTextColor(Qt::red);
+        break;
+    default:
+        (*m_pcInfoDlg)->setTextColor(Qt::black);
+        break;
+    }
+
+    m_pcInfoDlg->appentText(a_csTextToHandle);
+}
+
+
 void Mainwindow_gui_wallet::CliCallbackFunction(struct StructApi* a_pApi)
 {
     if(a_pApi && a_pApi->gui_api)
@@ -205,7 +341,10 @@ void Mainwindow_gui_wallet::CliCallbackFunction(struct StructApi* a_pApi)
     }
     else
     {
-        m_cCliWalletDlg.appentText("first connect the api!\n>>>");
+        m_cCliWalletDlg->setTextColor(Qt::red);
+        m_cCliWalletDlg.appentText("first connect the wallet to the witness node!");
+        m_cCliWalletDlg->setTextColor(Qt::black);
+        m_cCliWalletDlg.appentText(">>>");
     }
 }
 
@@ -219,7 +358,13 @@ void Mainwindow_gui_wallet::CliCallbackFnc(void*/*arg*/,const std::string& a_tas
 
 void Mainwindow_gui_wallet::OpenCliWalletDlgSlot()
 {
-    m_cCliWalletDlg.execCli(this,NULL,&Mainwindow_gui_wallet::CliCallbackFnc);
+    m_cCliWalletDlg.exec();
+}
+
+
+void Mainwindow_gui_wallet::OpenInfoDlgSlot()
+{
+    m_pcInfoDlg->exec();
 }
 
 
@@ -677,6 +822,23 @@ void Mainwindow_gui_wallet::ConnectSlot()
     m_nError = 0;
     m_error_string = "";
     m_ConnectDlg.exec();
+    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions);
+}
+
+
+void Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions(struct StructApi* a_pApi)
+{
+    if(a_pApi && a_pApi->gui_api)
+    {
+        (a_pApi->gui_api)->SetOwner(this);
+        (a_pApi->gui_api)->SetInfoReporter(&GuiWalletInfoStatic);
+        (a_pApi->gui_api)->SetWarnReporter(&GuiWalletWarnStatic);
+        (a_pApi->gui_api)->SetErrorReporter(&GuiWalletErrrStatic);
+    }
+    else
+    {
+        GuiWalletInfoWarnErrSlot(__ERRR__,"Connection not sucessfull");
+    }
 }
 
 
@@ -684,6 +846,14 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
 {
 
     if(g_nDebugApplication){printf("fnc:%s, arg=%p, task=%s, result=%s\n",__FUNCTION__,a_arg,a_task.c_str(),a_result.c_str());}
+
+    if(a_arg == ((void*)-1))
+    {
+        if(a_err)
+        {
+            m_cCliWalletDlg->setTextColor(Qt::red);
+        }
+    }
 
     if( strstr(a_task.c_str(),"info"))
     {
@@ -720,7 +890,7 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
             nUpdate = (int)(ullnUserAndUpdate & 0xffffffff);
         }
 
-        if(g_nDebugApplication){printf("cur_index=%s\n",nCurUserIndex);}
+        if(g_nDebugApplication){printf("cur_index=%d\n",nCurUserIndex);}
         if(nCurUserIndex<0){return;}
 
         if((((int)m_vAccountsBalances.size()) -1) < nCurUserIndex)
@@ -766,9 +936,9 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
 donePoint:
     if(a_arg == ((void*)-1))
     {
-        //a_result += "\n";
-        a_result += "\n>>>";
         m_cCliWalletDlg.appentText(a_result);
+        if(a_err){ m_cCliWalletDlg->setTextColor(Qt::black);}
+        m_cCliWalletDlg.appentText(">>>");
     }
 
 }
