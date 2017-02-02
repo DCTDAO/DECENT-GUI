@@ -41,7 +41,7 @@ typedef void (*WarnYesOrNoFuncType)(void*owner,int answer,/*string**/void* str_p
 namespace gui_wallet
 {
 
-enum _API_STATE{DEFAULT_ST=0,UNLOCKED_ST,_API_STATE_SIZE};
+enum _API_STATE{DEFAULT_ST=0,CONNECTED_ST,_API_STATE_SIZE};
 
 int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,

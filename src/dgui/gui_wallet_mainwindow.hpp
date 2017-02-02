@@ -64,6 +64,7 @@ namespace gui_wallet
 
     private:
         void CliCallbackFnc(void*arg,const std::string& task);
+        int GetDigitalContentsFromString(std::vector<gui_wallet::SDigitalContent>& acContents, const char* contents_str);
 
     protected slots:/* Instead of these one line slots
                      *, probably should be used lambda functions?

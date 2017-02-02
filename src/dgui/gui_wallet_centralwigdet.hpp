@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <QLabel>
 #include <QComboBox>
+#include <vector>
 
 #define __TEMPORARY__
 
@@ -34,6 +35,7 @@ struct qtWidget_test : public QWidget{~qtWidget_test(){if(g_nDebugApplication){p
 
 namespace gui_wallet
 {
+
     class CentralWigdet : public QWidget
     {
         Q_OBJECT
@@ -52,7 +54,8 @@ namespace gui_wallet
 
         QString getFilterText()const;
 
-        QTableWidget& getDigitalContentsTable();
+        //QTableWidget& getDigitalContentsTable();
+        void SetDigitalContentsGUI(const std::vector<gui_wallet::SDigitalContent>& contents);
 
     protected:
         virtual void showEvent ( QShowEvent * event ) ;

@@ -94,8 +94,7 @@ void gui_wallet::application::ConnectToSigFnc(QObject* a_pObject,const char* a_m
 
 void gui_wallet::application::MenegerThreadFunc()
 {
-
-
+    if(g_nDebugApplication){printf("!!!!!!!!!!! m_nRun=%d, thread is running\n", m_nRun);}
     char vnOpt[_API_STATE_SIZE];
     int i;
 
@@ -106,9 +105,9 @@ void gui_wallet::application::MenegerThreadFunc()
         // make checks
         s_mutex_for_cur_api.lock();
 
-        if(s_CurrentApi.wal_api && !(s_CurrentApi.wal_api)->is_new() && !(s_CurrentApi.wal_api)->is_new())
+        if(s_CurrentApi.wal_api )
         {
-            vnOpt[UNLOCKED_ST] = 1;
+            vnOpt[CONNECTED_ST] = 1;
         }
 
         s_mutex_for_cur_api.unlock();
@@ -117,6 +116,7 @@ void gui_wallet::application::MenegerThreadFunc()
         {
             if(vnOpt[i])
             {
+                //if(g_nDebugApplication){printf("emit UpdateGuiStateSig(%d)\n",i);}
                 emit UpdateGuiStateSig(i);
                 vnOpt[i] = 0;
             }

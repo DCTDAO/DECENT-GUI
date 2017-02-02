@@ -290,9 +290,9 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
 }
 
 
-QTableWidget& CentralWigdet::getDigitalContentsTable()
+void CentralWigdet::SetDigitalContentsGUI(const std::vector<gui_wallet::SDigitalContent>& a_vContents)
 {
-    return m_browse_cont_tab.getDigitalContentsTable();
+    m_browse_cont_tab.SetDigitalContentsGUI(a_vContents);
 }
 
 

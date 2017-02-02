@@ -199,9 +199,10 @@ void Mainwindow_gui_wallet::CreateMenues()
 
 void Mainwindow_gui_wallet::StateUpdateSlot(int a_state)
 {
+    //if(g_nDebugApplication){printf("%s\n",__FUNCTION__);}
     switch(a_state)
     {
-    case UNLOCKED_ST:
+    case CONNECTED_ST:
     {
         QString cqsNewFilter = m_pCentralWidget->getFilterText();
 
@@ -209,7 +210,7 @@ void Mainwindow_gui_wallet::StateUpdateSlot(int a_state)
 
         else if(cqsNewFilter==tr(""))
         {
-            // may be in the case of no fiolter all contents should be displayed?
+            // may be in the case of empty filter all contents should be displayed?
             m_cqsPreviousFilter = cqsNewFilter;
             return;
         }
@@ -426,13 +427,116 @@ void Mainwindow_gui_wallet::ShowDigitalContextesFunction(struct StructApi* a_pAp
 
     if(a_pApi && a_pApi->gui_api)
     {
+        int nNumber;
         QByteArray cqbaFilter = cqsFilter.toLatin1();
-        std::string csTaskLine = std::string("list_content") + cqbaFilter.data() + "10";
+        std::string csFilterStr = cqbaFilter.data();
+        const char* cpcNumberPtr = strchr(csFilterStr.c_str(),' ');
+        if( !cpcNumberPtr || ((nNumber=atoi(cpcNumberPtr+1))=0))
+        {
+            csFilterStr += " 10";
+        }
+        std::string csTaskLine = std::string("list_content ") + csFilterStr;
 
         a_pApi->gui_api->SetNewTask(this,NULL,csTaskLine,&Mainwindow_gui_wallet::TaskDoneFunc);
     }
 
 #endif  // #ifdef WALLET_API_DIRECT_CALLS
+}
+
+/*
+ * return != 0 means parsing error
+ */
+int Mainwindow_gui_wallet::GetDigitalContentsFromString(std::vector<gui_wallet::SDigitalContent>& a_vcContents, const char* a_contents_str)
+{
+    SDigitalContent aDigContent;
+    const char *cpcSearchStart= a_contents_str,
+            *cpcAuthorFld, *cpcAutorBeg, *cpcAutorEnd,
+            *cpcAmountFld, *cpcAmountBeg,*cpcAmountEnd,
+            *cpcAssetIdFld, *cpcAssetIdBeg,*cpcAssetIdEnd,
+            *cpcSynopsisFld, *cpcSynopsisBeg, *cpcSynopsisEnd,
+            *cpcUriFld, *cpcUriBeg, *cpcUriEnd,
+            *cpcAvgRatingFld, *cpcAvgRatingBeg,*cpcAvgRatingEnd;
+
+    while(cpcSearchStart)
+    {
+        cpcAuthorFld = strstr(cpcSearchStart,"\"author\"");
+        if(g_nDebugApplication){printf("cpcAuthorFld=\"%.10s\"\n",cpcAuthorFld ? cpcAuthorFld : "nill");}
+        if(!cpcAuthorFld){return 0;}
+        cpcAutorBeg = strchr(cpcAuthorFld+strlen("\"author\""),'\"');
+        if(g_nDebugApplication){printf("cpcAutorBeg=\"%.10s\"\n",cpcAutorBeg ? cpcAutorBeg : "nill");}
+        if(!cpcAutorBeg){return 1;}
+        cpcAutorEnd = strchr(++cpcAutorBeg,'\"');
+        if(g_nDebugApplication){printf("cpcAutorEnd=\"%.10s\"\n",cpcAutorEnd ? cpcAutorEnd : "nill");}
+        if(!cpcAutorEnd){return 1;}
+        aDigContent.author = std::string(cpcAutorBeg,((size_t)cpcAutorEnd)-((size_t)cpcAutorBeg));
+        if(g_nDebugApplication){printf("Content.author=\"%s\"\n",aDigContent.author.c_str());}
+
+        cpcAmountFld = strstr(cpcAutorEnd+1,"\"amount\"");
+        if(g_nDebugApplication){printf("cpcAmountFld=\"%.10s\"\n",cpcAmountFld ? cpcAmountFld : "nill");}
+        if(!cpcAmountFld){return 1;}
+        cpcAmountBeg = strchr(cpcAmountFld+strlen("\"amount\""),':');
+        //cpcAmountBeg = cpcAmountFld+strlen("\"amount\"");
+        if(g_nDebugApplication){printf("cpcAmountBeg=\"%.10s\"\n",cpcAmountBeg ? cpcAmountBeg : "nill");}
+        if(!cpcAmountBeg){return 1;}
+        aDigContent.price.amount = strtod(++cpcAmountBeg,const_cast<char**>(&cpcAmountEnd));
+        if(g_nDebugApplication){printf("cpcAmountEnd=\"%.10s\", Content.price.amount=%lf\n",cpcAmountEnd ? cpcAmountEnd : "nill",aDigContent.price.amount);}
+        if(!cpcAmountEnd){return 1;}
+
+        cpcAssetIdFld = strstr(cpcAmountEnd,"\"asset_id\"");
+        if(g_nDebugApplication){printf("cpcAssetIdFld=\"%.10s\"\n",cpcAssetIdFld ? cpcAssetIdFld : "nill");}
+        if(!cpcAssetIdFld){return 1;}
+        cpcAssetIdBeg = strchr(cpcAssetIdFld+strlen("\"asset_id\""),'\"');
+        if(g_nDebugApplication){printf("cpcAssetIdBeg=\"%.10s\"\n",cpcAssetIdBeg ? cpcAssetIdBeg : "nill");}
+        if(!cpcAssetIdBeg){return 1;}
+        cpcAssetIdEnd = strchr(++cpcAssetIdBeg,'\"');
+        if(g_nDebugApplication){printf("cpcAssetIdEnd=\"%.10s\"\n",cpcAssetIdEnd ? cpcAssetIdEnd : "nill");}
+        if(!cpcAssetIdEnd){return 1;}
+        aDigContent.price.asset_id = std::string(cpcAssetIdBeg,((size_t)cpcAssetIdEnd)-((size_t)cpcAssetIdBeg));
+        if(g_nDebugApplication){printf("Content.price.asset_id=\"%s\"\n",aDigContent.price.asset_id.c_str());}
+
+        cpcSynopsisFld = strstr(cpcAssetIdEnd,"\"synopsis\"");
+        if(g_nDebugApplication){printf("cpcSynopsisFld=\"%.10s\"\n",cpcSynopsisFld ? cpcSynopsisFld : "nill");}
+        if(!cpcSynopsisFld){return 1;}
+        cpcSynopsisBeg = strchr(cpcSynopsisFld+strlen("\"synopsis\""),'\"');
+        if(g_nDebugApplication){printf("cpcSynopsisBeg=\"%.10s\"\n",cpcSynopsisBeg ? cpcSynopsisBeg : "nill");}
+        if(!cpcSynopsisBeg){return 1;}
+        cpcSynopsisEnd = strchr(++cpcSynopsisBeg,'\"');
+        if(g_nDebugApplication){printf("cpcSynopsisEnd=\"%.10s\"\n",cpcSynopsisEnd ? cpcSynopsisEnd : "nill");}
+        if(!cpcSynopsisEnd){return 1;}
+        aDigContent.synopsis = std::string(cpcSynopsisBeg,((size_t)cpcSynopsisEnd)-((size_t)cpcSynopsisBeg));
+        if(g_nDebugApplication){printf("Content.synopsis=\"%s\"\n",aDigContent.synopsis.c_str());}
+
+        cpcUriFld = strstr(cpcSynopsisEnd,"\"URI\"");
+        if(g_nDebugApplication){printf("cpcUriFld=\"%.10s\"\n",cpcUriFld ? cpcUriFld : "nill");}
+        if(!cpcSynopsisFld){return 1;}
+        cpcUriBeg = strchr(cpcUriFld+strlen("\"URI\""),'\"');
+        if(g_nDebugApplication){printf("cpcUriBeg=\"%.10s\"\n",cpcUriBeg ? cpcUriBeg : "nill");}
+        if(!cpcUriBeg){return 1;}
+        cpcUriEnd = strchr(++cpcUriBeg,'\"');
+        if(g_nDebugApplication){printf("cpcUriEnd=\"%.10s\"\n",cpcUriEnd ? cpcUriEnd : "nill");}
+        if(!cpcUriEnd){return 1;}
+        aDigContent.URI = std::string(cpcUriBeg,((size_t)cpcUriEnd)-((size_t)cpcUriBeg));
+        if(g_nDebugApplication){printf("Content.URI=\"%s\"\n",aDigContent.URI.c_str());}
+
+        cpcAvgRatingFld = strstr(cpcUriEnd+1,"\"AVG_rating\"");
+        if(g_nDebugApplication){printf("cpcAvgRatingFld=\"%.10s\"\n",cpcAvgRatingFld ? cpcAvgRatingFld : "nill");}
+        if(!cpcAvgRatingFld){return 1;}
+        cpcAvgRatingBeg = strchr(cpcAvgRatingFld+strlen("\"AVG_rating\""),':');
+        //cpcAvgRatingBeg = cpcAvgRatingFld+strlen("\"AVG_rating\"");
+        if(g_nDebugApplication){printf("cpcAvgRatingBeg=\"%.10s\"\n",cpcAvgRatingBeg ? cpcAvgRatingBeg : "nill");}
+        if(!cpcAvgRatingBeg){return 1;}
+        aDigContent.AVG_rating = strtod(++cpcAvgRatingBeg,const_cast<char**>(&cpcAvgRatingEnd));
+        if(g_nDebugApplication){printf("cpcAvgRatingEnd=\"%.10s\", Content.AVG_rating=%lf\n",cpcAvgRatingEnd ? cpcAvgRatingEnd : "nill",aDigContent.AVG_rating);}
+        if(!cpcAvgRatingEnd){return 1;}
+        if(g_nDebugApplication){printf("\n*****************************************************\n");}
+
+        a_vcContents.push_back(aDigContent);
+        cpcSearchStart = cpcAvgRatingEnd+1;
+    }
+
+    if(g_nDebugApplication){printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");}
+
+    return 0;
 }
 
 
@@ -917,7 +1021,10 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
     }
     else if(strstr(a_task.c_str(),"list_content "))
     {
-        QTableWidget& cContents = m_pCentralWidget->getDigitalContentsTable();
+        //QTableWidget& cContents = m_pCentralWidget->getDigitalContentsTable();
+        std::vector<gui_wallet::SDigitalContent> vcDigContent;
+        GetDigitalContentsFromString(vcDigContent,a_result.c_str());
+        m_pCentralWidget->SetDigitalContentsGUI(vcDigContent);
     }
     else if(strstr(a_task.c_str(),"get_content "))
     {
