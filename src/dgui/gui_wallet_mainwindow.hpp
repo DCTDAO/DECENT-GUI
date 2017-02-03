@@ -44,20 +44,20 @@ namespace gui_wallet
         void TaskDoneFunc(void* clbkArg,int err,const std::string& task,const std::string& result);
 
     private:
-        void CallInfoFunction(struct StructApi* pApi);
-        void CallAboutFunction(struct StructApi* a_pApi);
-        void CallHelpFunction(struct StructApi* a_pApi);
-        void CallImportKeyFunction(struct StructApi* a_pApi);
-        void CallShowWalletContentFunction(struct StructApi* a_pApi);
-        void UnlockFunction(struct StructApi* a_pApi);
-        void ShowDigitalContextesFunction(struct StructApi* a_pApi);
+        void CallInfoFunction(void*,struct StructApi* pApi);
+        void CallAboutFunction(void*,struct StructApi* a_pApi);
+        void CallHelpFunction(void*,struct StructApi* a_pApi);
+        void CallImportKeyFunction(void*,struct StructApi* a_pApi);
+        void CallShowWalletContentFunction(void*,struct StructApi* a_pApi);
+        void UnlockFunction(void*,struct StructApi* a_pApi);
+        void ShowDigitalContextesFunction(void*,struct StructApi* a_pApi);
+        void CurrentUserBalanceFunction(void*,struct StructApi* a_pApi);
+        void SetupInfoWarnErrrFunctions(void*,struct StructApi* api);
+        void CliCallbackFunction(void*,struct StructApi* a_pApi);
+        void DigitalContentDetailsFunction(void*,struct StructApi* a_pApi);
 
         void ListAccountThreadFunc(int a_nDetailed);
 
-        void CurrentUserBalanceFunction(struct StructApi* a_pApi);
-        void SetupInfoWarnErrrFunctions(struct StructApi* api);
-
-        void CliCallbackFunction(struct StructApi* a_pApi);
         static int GuiWalletInfoStatic(void* owner,const char* form, ...);
         static int GuiWalletWarnStatic(void* owner,const char* form, ...);
         static int GuiWalletErrrStatic(void* owner,const char* form, ...);
@@ -90,6 +90,7 @@ namespace gui_wallet
 
         void StateUpdateSlot(int state);
         void GuiWalletInfoWarnErrSlot(int type,std::string);
+        void GetDigitalContentDetails(int act,std::string uri);
 
     private:
     signals:
@@ -172,6 +173,7 @@ namespace gui_wallet
         QString                            m_cqsPreviousFilter;
         QTextEdit*                          m_pInfoTextEdit;
         CliWalletDlg*                        m_pcInfoDlg;
+        std::string                         m_URI;
     };
 
 }

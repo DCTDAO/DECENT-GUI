@@ -68,11 +68,11 @@ gui_wallet::ConnectDlg::ConnectDlg(QWidget* a_parent)
 
 gui_wallet::ConnectDlg::~ConnectDlg()
 {
-    UseConnectedApiInstance(this,&gui_wallet::ConnectDlg::CallSaveWalletFile);
+    UseConnectedApiInstance(this,NULL,&gui_wallet::ConnectDlg::CallSaveWalletFile);
 }
 
 
-void gui_wallet::ConnectDlg::CallSaveWalletFile(struct StructApi* a_pApi)
+void gui_wallet::ConnectDlg::CallSaveWalletFile(void*,struct StructApi* a_pApi)
 {
     try{
         if(a_pApi && a_pApi->wal_api)

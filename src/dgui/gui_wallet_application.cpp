@@ -297,23 +297,23 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
 }
 
 
-void UseConnectedApiInstance(void* a_pUserData,WaletFncType a_fpFunction)
+void UseConnectedApiInstance(void* a_pUserData,void* a_callbackArg,WaletFncType a_fpFunction)
 {
-    UseConnectedApiInstance_base(a_pUserData,a_fpFunction);
+    UseConnectedApiInstance_base(a_pUserData,a_callbackArg,a_fpFunction);
 }
 
 
-void UseConnectedApiInstance_base(void* a_pUserData,...)
+void UseConnectedApiInstance_base(void* a_pUserData,void* a_callbackArg,...)
 {
     WaletFncType fpFunction;
     va_list aFunc;
 
-    va_start( aFunc, a_pUserData );  /* Initialize variable arguments. */
+    va_start( aFunc, a_callbackArg );  /* Initialize variable arguments. */
     fpFunction = va_arg( aFunc, WaletFncType);
     va_end( aFunc );                /* Reset variable arguments.      */
 
     std::lock_guard<NewTestMutex> lock(s_mutex_for_cur_api);
-    (*fpFunction)(a_pUserData,&s_CurrentApi);
+    (*fpFunction)(a_pUserData,a_callbackArg,&s_CurrentApi);
     //s_mutex_for_cur_api.unlock();
 
 }

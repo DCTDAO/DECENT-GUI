@@ -76,7 +76,7 @@ public:
     void SetWalletFileName(const std::string& wallet_file_name);
 
 private:
-    void CallSaveWalletFile(struct StructApi* pApi);
+    void CallSaveWalletFile(void*,struct StructApi* pApi);
 
     static void error_function(void* a_pOwner, const std::string& a_err, const std::string& a_details);
     void error_function(const std::string& a_err, const std::string& a_details);

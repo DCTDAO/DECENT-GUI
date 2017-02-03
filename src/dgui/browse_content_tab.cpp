@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <QHeaderView>
 #include <QLabel>
+#include <QMouseEvent>
+#include <stdio.h>
+#include <stdarg.h>
 
 #if 0
 pItem = new TableWidgetItem_test(tr("Time"));
@@ -52,24 +55,61 @@ extern int g_nDebugApplication;
 /************ class TableWidgetItemW ********************************************/
 /********************************************************************************/
 
-/*
-template <typename QtType,typename ConstrArgType>
-gui_wallet::TableWidgetItemW<QtType>::TableWidgetItemW(ConstrArgType a_cons_arg)
-    :
-      QtType(a_cons_arg)
-{
-}
-*/
 
 template <typename QtType>
-gui_wallet::TableWidgetItemW<QtType>::TableWidgetItemW()
+template <typename ConstrArgType,typename ClbType>
+gui_wallet::TableWidgetItemW<QtType>::TableWidgetItemW(ConstrArgType a_cons_arg,
+                                                       const SDigitalContent& a_cDigCont,
+                                                       ClbType* a_own,void* a_clbDt,void (ClbType::*a_fpFunction)(_NEEDED_ARGS_))
+    :
+      QtType(a_cons_arg),
+      m_pOwner(a_own),
+      m_pCallbackData(a_clbDt),
+      m_callback_data(a_cDigCont)
 {
+    prepare_constructor(1,a_fpFunction);
+}
+
+
+template <typename QtType>
+template <typename ClbType>
+gui_wallet::TableWidgetItemW<QtType>::TableWidgetItemW(const SDigitalContent& a_cDigCont,
+                                                       ClbType* a_own,void* a_clbDt,void (ClbType::*a_fpFunction)(_NEEDED_ARGS_))
+    :
+      m_pOwner(a_own),
+      m_pCallbackData(a_clbDt),
+      m_callback_data(a_cDigCont)
+{
+    prepare_constructor(1,a_fpFunction);
 }
 
 template <typename QtType>
 gui_wallet::TableWidgetItemW<QtType>::~TableWidgetItemW()
 {
-    if(g_nDebugApplication){printf("!!! fn:%s, ln%d\n",__FUNCTION__,__LINE__);}
+    if(g_nDebugApplication){printf("!!!!!!!!!!!!!!!!!!!!!!!!!!! fn:%s, ln%d\n",__FUNCTION__,__LINE__);}
+}
+
+template <typename QtType>
+void gui_wallet::TableWidgetItemW<QtType>::prepare_constructor(int a_val,...)
+{
+    va_list aArgs;
+    va_start( aArgs, a_val );
+    m_fpCallback = va_arg( aArgs, TypeDigContCallback);
+    va_end( aArgs );
+}
+
+
+template <typename QtType>
+void gui_wallet::TableWidgetItemW<QtType>::mouseDoubleClickEvent(QMouseEvent* a_event)
+{
+    if(a_event->button()==Qt::LeftButton)
+    {
+        if(g_nDebugApplication){
+            printf("!!!! fn:%s, ln:%d   ",__FUNCTION__,__LINE__);
+            printf("m_pOwner=%p, m_pCallbackData=%p, m_fpCallback=%p\n",m_pOwner,m_pCallbackData,m_fpCallback);
+        }
+        (*m_fpCallback)(m_pOwner,m_pCallbackData,DCA::CALL_GET_CONTENT, &m_callback_data);
+    }
 }
 
 
@@ -103,16 +143,18 @@ Browse_content_tab::~Browse_content_tab()
 void Browse_content_tab::PrepareTableWidgetHeaderGUI()
 {
     QTableWidget& m_TableWidget = *m_pTableWidget;
-    TableWidgetItemW<QLabel>* pLabel;
+    QLabel* pLabel;
     m_TableWidget.horizontalHeader()->hide();
     m_TableWidget.verticalHeader()->hide();
 
-    TableWidgetItemW<QCheckBox>* pCheck = new TableWidgetItemW<QCheckBox>;
-    m_TableWidget.setCellWidget(0,DGF::IS_SELECTED,pCheck);
+    QCheckBox* pCheck = new QCheckBox;
+    if(!pCheck){throw "Low memory\n" __FILE__ ;}
+    m_TableWidget.setCellWidget(0,DCF::IS_SELECTED,pCheck);
 
     for( int i(1); i<s_cnNumberOfRows; ++i )
     {
-        pLabel = new TableWidgetItemW<QLabel>(tr(s_vccpItemNames[i]));
+        pLabel = new QLabel(tr(s_vccpItemNames[i]));
+        if(!pLabel){throw "Low memory\n" __FILE__ ;}
         m_TableWidget.setCellWidget(0,i,pLabel);
     }
 
@@ -122,17 +164,29 @@ void Browse_content_tab::PrepareTableWidgetHeaderGUI()
 }
 
 
-void Browse_content_tab::showEvent ( QShowEvent * event )
+// #define _NEEDED_ARGS_ void* a_clb_data,int a_act,const gui_wallet::SDigitalContent* a_pDigContent
+void Browse_content_tab::DigContCallback(_NEEDED_ARGS_)
 {
-    QWidget::showEvent(event);
+    if(g_nDebugApplication){
+        printf("!!!! fn:%s, ln:%d  ",__FUNCTION__,__LINE__);
+        printf("clbdata=%p, act=%d, pDigCont=%p\n",a_clb_data,a_act,a_pDigContent);
+    }
+    switch(a_act)
+    {
+    case DCA::CALL_GET_CONTENT:
+        emit GetdetailsOnDigContentSig(a_act,a_pDigContent->URI);
+        break;
+    default:
+        break;
+    }
 }
 
 
 void Browse_content_tab::SetDigitalContentsGUI(const std::vector<gui_wallet::SDigitalContent>& a_vContents)
 {
     //
-    QCheckBox* pCheck;
-    QLabel* pLabel;
+    TableWidgetItemW<QCheckBox>* pCheck;
+    TableWidgetItemW<QLabel>* pLabel;
     gui_wallet::SDigitalContent aTemporar;
     const int cnNumberOfContentsPlus1((int)a_vContents.size() + 1);
 
@@ -155,33 +209,36 @@ void Browse_content_tab::SetDigitalContentsGUI(const std::vector<gui_wallet::SDi
         aTemporar = a_vContents[i-1];
         // To be continue
         // namespace DGF {enum DIG_CONT_FIELDS{IS_SELECTED,TIME,SYNOPSIS,RATING,LEFT,SIZE,PRICE};}
-        pCheck = new QCheckBox;
+        //const SDigitalContent& clbData,ClbType* own,void*clbDt,void (ClbType::*a_fpFunction)(_NEEDED_ARGS_)
+        pCheck = new TableWidgetItemW<QCheckBox>(aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pCheck){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::IS_SELECTED,pCheck);
+        m_TableWidget.setCellWidget(i,DCF::IS_SELECTED,pCheck);
 
-        pLabel = new QLabel(tr("1970.01.01"));
+        pLabel = new TableWidgetItemW<QLabel>(tr("1970.01.01"),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::TIME,pLabel);
+        m_TableWidget.setCellWidget(i,DCF::TIME,pLabel);
 
-        pLabel = new QLabel(tr(aTemporar.synopsis.c_str()));
+        pLabel = new TableWidgetItemW<QLabel>(tr(aTemporar.synopsis.c_str()),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::SYNOPSIS,pLabel);
+        m_TableWidget.setCellWidget(i,DCF::SYNOPSIS,pLabel);
 
-        pLabel = new QLabel( QString::number(aTemporar.AVG_rating,'f').remove( QRegExp("0+$") ).remove( QRegExp("\\.$") ) );
+        pLabel = new TableWidgetItemW<QLabel>( QString::number(aTemporar.AVG_rating,'f').remove( QRegExp("0+$") ).remove( QRegExp("\\.$") ),
+                                               aTemporar,this,NULL,&Browse_content_tab::DigContCallback );
         if(!pLabel){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::RATING,pLabel);
+        m_TableWidget.setCellWidget(i,DCF::RATING,pLabel);
 
-        pLabel = new QLabel(tr("left"));
+        pLabel = new TableWidgetItemW<QLabel>(tr("left"),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::LEFT,pLabel);
+        m_TableWidget.setCellWidget(i,DCF::LEFT,pLabel);
 
-        pLabel = new QLabel(tr("1MB"));
+        pLabel = new TableWidgetItemW<QLabel>(tr("1MB"),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::SIZE,pLabel);
+        m_TableWidget.setCellWidget(i,DCF::SIZE,pLabel);
 
-        pLabel = new QLabel( QString::number(aTemporar.price.amount,'f').remove( QRegExp("0+$") ).remove( QRegExp("\\.$") ) );
+        pLabel = new TableWidgetItemW<QLabel>( QString::number(aTemporar.price.amount,'f').remove( QRegExp("0+$") ).remove( QRegExp("\\.$") ),
+                                               aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
-        m_TableWidget.setCellWidget(i,DGF::PRICE,pLabel);
+        m_TableWidget.setCellWidget(i,DCF::PRICE,pLabel);
     }
 
     if(g_nDebugApplication){printf("fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}

@@ -54,6 +54,8 @@ namespace gui_wallet
 
         QString getFilterText()const;
 
+        QWidget* GetBrowseContentTab(){return &m_browse_cont_tab;}
+
         //QTableWidget& getDigitalContentsTable();
         void SetDigitalContentsGUI(const std::vector<gui_wallet::SDigitalContent>& contents);
 

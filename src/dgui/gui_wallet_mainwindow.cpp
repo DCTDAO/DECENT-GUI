@@ -94,6 +94,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     connect(&m_ConnectDlg, SIGNAL(ConnectDoneSig()), this, SLOT(ConnectDoneSlot()) );
     //connect(pUsersCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(CurrentUserBalanceSlot(int)) );
     //void GuiWalletInfoWarnErrSlot(std::string);
+    connect(m_pCentralWidget->GetBrowseContentTab(),SIGNAL(GetdetailsOnDigContentSig(int,std::string)),this,SLOT(GetDigitalContentDetails(int,std::string)));
 
     ConnectToStateChangeUpdate(this,SLOT(StateUpdateSlot(int)));
 
@@ -334,7 +335,35 @@ void Mainwindow_gui_wallet::GuiWalletInfoWarnErrSlot(int a_type,std::string a_cs
 }
 
 
-void Mainwindow_gui_wallet::CliCallbackFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::GetDigitalContentDetails(int a_act,std::string a_uri)
+{
+    switch(a_act)
+    {
+    case DCA::CALL_GET_CONTENT:
+    {
+        m_URI = a_uri;
+        UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::DigitalContentDetailsFunction);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+
+void Mainwindow_gui_wallet::DigitalContentDetailsFunction(void*,struct StructApi* a_pApi)
+{
+    if(g_nDebugApplication){printf("!!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
+    if(a_pApi && a_pApi->wal_api)
+    {
+        if(g_nDebugApplication){printf("!!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
+        //optional<content_object> aObj = (a_pApi->wal_api)->get_content(m_URI); // To be implemenetd
+        if(g_nDebugApplication){printf("!!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
+    }
+}
+
+
+void Mainwindow_gui_wallet::CliCallbackFunction(void*,struct StructApi* a_pApi)
 {
     if(a_pApi && a_pApi->gui_api)
     {
@@ -353,7 +382,7 @@ void Mainwindow_gui_wallet::CliCallbackFunction(struct StructApi* a_pApi)
 void Mainwindow_gui_wallet::CliCallbackFnc(void*/*arg*/,const std::string& a_task)
 {
     m_cli_line = a_task;
-    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CliCallbackFunction);
+    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CliCallbackFunction);
 }
 
 
@@ -371,11 +400,11 @@ void Mainwindow_gui_wallet::OpenInfoDlgSlot()
 
 void Mainwindow_gui_wallet::CurrentUserBalanceSlot(int a_nIndex)
 {
-    if(a_nIndex>=0){UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CurrentUserBalanceFunction);}
+    if(a_nIndex>=0){UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CurrentUserBalanceFunction);}
 }
 
 
-void Mainwindow_gui_wallet::CurrentUserBalanceFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::CurrentUserBalanceFunction(void*,struct StructApi* a_pApi)
 {
     int nCurUserIndex ( m_pCentralWidget->usersCombo().currentIndex() );
     const int cnSize ( m_pCentralWidget->usersCombo().count() );
@@ -399,15 +428,16 @@ void Mainwindow_gui_wallet::CurrentUserBalanceFunction(struct StructApi* a_pApi)
 void Mainwindow_gui_wallet::ShowDigitalContextesSlot(QString a_filter)
 {
     m_cqsCurrentFilter = a_filter;
-    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::ShowDigitalContextesFunction);
+    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::ShowDigitalContextesFunction);
 }
 
 
-void Mainwindow_gui_wallet::ShowDigitalContextesFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::ShowDigitalContextesFunction(void*,struct StructApi* a_pApi)
 {
     QString& cqsFilter = m_cqsCurrentFilter;
 
 #ifdef WALLET_API_DIRECT_CALLS
+//#if 1
     if(a_pApi && a_pApi->wal_api)
     {
         optional<content_object> cContent;
@@ -551,12 +581,12 @@ void Mainwindow_gui_wallet::ConnectDoneSlot()
 
 void Mainwindow_gui_wallet::UnlockSlot()
 {
-    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::UnlockFunction);
+    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::UnlockFunction);
     //wapiptr->unlock(aPassword);
 }
 
 
-void Mainwindow_gui_wallet::UnlockFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::UnlockFunction(void*,struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pWapi = a_pApi ? a_pApi->wal_api : NULL;
 
@@ -597,7 +627,7 @@ void Mainwindow_gui_wallet::moveEvent(QMoveEvent * a_event)
 
 void Mainwindow_gui_wallet::ListAccountThreadFunc(int a_nDetailed)
 {
-    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CallShowWalletContentFunction);
+    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CallShowWalletContentFunction);
     emit WalletContentReadySig(a_nDetailed);
 }
 
@@ -643,7 +673,7 @@ void Mainwindow_gui_wallet::WalletContentReadySlot(int a_nDetailed)
 }
 
 
-void Mainwindow_gui_wallet::CallShowWalletContentFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallShowWalletContentFunction(void*,struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pWapi = a_pApi ? a_pApi->wal_api : NULL;
 
@@ -696,7 +726,7 @@ void Mainwindow_gui_wallet::ImportKeySlot()
 {
     m_nError = 0;
     m_error_string = "";
-    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::CallImportKeyFunction);
+    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CallImportKeyFunction);
 }
 
 
@@ -711,7 +741,7 @@ void Mainwindow_gui_wallet::ShowWalletContentSlot()
 }
 
 
-void Mainwindow_gui_wallet::CallInfoFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallInfoFunction(void*,struct StructApi* a_pApi)
 {
     try
     {
@@ -731,7 +761,7 @@ void Mainwindow_gui_wallet::CallInfoFunction(struct StructApi* a_pApi)
 }
 
 
-void Mainwindow_gui_wallet::CallImportKeyFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallImportKeyFunction(void*,struct StructApi* a_pApi)
 {
     try
     {
@@ -790,11 +820,11 @@ void Mainwindow_gui_wallet::CallImportKeyFunction(struct StructApi* a_pApi)
 
 void Mainwindow_gui_wallet::InfoSlot()
 {
-    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,&Mainwindow_gui_wallet::CallInfoFunction);
+    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallInfoFunction);
 }
 
 
-void Mainwindow_gui_wallet::CallAboutFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallAboutFunction(void*,struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pApi = NULL;
     bool bCreatedHere = false;
@@ -861,11 +891,11 @@ void Mainwindow_gui_wallet::CallAboutFunction(struct StructApi* a_pApi)
 
 void Mainwindow_gui_wallet::AboutSlot()
 {
-    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,&Mainwindow_gui_wallet::CallAboutFunction);
+    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallAboutFunction);
 }
 
 
-void Mainwindow_gui_wallet::CallHelpFunction(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::CallHelpFunction(void*,struct StructApi* a_pApi)
 {
     graphene::wallet::wallet_api* pApi = NULL;
     bool bCreatedHere = false;
@@ -911,7 +941,7 @@ void Mainwindow_gui_wallet::CallHelpFunction(struct StructApi* a_pApi)
 
 void Mainwindow_gui_wallet::HelpSlot()
 {
-    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,&Mainwindow_gui_wallet::CallHelpFunction);
+    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallHelpFunction);
 }
 
 
@@ -926,11 +956,11 @@ void Mainwindow_gui_wallet::ConnectSlot()
     m_nError = 0;
     m_error_string = "";
     m_ConnectDlg.exec();
-    UseConnectedApiInstance(this,&Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions);
+    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions);
 }
 
 
-void Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions(struct StructApi* a_pApi)
+void Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions(void*,struct StructApi* a_pApi)
 {
     if(a_pApi && a_pApi->gui_api)
     {

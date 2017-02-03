@@ -32,7 +32,7 @@ typedef unsigned long long int __ulli64;
 
 struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wallet_api* wal_api; fc::rpc::gui* gui_api;};
 
-typedef void (__THISCALL__ *WaletFncType)(void*user_data,struct StructApi* pApi);
+typedef void (__THISCALL__ *WaletFncType)(void*user_data,void* callbackArg,struct StructApi* pApi);
 typedef void (*DoneFuncType)(void*user_data);
 typedef void (*ErrFuncType)(void*user_data,const std::string& err,const std::string& details);
 //SetPasswdFuncGUI
@@ -47,12 +47,12 @@ int CreateConnectedApiInstance( const graphene::wallet::wallet_data* a_wdata,
                                 const std::string& a_wallet_file_name,
                                 void* a_pOwner,DoneFuncType a_fpDone, ErrFuncType a_fpErr,
                                 WarnYesOrNoFuncType a_fpFunc);
-void UseConnectedApiInstance_base(void* a_pUserData,...);
-void UseConnectedApiInstance(void* a_pUserData,WaletFncType a_fpFunction);
+void UseConnectedApiInstance_base(void* a_pUserData,void* a_callbackArg,...);
+void UseConnectedApiInstance(void* a_pUserData,void* a_callbackArg,WaletFncType a_fpFunction);
 template <typename Type>
-static void UseConnectedApiInstance(Type* obj_ptr,void (Type::*a_fpFunction)(struct StructApi* pApi))
+static void UseConnectedApiInstance(Type* a_obj_ptr,void* a_callbackArg,void (Type::*a_fpFunction)(void* callbackData,struct StructApi* pApi))
 {
-    UseConnectedApiInstance_base(obj_ptr,a_fpFunction);
+    UseConnectedApiInstance_base(a_obj_ptr,a_callbackArg,a_fpFunction);
 }
 
 }
