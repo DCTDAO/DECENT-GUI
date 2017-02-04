@@ -143,7 +143,6 @@ static void SetImageToLabelStatic(bool& _bRet_,QPixmap& _image_,const char* _ima
 
 #endif // #if 1/0
 
-int GuiWalletInfoWarnErrGlobal(int a_nType,const char* a_form, ...);
 
 void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
 {
@@ -198,7 +197,9 @@ void CentralWigdet::PrepareGUIprivate(class QBoxLayout* a_pAllLayout)
         m_DelayedWaringDetails = tr(csWarningDetails.c_str());
 #if 1
         if(g_nDebugApplication){fprintf(stdout,"%s\n",csWarningDetails.c_str());}
+#ifdef API_SHOULD_BE_DEFINED2
         GuiWalletInfoWarnErrGlobal(1,csWarningDetails.c_str());
+#endif  //  #ifdef API_SHOULD_BE_DEFINED2
 #else // #if 1
         QTimer::singleShot(100, this, SLOT(make_deleyed_warning()));
 #endif // #if 1

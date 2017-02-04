@@ -13,7 +13,7 @@
 #include <QEvent>
 #include <QObject>
 #include <stdio.h>
-#include "connected_api_instance.hpp"
+//#include "connected_api_instance.hpp"
 
 
 namespace gui_wallet{

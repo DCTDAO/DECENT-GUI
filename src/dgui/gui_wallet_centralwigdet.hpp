@@ -11,6 +11,7 @@
 #define CENTRALWIGDET_GUI_WALLET_H
 
 //#define USE_TABLE_FOR_FIRST_LINE
+#define API_SHOULD_BE_DEFINED
 
 #include <QWidget>
 #include <QVBoxLayout>

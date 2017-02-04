@@ -1,0 +1,138 @@
+/*
+ *	File: decent_tool_fifo.tos
+ *
+ *	Created on: 04 Feb 2017
+ *	Created by: Davit Kalantaryan (Email: davit.kalantaryan@desy.de)
+ *
+ *  This file implements ...
+ *
+ */
+#ifndef DECENT_TOOL_FIFO_TOS
+#define DECENT_TOOL_FIFO_TOS
+
+#ifndef DECENT_TOOL_FIFO_HPP
+//#error this file could not be include directly
+#include "decent_tool_fifo.hpp"
+#endif  // #ifndef DECENT_TOOL_FIFO_HPP
+
+#include <stdio.h>
+#include <stdarg.h>
+
+/*
+    struct taskListItem*    next;
+    void*                   owner;
+    void*                   callbackArg;
+    TypeInp                 input;
+    TypeTaskFnc             fn_tsk_dn;
+
+    taskListItem(TypeTaskFnc fn_tsk_dn,const TypeInp& inp,void* owner = NULL,void* clbArg=NULL);
+ */
+
+template <typename TypeInp, typename TypeTaskFnc>
+decent::tools::taskListItem<TypeInp,TypeTaskFnc>::taskListItem(TypeTaskFnc a_fn_tsk_dn,const TypeInp& a_inp,
+                                                               void* a_owner,void* a_clbArg)
+    :
+      next(NULL),owner(a_owner),callbackArg(a_clbArg),input(a_inp),fn_tsk_dn2(a_fn_tsk_dn)
+{
+    //
+}
+
+
+
+/*///////////////////////////////////////////////////////////////*/
+
+/*
+    taskListItem                       m_InitialTaskBuffer;
+    taskListItem*                      m_pFirstTask;
+    taskListItem*                      m_pLastTask;
+    std::mutex                         m_task_mutex;
+    */
+
+template <typename TypeInp, typename TypeTaskFnc>
+decent::tools::FiFo<TypeInp,TypeTaskFnc>::FiFo()
+    :
+      m_InitialTaskBuffer(NULL,TypeInp()),
+      m_pFirstTask(NULL),
+      m_pLastTask(NULL)
+{
+}
+
+
+template <typename TypeInp, typename TypeTaskFnc>
+decent::tools::FiFo<TypeInp,TypeTaskFnc>::~FiFo()
+{
+    taskListItem<TypeInp,TypeTaskFnc> *pItemTodelete, *pItemTemp;
+
+    m_task_mutex.lock();
+    pItemTodelete = m_pFirstTask ? m_pFirstTask->next : NULL;
+    while(pItemTodelete)
+    {
+        pItemTemp = pItemTodelete->next;
+        delete pItemTodelete;
+        pItemTodelete = pItemTemp;
+    }
+    m_task_mutex.unlock();
+}
+
+
+template <typename TypeInp, typename TypeTaskFnc>
+bool decent::tools::FiFo<TypeInp,TypeTaskFnc>::GetFirstTask(decent::tools::taskListItem<TypeInp,TypeTaskFnc>* a_pFirstTaskBuffer)
+{
+    bool bRet(false);
+    struct taskListItem<TypeInp,TypeTaskFnc>* pTmp = NULL;
+
+    //printf("line=%d\n",__LINE__);
+
+    m_task_mutex.lock();
+    if(m_pFirstTask)
+    {
+        //printf("line=%d\n",__LINE__);
+        memcpy(a_pFirstTaskBuffer,m_pFirstTask,sizeof(struct taskListItem<TypeInp,TypeTaskFnc>));
+        if(m_pFirstTask->next)
+        {
+            pTmp = m_pFirstTask->next;
+            memcpy(m_pFirstTask,m_pFirstTask->next,sizeof(struct taskListItem<TypeInp,TypeTaskFnc>));
+            delete pTmp;
+        }
+        else {m_pFirstTask = NULL;}
+        bRet = true;
+    } // if(m_pFirstTask)
+    m_task_mutex.unlock();
+
+    return bRet;
+}
+
+
+template <typename TypeInp, typename TypeTaskFnc>
+void decent::tools::FiFo<TypeInp,TypeTaskFnc>::AddNewTask(const TypeInp& a_inp, void* a_owner, void* a_clbData,...)
+{
+    TypeTaskFnc fpTaskDone;
+    va_list aFunc;
+
+    va_start( aFunc, a_clbData );
+    fpTaskDone = va_arg( aFunc, TypeTaskFnc);
+    va_end( aFunc );
+
+    m_task_mutex.lock();
+    if(!m_pFirstTask)
+    {
+        //m_InitialTaskBuffer.next = NULL;
+        m_pFirstTask = m_pLastTask = &m_InitialTaskBuffer;
+
+        m_pLastTask->next = NULL;
+        m_pLastTask->owner = a_owner;
+        m_pLastTask->callbackArg = a_clbData;
+        m_pLastTask->input = a_inp;
+        m_pLastTask->fn_tsk_dn2 = fpTaskDone;
+    }
+    else
+    {
+        m_pLastTask->next = new taskListItem<TypeInp,TypeTaskFnc>(fpTaskDone,a_inp,a_owner,a_clbData);
+        m_pLastTask = m_pLastTask->next;
+    }
+    m_task_mutex.unlock();
+
+}
+
+
+#endif // DECENT_TOOL_FIFO_TOS

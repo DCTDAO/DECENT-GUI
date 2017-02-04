@@ -9,7 +9,7 @@
  */
 #include "gui_wallet_mainwindow.hpp"
 #include <QMenuBar>
-#include "connected_api_instance.hpp"
+//#include "connected_api_instance.hpp"
 #include <QMoveEvent>
 #include "qt_commonheader.hpp"
 #include <stdio.h>
@@ -21,7 +21,6 @@
 
 using namespace gui_wallet;
 extern int g_nDebugApplication;
-static Mainwindow_gui_wallet* s_pMainWindow = NULL;
 
 Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
@@ -33,7 +32,6 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_ActionWalletContent(tr("Wallet content"),this),
         m_ActionUnlock(tr("Unlock"),this),
         m_ActionImportKey(tr("Import key"),this),
-        m_ActionShowDigitalContextes(tr("show dig. contexes"),this),
         m_ActionOpenCliWallet(tr("cli_wallet"),this),
         m_ActionOpenInfoDlg(tr("Open info dlg."),this),
         m_ConnectDlg(this),
@@ -41,14 +39,12 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         m_import_key_dlg(2),
         m_cqsPreviousFilter(tr("nf"))
 {
+    SetManagementCallback(this,NULL,&Mainwindow_gui_wallet::ManagementNewFuncGUI);
     m_pInfoTextEdit = new QTextEdit;
     if(!m_pInfoTextEdit){throw "Low memory";}
     m_pInfoTextEdit->setReadOnly(true);
     m_pcInfoDlg = new CliWalletDlg(m_pInfoTextEdit);
     if(!m_pcInfoDlg){throw "Low memory";}
-
-    s_pMainWindow = this;
-    connect(this, SIGNAL(GuiWalletInfoWarnErrSig(int,std::string)), this, SLOT(GuiWalletInfoWarnErrSlot(int,std::string)) );
 
     CliTextEdit* pCliTextEdit = (CliTextEdit*)m_cCliWalletDlg.operator ->();
     pCliTextEdit->SetCallbackStuff2(this,NULL,&Mainwindow_gui_wallet::CliCallbackFnc);
@@ -89,7 +85,6 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
     QComboBox* pUsersCombo = &(m_pCentralWidget->usersCombo());
 
-    connect(this, SIGNAL(TaskDoneSig(void*,int,std::string, std::string)), this, SLOT(TaskDoneSlot(void*,int,std::string, std::string)) );
     connect(this, SIGNAL(WalletContentReadySig(int)), this, SLOT(WalletContentReadySlot(int)) );
     connect(&m_ConnectDlg, SIGNAL(ConnectDoneSig()), this, SLOT(ConnectDoneSlot()) );
     //connect(pUsersCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(CurrentUserBalanceSlot(int)) );
@@ -103,7 +98,6 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
 Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
-    disconnect(this, SIGNAL(GuiWalletInfoWarnErrSig(int,std::string)), this, SLOT(GuiWalletInfoWarnErrSlot(int,std::string)) );
     delete m_pInfoTextEdit;
     delete m_pcInfoDlg;
 }
@@ -148,9 +142,6 @@ void Mainwindow_gui_wallet::CreateActions()
     m_ActionImportKey.setStatusTip( tr("Import key") );
     connect( &m_ActionImportKey, SIGNAL(triggered()), this, SLOT(ImportKeySlot()) );
 
-    //m_ActionShowDigitalContextes
-    connect( &m_ActionShowDigitalContextes, SIGNAL(triggered()), this, SLOT(ShowDigitalContextesSlot()) );
-
     m_ActionOpenCliWallet.setStatusTip( tr("Open CLI wallet dialog") );
     connect( &m_ActionOpenCliWallet, SIGNAL(triggered()), this, SLOT(OpenCliWalletDlgSlot()) );
 
@@ -183,7 +174,7 @@ void Mainwindow_gui_wallet::CreateMenues()
     m_pMenuDebug->addAction(&m_ActionOpenCliWallet);
     m_pMenuDebug->addAction(&m_ActionOpenInfoDlg);
     m_pMenuTempFunctions = m_pMenuDebug->addMenu(tr("temp. functions start"));
-    m_pMenuTempFunctions->addAction(&m_ActionShowDigitalContextes);
+    //m_pMenuTempFunctions->addAction(&m_ActionShowDigitalContextes);
 
     /******************************************************/
     pMenuBar = m_barRight;
@@ -198,143 +189,6 @@ void Mainwindow_gui_wallet::CreateMenues()
 }
 
 
-void Mainwindow_gui_wallet::StateUpdateSlot(int a_state)
-{
-    //if(g_nDebugApplication){printf("%s\n",__FUNCTION__);}
-    switch(a_state)
-    {
-    case CONNECTED_ST:
-    {
-        QString cqsNewFilter = m_pCentralWidget->getFilterText();
-
-        if(cqsNewFilter==m_cqsPreviousFilter){return;}
-
-        else if(cqsNewFilter==tr(""))
-        {
-            // may be in the case of empty filter all contents should be displayed?
-            m_cqsPreviousFilter = cqsNewFilter;
-            return;
-        }
-
-        m_cqsPreviousFilter = cqsNewFilter;
-        ShowDigitalContextesSlot(cqsNewFilter);
-
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-
-int GuiWalletInfoWarnErrGlobal(int a_nType,const char* a_form, ...)
-{
-    va_list aArgs ;
-    va_start(aArgs,a_form);
-    int nReturn = s_pMainWindow->GuiWalletInfoWarnErr(a_nType,a_form,aArgs);
-    va_end (aArgs);
-    return nReturn;
-}
-
-
-int Mainwindow_gui_wallet::GuiWalletInfoStatic(void* a_owner,const char* a_form, ...)
-{
-    va_list aArgs ;
-    va_start(aArgs,a_form);
-    int nReturn = ((Mainwindow_gui_wallet*)a_owner)->GuiWalletInfoWarnErr(__INFO__,a_form,aArgs);
-    va_end (aArgs);
-    return nReturn;
-}
-
-
-int Mainwindow_gui_wallet::GuiWalletWarnStatic(void* a_owner,const char* a_form, ...)
-{
-    va_list aArgs ;
-    va_start(aArgs,a_form);
-    int nReturn = ((Mainwindow_gui_wallet*)a_owner)->GuiWalletInfoWarnErr(__WARN__,a_form,aArgs);
-    va_end (aArgs);
-    return nReturn;
-}
-
-
-int Mainwindow_gui_wallet::GuiWalletErrrStatic(void* a_owner,const char* a_form, ...)
-{
-    va_list aArgs ;
-    va_start(aArgs,a_form);
-    int nReturn = ((Mainwindow_gui_wallet*)a_owner)->GuiWalletInfoWarnErr(__ERRR__,a_form,aArgs);
-    va_end (aArgs);
-    return nReturn;
-}
-
-
-int Mainwindow_gui_wallet::GuiWalletInfoWarnErr(int a_nType,const char* a_form, va_list a_args)
-{
-    char* pcBuffer(NULL);
-    int nReturn (0), nFreeBuffer;
-    if(g_nDebugApplication){vprintf(a_form,a_args);}
-
-#ifdef WIN32
-//#if 1
-    int nBuffSize(0);
-    char *pcTemp;
-
-    do{
-        nBuffSize += 1024;
-        pcTemp =  (char*)realloc(pcBuffer,nBuffSize);
-        if(!pcTemp){free(pcBuffer);return 0;}
-        pcBuffer = pcTemp;
-        nReturn = _vsnprintf(pcBuffer,nBuffSize,a_form,a_args);
-    }while(nReturn<0);
-
-    nFreeBuffer = 1;
-
-#else  // #ifdef WIN32
-    nReturn = vsnprintf(NULL,0,a_form,a_args);
-
-    if(nReturn<4095) // There will not be stack overflow
-    {
-        pcBuffer = (char*)alloca(nReturn+2);
-        nFreeBuffer = 0;
-    }
-    else
-    {
-        pcBuffer = (char*)malloc(nReturn + 2);
-        nFreeBuffer = 1;
-    }
-
-    nReturn = vsnprintf(pcBuffer,nReturn+1,a_form,a_args);
-    std::string csTextToHandle(pcBuffer);
-    emit GuiWalletInfoWarnErrSig(a_nType,csTextToHandle);
-
-#endif // #ifdef WIN32
-
-    if(nFreeBuffer)
-    {
-        free(pcBuffer);
-    }
-
-    return nReturn;
-}
-
-void Mainwindow_gui_wallet::GuiWalletInfoWarnErrSlot(int a_type,std::string a_csTextToHandle)
-{
-    switch(a_type)
-    {
-    case __WARN__:
-        (*m_pcInfoDlg)->setTextColor(Qt::darkYellow);
-        break;
-    case __ERRR__:
-        (*m_pcInfoDlg)->setTextColor(Qt::red);
-        break;
-    default:
-        (*m_pcInfoDlg)->setTextColor(Qt::black);
-        break;
-    }
-
-    m_pcInfoDlg->appentText(a_csTextToHandle);
-}
-
-
 void Mainwindow_gui_wallet::GetDigitalContentDetails(int a_act,std::string a_uri)
 {
     switch(a_act)
@@ -342,7 +196,8 @@ void Mainwindow_gui_wallet::GetDigitalContentDetails(int a_act,std::string a_uri
     case DCA::CALL_GET_CONTENT:
     {
         m_URI = a_uri;
-        UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::DigitalContentDetailsFunction);
+        std::string inp_line (std::string("get_content ")+a_uri);
+        SetNewTask(inp_line,this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
         break;
     }
     default:
@@ -351,38 +206,14 @@ void Mainwindow_gui_wallet::GetDigitalContentDetails(int a_act,std::string a_uri
 }
 
 
-void Mainwindow_gui_wallet::DigitalContentDetailsFunction(void*,struct StructApi* a_pApi)
-{
-    if(g_nDebugApplication){printf("!!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
-    if(a_pApi && a_pApi->wal_api)
-    {
-        if(g_nDebugApplication){printf("!!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
-        //optional<content_object> aObj = (a_pApi->wal_api)->get_content(m_URI); // To be implemenetd
-        if(g_nDebugApplication){printf("!!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
-    }
-}
-
-
-void Mainwindow_gui_wallet::CliCallbackFunction(void*,struct StructApi* a_pApi)
-{
-    if(a_pApi && a_pApi->gui_api)
-    {
-        (a_pApi->gui_api)->SetNewTask(this,(void*)-1,m_cli_line,&Mainwindow_gui_wallet::TaskDoneFunc);
-    }
-    else
-    {
-        m_cCliWalletDlg->setTextColor(Qt::red);
-        m_cCliWalletDlg.appentText("first connect the wallet to the witness node!");
-        m_cCliWalletDlg->setTextColor(Qt::black);
-        m_cCliWalletDlg.appentText(">>>");
-    }
-}
-
+// static int SetNewTask(const std::string& a_inp_line, Type* a_memb, void* a_clbData,
+//                      void (Type::*a_clbkFunction)(SetNewTask_last_args))
 
 void Mainwindow_gui_wallet::CliCallbackFnc(void*/*arg*/,const std::string& a_task)
 {
     m_cli_line = a_task;
-    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CliCallbackFunction);
+    SetNewTask(a_task,this,(void*)-1,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
+    //UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CliCallbackFunction);
 }
 
 
@@ -398,80 +229,25 @@ void Mainwindow_gui_wallet::OpenInfoDlgSlot()
 }
 
 
-void Mainwindow_gui_wallet::CurrentUserBalanceSlot(int a_nIndex)
+//int SetNewTask(const std::string& a_inp_line, Type* a_memb, void* a_clbData, void (Type::*a_clbkFunction)(SetNewTask_last_args))
+void Mainwindow_gui_wallet::ShowDigitalContextesGUI(QString a_filter)
 {
-    if(a_nIndex>=0){UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CurrentUserBalanceFunction);}
-}
+    //m_cqsCurrentFilter = a_filter;
+    //UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::ShowDigitalContextesFunction);
 
-
-void Mainwindow_gui_wallet::CurrentUserBalanceFunction(void*,struct StructApi* a_pApi)
-{
-    int nCurUserIndex ( m_pCentralWidget->usersCombo().currentIndex() );
-    const int cnSize ( m_pCentralWidget->usersCombo().count() );
-    if((nCurUserIndex>=0) && cnSize)
+    int nNumber;
+    QByteArray cqbaFilter = a_filter.toLatin1();
+    std::string csFilterStr = cqbaFilter.data();
+    const char* cpcNumberPtr = strchr(csFilterStr.c_str(),' ');
+    if( !cpcNumberPtr || ((nNumber=atoi(cpcNumberPtr+1))=0))
     {
-
-        m_vAccountsBalances.resize(cnSize);
-        QString cqsUserName = m_pCentralWidget->usersCombo().currentText();
-        QByteArray cLatin = cqsUserName.toLatin1();
-        std::string csAccName = cLatin.data();
-
-        __ulli64 ullnCurUserAndUpdate = (((__ulli64)nCurUserIndex)<<32 ) | 1;
-
-        std::string csTaskString = "list_account_balances " + csAccName;
-        if(a_pApi && a_pApi->gui_api){(a_pApi->gui_api)->SetNewTask(
-                        this,(void*)ullnCurUserAndUpdate,csTaskString,&Mainwindow_gui_wallet::TaskDoneFunc);}
+        csFilterStr += " 10";
     }
+    std::string csTaskLine = std::string("list_content ") + csFilterStr;
+
+    SetNewTask(csTaskLine,this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
 }
 
-
-void Mainwindow_gui_wallet::ShowDigitalContextesSlot(QString a_filter)
-{
-    m_cqsCurrentFilter = a_filter;
-    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::ShowDigitalContextesFunction);
-}
-
-
-void Mainwindow_gui_wallet::ShowDigitalContextesFunction(void*,struct StructApi* a_pApi)
-{
-    QString& cqsFilter = m_cqsCurrentFilter;
-
-#ifdef WALLET_API_DIRECT_CALLS
-//#if 1
-    if(a_pApi && a_pApi->wal_api)
-    {
-        optional<content_object> cContent;
-        std::vector<content_object> cvContents = a_pApi->wal_api->list_content("a",5);
-
-        const int nSize = cvContents.size();
-        if(g_nDebugApplication){printf("Number of digital contents = %d\n",nSize);}
-        for(int i(0); i<nSize;++i)
-        {
-            if(g_nDebugApplication){printf("%d, uri=\"%s\"\n",i,cvContents[i].URI.c_str());}
-            cContent = a_pApi->wal_api->get_content(cvContents[i].URI);
-            if(g_nDebugApplication){printf("valid=%d\n",(int)cContent.valid());}
-        }
-
-    }
-#else  // #ifdef WALLET_API_DIRECT_CALLS
-
-    if(a_pApi && a_pApi->gui_api)
-    {
-        int nNumber;
-        QByteArray cqbaFilter = cqsFilter.toLatin1();
-        std::string csFilterStr = cqbaFilter.data();
-        const char* cpcNumberPtr = strchr(csFilterStr.c_str(),' ');
-        if( !cpcNumberPtr || ((nNumber=atoi(cpcNumberPtr+1))=0))
-        {
-            csFilterStr += " 10";
-        }
-        std::string csTaskLine = std::string("list_content ") + csFilterStr;
-
-        a_pApi->gui_api->SetNewTask(this,NULL,csTaskLine,&Mainwindow_gui_wallet::TaskDoneFunc);
-    }
-
-#endif  // #ifdef WALLET_API_DIRECT_CALLS
-}
 
 /*
  * return != 0 means parsing error
@@ -581,38 +357,17 @@ void Mainwindow_gui_wallet::ConnectDoneSlot()
 
 void Mainwindow_gui_wallet::UnlockSlot()
 {
-    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::UnlockFunction);
+    //int SetNewTask(const std::string& a_inp_line, Type* a_memb, void* a_clbData,
+    //           void (Type::*a_clbkFunction)(SetNewTask_last_args))
+    //UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::UnlockFunction);
     //wapiptr->unlock(aPassword);
-}
-
-
-void Mainwindow_gui_wallet::UnlockFunction(void*,struct StructApi* a_pApi)
-{
-    graphene::wallet::wallet_api* pWapi = a_pApi ? a_pApi->wal_api : NULL;
-
-    try
+    QPoint thisPos = pos();
+    std::vector<std::string> cvsPassword(1);
+    decent::gui::tools::RET_TYPE rtRet = m_PasswdDialog2.execRD(&thisPos,cvsPassword);
+    if(rtRet == decent::gui::tools::RDB_OK)
     {
-        if(pWapi)
-        {
-            QPoint thisPos = pos();
-            std::vector<std::string> cvsPassword(1);
-            decent::gui::tools::RET_TYPE rtRet = m_PasswdDialog2.execRD(&thisPos,cvsPassword);
-            if(rtRet == decent::gui::tools::RDB_OK){pWapi->unlock(cvsPassword[0]);}
-        } // if(pWapi)
-    }
-    catch(const fc::exception& a_fc)
-    {
-        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
-        m_nError = 1;
-        m_error_string = a_fc.to_detail_string();
-        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
-    }
-    catch(...)
-    {
-        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
-        m_nError = 2;
-        m_error_string = "Unknown exception!";
-        if(g_nDebugApplication){printf("Unknown exception\n");}
+        std::string csPassLine = std::string("unlock ") + cvsPassword[0];
+        SetNewTask(csPassLine,this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
     }
 
 }
@@ -625,15 +380,10 @@ void Mainwindow_gui_wallet::moveEvent(QMoveEvent * a_event)
 }
 
 
-void Mainwindow_gui_wallet::ListAccountThreadFunc(int a_nDetailed)
-{
-    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CallShowWalletContentFunction);
-    emit WalletContentReadySig(a_nDetailed);
-}
-
 
 void Mainwindow_gui_wallet::WalletContentReadySlot(int a_nDetailed)
 {
+#if 0
     if(_LIKELY_(!m_nError))
     {
         std::string csBalanceName;
@@ -669,55 +419,7 @@ void Mainwindow_gui_wallet::WalletContentReadySlot(int a_nDetailed)
     }
 
     if(a_nDetailed){m_wallet_content_dlg.execWCt(m_vAccounts,m_vAccountsBalances,m_nError,m_error_string);}
-
-}
-
-
-void Mainwindow_gui_wallet::CallShowWalletContentFunction(void*,struct StructApi* a_pApi)
-{
-    graphene::wallet::wallet_api* pWapi = a_pApi ? a_pApi->wal_api : NULL;
-
-    try
-    {
-        if(pWapi)
-        {
-            account_object* pAcc;
-            m_vAccounts = pWapi->list_my_accounts();
-            const int cnNumOfAccounts(m_vAccounts.size());
-            //m_vAccountsBalances.reserve(cnNumOfAccounts);
-            m_vAccountsBalances.resize(cnNumOfAccounts);
-            for(int i(0); i<cnNumOfAccounts;++i)
-            {
-                pAcc = &(m_vAccounts[i]);
-#ifdef LIST_ACCOUNT_BALANCES_DIRECT_CALL
-                m_vAccountsBalances[i] = pWapi->list_account_balances(((std::string)(pAcc->id)));
-#else
-                m_vAccountsBalances[i].clear();
-                if(a_pApi->gui_api)
-                {
-                    int nUpdate = (i==(cnNumOfAccounts-1)) ? 1 : 0;
-                    __ulli64 ullnAccountAndUpdate = ((__ulli64)i)<<32 | nUpdate;
-                    std::string csTaskString = "list_account_balances " + ((std::string)(pAcc->id));
-                    (a_pApi->gui_api)->SetNewTask(this,(void*)ullnAccountAndUpdate,csTaskString,&Mainwindow_gui_wallet::TaskDoneFunc);
-                }
 #endif
-            }
-        }
-    }
-    catch(const fc::exception& a_fc)
-    {
-        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
-        m_nError = 1;
-        m_error_string = a_fc.to_detail_string();
-        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
-    }
-    catch(...)
-    {
-        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
-        m_nError = 2;
-        m_error_string = "Unknown exception!";
-        if(g_nDebugApplication){printf("Unknown exception\n");}
-    }
 
 }
 
@@ -726,7 +428,27 @@ void Mainwindow_gui_wallet::ImportKeySlot()
 {
     m_nError = 0;
     m_error_string = "";
-    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CallImportKeyFunction);
+
+    std::vector<std::string> cvsUsKey(2);
+    QComboBox& cUsersCombo = m_pCentralWidget->GetUsersList();
+
+    cvsUsKey[0] = "nathan";
+    cvsUsKey[1] = "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3";
+
+    if(cUsersCombo.count())
+    {
+        QString cqsUserName = cUsersCombo.currentText();
+        QByteArray cbaResult = cqsUserName.toLatin1();
+        cvsUsKey[0] = cbaResult.data();
+    }
+
+    QPoint thisPos = pos();
+    decent::gui::tools::RET_TYPE aRet = m_import_key_dlg.execRD(&thisPos,cvsUsKey);
+    if(aRet == decent::gui::tools::RDB_CANCEL){return ;}
+
+    std::string csTaskStr = "import_key " + cvsUsKey[0] + " " + cvsUsKey[1];
+    if(g_nDebugApplication){printf("!!!task: %s\n",csTaskStr.c_str());}
+    SetNewTask(csTaskStr,this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
 }
 
 
@@ -734,254 +456,72 @@ void Mainwindow_gui_wallet::ShowWalletContentSlot()
 {
     //m_wallet_content_dlg.exec();
 
+#ifdef API_SHOULD_BE_DEFINED2
+
     m_nError = 0;
     m_error_string = "";
-    std::thread aListAccountThread(&Mainwindow_gui_wallet::ListAccountThreadFunc,this,1);
-    aListAccountThread.detach();
-}
+    //std::thread aListAccountThread(&Mainwindow_gui_wallet::ListAccountThreadFunc,this,1);
+    //aListAccountThread.detach();
 
+    //UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CallShowWalletContentFunction);
 
-void Mainwindow_gui_wallet::CallInfoFunction(void*,struct StructApi* a_pApi)
-{
-    try
+    account_object* pAcc;
+    m_vAccounts = pWapi->list_my_accounts();
+    const int cnNumOfAccounts(m_vAccounts.size());
+    //m_vAccountsBalances.reserve(cnNumOfAccounts);
+    m_vAccountsBalances.resize(cnNumOfAccounts);
+    for(int i(0); i<cnNumOfAccounts;++i)
     {
-        if(a_pApi && (a_pApi->gui_api)){(a_pApi->gui_api)->SetNewTask(this,NULL,"info",&Mainwindow_gui_wallet::TaskDoneFunc);}
-    }
-    catch(const fc::exception& a_fc)
-    {
-        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
-        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
-        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
-    }
-    catch(...)
-    {
-        if(g_nDebugApplication){printf("file:\"" __FILE__ "\",line:%d\n",__LINE__);}
-        if(g_nDebugApplication){printf("Unknown exception\n");}
-    }
-}
-
-
-void Mainwindow_gui_wallet::CallImportKeyFunction(void*,struct StructApi* a_pApi)
-{
-    try
-    {
-        if(a_pApi && (a_pApi->wal_api))
+        pAcc = &(m_vAccounts[i]);
+#ifdef LIST_ACCOUNT_BALANCES_DIRECT_CALL
+        m_vAccountsBalances[i] = pWapi->list_account_balances(((std::string)(pAcc->id)));
+#else
+        m_vAccountsBalances[i].clear();
+        if(a_pApi->gui_api)
         {
-            //QByteArray cLatin;
-            std::vector<std::string> cvsUsKey(2);
-            //QString cqsUserName(tr("nathan"));
-            //QString cqsKey(tr("5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3"));
-            //std::string csUser_name, csKey;
-            QComboBox& cUsersCombo = m_pCentralWidget->GetUsersList();
-
-            cvsUsKey[0] = "nathan";
-            cvsUsKey[1] = "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3";
-
-            if(cUsersCombo.count())
-            {
-                QString cqsUserName = cUsersCombo.currentText();
-                QByteArray cbaResult = cqsUserName.toLatin1();
-                cvsUsKey[0] = cbaResult.data();
-            }
-
-            QPoint thisPos = pos();
-            decent::gui::tools::RET_TYPE aRet = m_import_key_dlg.execRD(&thisPos,cvsUsKey);
-            if(aRet == decent::gui::tools::RDB_CANCEL){return ;}
-            //cLatin = cqsUserName.toLatin1();
-            //csUser_name = cLatin.data();
-            //cLatin = cqsKey.toLatin1();
-            //csKey = cLatin.data();
-#ifdef WALLET_API_DIRECT_CALLS
-            (a_pApi->wal_api)->import_key(cvsUsKey[0],cvsUsKey[1]);
-#else  // #ifdef WALLET_API_DIRECT_CALLS
-            if(a_pApi->gui_api)
-            {
-                std::string csTaskStr = "import_key " + cvsUsKey[0] + " " + cvsUsKey[1];
-                if(g_nDebugApplication){printf("!!!task: %s\n",csTaskStr.c_str());}
-                (a_pApi->gui_api)->SetNewTask(this,NULL,csTaskStr,&Mainwindow_gui_wallet::TaskDoneFunc);
-            }
-#endif  // #ifdef WALLET_API_DIRECT_CALLS
-
-        } // if(a_pApi && (a_pApi->wal_api))
-    } // try
-    catch(const fc::exception& a_fc)
-    {
-        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
-        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
-    }
-    catch(...)
-    {
-        if(g_nDebugApplication){printf("Unknown exception\n");}
+            int nUpdate = (i==(cnNumOfAccounts-1)) ? 1 : 0;
+            __ulli64 ullnAccountAndUpdate = ((__ulli64)i)<<32 | nUpdate;
+            std::string csTaskString = "list_account_balances " + ((std::string)(pAcc->id));
+            (a_pApi->gui_api)->SetNewTask(this,(void*)ullnAccountAndUpdate,csTaskString,&Mainwindow_gui_wallet::TaskDoneFunc);
+        }
+#endif
     }
 
-    emit WalletContentReadySig(0);
+#endif // #ifdef API_SHOULD_BE_DEFINED
 }
 
 
 void Mainwindow_gui_wallet::InfoSlot()
 {
-    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallInfoFunction);
+    //UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallInfoFunction);
+    //if(a_pApi && (a_pApi->gui_api)){(a_pApi->gui_api)->SetNewTask(this,NULL,"info",&Mainwindow_gui_wallet::TaskDoneFunc);}
+    SetNewTask("info",this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
 }
 
-
-void Mainwindow_gui_wallet::CallAboutFunction(void*,struct StructApi* a_pApi)
-{
-    graphene::wallet::wallet_api* pApi = NULL;
-    bool bCreatedHere = false;
-    std::string aStr;
-
-    try
-    {
-        aStr = "";
-        fc::variant_object var_obj_about;
-        pApi = a_pApi ? a_pApi->wal_api : NULL;
-#if 0
-        if(!pApi){
-            graphene::wallet::wallet_data wdata;
-            get_remote_api
-            pApi = new graphene::wallet::wallet_api(wdata,);
-            bCreatedHere=true;
-        }
-#endif
-
-        if(pApi)
-        {
-            var_obj_about = pApi->about();
-            fc::variant_object::iterator itCur;
-            fc::variant_object::iterator itBeg = var_obj_about.begin();
-            fc::variant_object::iterator itEnd = var_obj_about.end();
-
-            for(itCur=itBeg;itCur < itEnd;++itCur)
-            {
-                aStr += "\"";
-                aStr += (*itCur).key();
-                aStr += "\": \"";
-                aStr += (*itCur).value().as_string();
-                aStr += "\"\n";
-            }
-
-        } // if(pApi)
-        else
-        {
-            //var_obj_about = static_about();
-            aStr = "First connect to the witness node, then require again info!";
-        }
-
-
-    }
-    catch(const fc::exception& a_fc)
-    {
-        aStr += a_fc.to_detail_string();
-        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
-        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
-    }
-    catch(...)
-    {
-        aStr += "Unknown Exception thrown!";
-        if(g_nDebugApplication){printf("Unknown exception\n");}
-    }
-
-    m_info_dialog.setFixedSize(500,300);
-    m_info_dialog->setText(tr(aStr.c_str()));
-    m_info_dialog.exec();
-
-    if(bCreatedHere){delete pApi;}
-
-}
 
 void Mainwindow_gui_wallet::AboutSlot()
 {
-    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallAboutFunction);
+    //UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallAboutFunction);
+    SetNewTask("about",this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
 }
 
-
-void Mainwindow_gui_wallet::CallHelpFunction(void*,struct StructApi* a_pApi)
-{
-    graphene::wallet::wallet_api* pApi = NULL;
-    bool bCreatedHere = false;
-    std::string aStr;
-
-    try
-    {
-        aStr = "";
-        //fc::variant_object var_obj_about;
-        pApi = a_pApi ? a_pApi->wal_api : NULL;
-
-        if(pApi)
-        {
-            aStr = pApi->help();
-        } // if(pApi)
-        else
-        {
-            //var_obj_about = static_about();
-            aStr = "First connect to the witness node, then require again info!";
-        }
-
-
-    }
-    catch(const fc::exception& a_fc)
-    {
-        aStr += a_fc.to_detail_string();
-        //(*a_fpErr)(a_pOwner,a_fc.to_string(),a_fc.to_detail_string());
-        if(g_nDebugApplication){printf("%s\n",(a_fc.to_detail_string()).c_str());}
-    }
-    catch(...)
-    {
-        aStr += "Unknown Exception thrown!";
-        if(g_nDebugApplication){printf("Unknown exception\n");}
-    }
-
-    m_info_dialog.setMaximumSize(QSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX));
-    m_info_dialog.resize(500,500);
-    m_info_dialog->setText(tr(aStr.c_str()));
-    m_info_dialog.exec();
-
-    if(bCreatedHere){delete pApi;}
-}
 
 void Mainwindow_gui_wallet::HelpSlot()
 {
-    UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallHelpFunction);
+    //UseConnectedApiInstance<Mainwindow_gui_wallet>(this,NULL,&Mainwindow_gui_wallet::CallHelpFunction);
+    SetNewTask("help",this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
 }
 
 
-void Mainwindow_gui_wallet::TaskDoneFunc(void* a_callbackArg,int a_err,const std::string& a_task,const std::string& a_result)
+void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const std::string& a_task,const std::string& a_result)
 {
-    emit TaskDoneSig(a_callbackArg,a_err,a_task,a_result);
-}
+    //emit TaskDoneSig(a_callbackArg,a_err,a_task,a_result);
 
-
-void Mainwindow_gui_wallet::ConnectSlot()
-{
-    m_nError = 0;
-    m_error_string = "";
-    m_ConnectDlg.exec();
-    UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions);
-}
-
-
-void Mainwindow_gui_wallet::SetupInfoWarnErrrFunctions(void*,struct StructApi* a_pApi)
-{
-    if(a_pApi && a_pApi->gui_api)
-    {
-        (a_pApi->gui_api)->SetOwner(this);
-        (a_pApi->gui_api)->SetInfoReporter(&GuiWalletInfoStatic);
-        (a_pApi->gui_api)->SetWarnReporter(&GuiWalletWarnStatic);
-        (a_pApi->gui_api)->SetErrorReporter(&GuiWalletErrrStatic);
+    if(g_nDebugApplication){printf("fnc:%s, a_clbkArg=%p, task=%s, result=%s\n",
+                                   __FUNCTION__,a_clbkArg,a_task.c_str(),a_result.c_str());
     }
-    else
-    {
-        GuiWalletInfoWarnErrSlot(__ERRR__,"Connection not sucessfull");
-    }
-}
 
-
-void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_task, std::string a_result)
-{
-
-    if(g_nDebugApplication){printf("fnc:%s, arg=%p, task=%s, result=%s\n",__FUNCTION__,a_arg,a_task.c_str(),a_result.c_str());}
-
-    if(a_arg == ((void*)-1))
+    if(a_clbkArg == ((void*)-1))
     {
         if(a_err)
         {
@@ -1002,11 +542,24 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
         m_info_dialog->setText(aStrToDisplay);
         m_info_dialog.exec();
     }
+    else if(strstr(a_task.c_str(),"about"))
+    {
+        m_info_dialog.setFixedSize(500,300);
+        m_info_dialog->setText(tr(a_result.c_str()));
+        m_info_dialog.exec();
+    }
+    else if(strstr(a_task.c_str(),"help"))
+    {
+        m_info_dialog.setMaximumSize(QSize(QWIDGETSIZE_MAX,QWIDGETSIZE_MAX));
+        m_info_dialog.resize(500,500);
+        m_info_dialog->setText(tr(a_result.c_str()));
+        m_info_dialog.exec();
+    }
     else if(strstr(a_task.c_str(),"list_account_balances"))
     {
         int nCurUserIndex, nUpdate;
 
-        if(a_arg == ((void*)-1))
+        if(a_clbkArg == ((void*)-1))
         {
             goto donePoint;
             if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
@@ -1019,7 +572,7 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
         }
         else
         {
-            __ulli64 ullnUserAndUpdate = (__ulli64)a_arg;
+            uint64_t ullnUserAndUpdate = (uint64_t)a_clbkArg;
             nCurUserIndex = (int)((ullnUserAndUpdate>>32) & 0xffffffff);
             nUpdate = (int)(ullnUserAndUpdate & 0xffffffff);
         }
@@ -1034,6 +587,7 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
 
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
         double lfDecents = strtod(a_result.c_str(),NULL);
+#ifdef API_SHOULD_BE_DEFINED2
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
         std::vector<asset> vAssets;
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
@@ -1048,6 +602,7 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
         if(nUpdate){emit WalletContentReadySig(0);}
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
+#endif // #ifdef API_SHOULD_BE_DEFINED
     }
     else if(strstr(a_task.c_str(),"list_content "))
     {
@@ -1066,16 +621,89 @@ void Mainwindow_gui_wallet::TaskDoneSlot(void* a_arg,int a_err,std::string a_tas
     }
     else if(strstr(a_task.c_str(),"import_key "))
     {
-        std::thread aListAccountThread(&Mainwindow_gui_wallet::ListAccountThreadFunc,this,0);
-        aListAccountThread.detach();
+        //std::thread aListAccountThread(&Mainwindow_gui_wallet::ListAccountThreadFunc,this,0);
+        //aListAccountThread.detach();
+        emit WalletContentReadySig(0);
+    }
+    else if(strstr(a_task.c_str(),"unlock "))
+    {
+        //
     }
 
 donePoint:
-    if(a_arg == ((void*)-1))
+    if(a_clbkArg == ((void*)-1))
     {
         m_cCliWalletDlg.appentText(a_result);
         if(a_err){ m_cCliWalletDlg->setTextColor(Qt::black);}
         m_cCliWalletDlg.appentText(">>>");
     }
+}
+
+
+void Mainwindow_gui_wallet::ManagementNewFuncGUI(void* a_clbkArg,int64_t a_err,const std::string& task,const std::string& result)
+{
+    int nCode = (int)a_err;
+    int nError = 0;  // in 64 bit should be stored and error and message
+
+    if(g_nDebugApplication)
+    {
+        printf("fn:%s, ln:%d -> code=%d, err=%d\n",__FUNCTION__,__LINE__,nCode,nError);
+    }
+
+    switch(nCode)
+    {
+    case WAS::CONNECTED_ST:
+    {
+        QString cqsNewFilter = m_pCentralWidget->getFilterText();
+        if(cqsNewFilter==m_cqsPreviousFilter){return;}
+
+        else if(cqsNewFilter==tr(""))
+        {
+            // may be in the case of empty filter all contents should be displayed?
+            m_cqsPreviousFilter = cqsNewFilter;
+            return;
+        }
+
+        m_cqsPreviousFilter = cqsNewFilter;
+        ShowDigitalContextesGUI(cqsNewFilter);
+
+        break;
+    }
+    default:
+        break;
+    }
 
 }
+
+
+void Mainwindow_gui_wallet::ConnectSlot()
+{
+    m_nError = 0;
+    m_error_string = "";
+    m_ConnectDlg.exec();
+}
+
+
+
+/*///////////////////////////////////////////////////////*/
+#if 0
+void Mainwindow_gui_wallet::CurrentUserBalanceFunction(void*,struct StructApi* a_pApi)
+{
+    int nCurUserIndex ( m_pCentralWidget->usersCombo().currentIndex() );
+    const int cnSize ( m_pCentralWidget->usersCombo().count() );
+    if((nCurUserIndex>=0) && cnSize)
+    {
+
+        m_vAccountsBalances.resize(cnSize);
+        QString cqsUserName = m_pCentralWidget->usersCombo().currentText();
+        QByteArray cLatin = cqsUserName.toLatin1();
+        std::string csAccName = cLatin.data();
+
+        __ulli64 ullnCurUserAndUpdate = (((__ulli64)nCurUserIndex)<<32 ) | 1;
+
+        std::string csTaskString = "list_account_balances " + csAccName;
+        if(a_pApi && a_pApi->gui_api){(a_pApi->gui_api)->SetNewTask(
+                        this,(void*)ullnCurUserAndUpdate,csTaskString,&Mainwindow_gui_wallet::TaskDoneFunc);}
+    }
+}
+#endif  // #if 0

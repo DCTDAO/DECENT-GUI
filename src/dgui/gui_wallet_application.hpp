@@ -12,9 +12,10 @@
 #define GUI_WALLET_APPLICATION_HPP
 
 #include <QApplication>
-#include "fc_rpc_gui.hpp"
-#include "connected_api_instance.hpp"
+//#include "connected_api_instance.hpp"
 #include "qt_commonheader.hpp"
+#include "unnamedsemaphorelite.hpp"
+#include "ui_wallet_functions.hpp"
 
 
 namespace gui_wallet
@@ -30,15 +31,9 @@ public:
     void ConnectToSigFnc(QObject* a_pObject,const char* method);
 
 protected:
-    void MenegerThreadFunc();
-
-protected:
 signals:
     void UpdateGuiStateSig(int state);
 
-private:
-    fc::rpc::gui    m_gui_app;
-    volatile int    m_nRun;
 };
 
 }
@@ -62,7 +57,7 @@ public:
     int                                 m_nRes;
     std::string                         m_csRes;
     };
-    decent_tools::UnnamedSemaphoreLite  m_sema;
+    decent::tools::UnnamedSemaphoreLite  m_sema;
 public:
     InGuiThreatCaller();
     ~InGuiThreatCaller();

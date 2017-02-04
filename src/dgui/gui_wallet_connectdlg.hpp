@@ -20,11 +20,12 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QTableWidget>
-#include <graphene/wallet/wallet.hpp>
+//#include <graphene/wallet/wallet.hpp>
 #include <thread>
 #include <vector>
-#include "connected_api_instance.hpp"
+//#include "connected_api_instance.hpp"
 #include "richdialog.hpp"
+#include "ui_wallet_functions.hpp"
 
 namespace gui_wallet
 {
@@ -72,39 +73,22 @@ public:
     ConnectDlg(QWidget* parent);
     virtual ~ConnectDlg();
 
-    std::string GetWalletFileName()const;
+    std::string GetWalletFileName();
     void SetWalletFileName(const std::string& wallet_file_name);
 
-private:
-    void CallSaveWalletFile(void*,struct StructApi* pApi);
-
-    static void error_function(void* a_pOwner, const std::string& a_err, const std::string& a_details);
-    void error_function(const std::string& a_err, const std::string& a_details);
-
-    static void done_function(void* a_pOwner);
-    void done_function();
-    static void SetPassword(void* a_owner,int a_answer,/*string**/void* a_str_ptr);
-
 protected:
+    static void SetPassword(void* a_owner,int a_answer,/*string**/void* a_str_ptr);
+    void SaveAndConnectDoneFncGUI(void* clbkArg,int64_t err,const std::string& task,const std::string& result);
+    void ConnectErrorFncGui(const std::string a_err, const std::string a_details);
     void resizeEvent ( QResizeEvent * event );
 
 protected slots:
     void ConnectPushedSlot();
-    void ConnectDoneSlot();
-    void ConnectErrorSlot(const std::string a_err, const std::string a_details);
 
 private:
-signals:
-    void ConnectDoneSig();
-    void ConnectErrorSig(const std::string a_err, const std::string a_details);
-
-public:
-    //mutable void*                   m_pTmp; // used for callbacks
-private:
-    graphene::wallet::wallet_data   m_wdata;
+    SConnectionStruct   m_wdata;
     QHBoxLayout                     m_main_layout;
     QTableWidget                    m_main_table;
-    mutable std::string             m_wallet_file_name;
     //graphene::wallet::wallet_api*   m_pCurApi;
     //fc::rpc::gui*                   m_pCurGuiApi;
     //std::vector<graphene::wallet::wallet_api*>   m_vAllApis;

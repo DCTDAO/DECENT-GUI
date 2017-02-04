@@ -35,36 +35,17 @@ namespace gui_wallet
         Mainwindow_gui_wallet();
         virtual ~Mainwindow_gui_wallet();   // virtual because may be this class will be
                                             // used by inheritanc
-        int GuiWalletInfoWarnErr(int type,const char* form, va_list args);
-
-    private:
+    protected:
         void CreateActions();
         void CreateMenues();
 
-        void TaskDoneFunc(void* clbkArg,int err,const std::string& task,const std::string& result);
+        void TaskDoneFuncGUI(void* clbkArg,int64_t err,const std::string& task,const std::string& result);
+        void ManagementNewFuncGUI(void* clbkArg,int64_t err,const std::string& task,const std::string& result);
 
-    private:
-        void CallInfoFunction(void*,struct StructApi* pApi);
-        void CallAboutFunction(void*,struct StructApi* a_pApi);
-        void CallHelpFunction(void*,struct StructApi* a_pApi);
-        void CallImportKeyFunction(void*,struct StructApi* a_pApi);
-        void CallShowWalletContentFunction(void*,struct StructApi* a_pApi);
-        void UnlockFunction(void*,struct StructApi* a_pApi);
-        void ShowDigitalContextesFunction(void*,struct StructApi* a_pApi);
-        void CurrentUserBalanceFunction(void*,struct StructApi* a_pApi);
-        void SetupInfoWarnErrrFunctions(void*,struct StructApi* api);
-        void CliCallbackFunction(void*,struct StructApi* a_pApi);
-        void DigitalContentDetailsFunction(void*,struct StructApi* a_pApi);
-
-        void ListAccountThreadFunc(int a_nDetailed);
-
-        static int GuiWalletInfoStatic(void* owner,const char* form, ...);
-        static int GuiWalletWarnStatic(void* owner,const char* form, ...);
-        static int GuiWalletErrrStatic(void* owner,const char* form, ...);
-
-    private:
         void CliCallbackFnc(void*arg,const std::string& task);
         int GetDigitalContentsFromString(std::vector<gui_wallet::SDigitalContent>& acContents, const char* contents_str);
+
+        void ShowDigitalContextesGUI(QString filter);
 
     protected slots:/* Instead of these one line slots
                      *, probably should be used lambda functions?
@@ -76,32 +57,24 @@ namespace gui_wallet
 
         void ShowWalletContentSlot();
         void WalletContentReadySlot(int a_nDetailed);
-        void CurrentUserBalanceSlot(int index );
 
-    protected slots:
         void ConnectSlot();
         void ImportKeySlot();
         void UnlockSlot();
-        void TaskDoneSlot(void*arg,int err,std::string task, std::string result);
         void ConnectDoneSlot();
-        void ShowDigitalContextesSlot(QString filter);
         void OpenCliWalletDlgSlot();
         void OpenInfoDlgSlot();
 
-        void StateUpdateSlot(int state);
-        void GuiWalletInfoWarnErrSlot(int type,std::string);
         void GetDigitalContentDetails(int act,std::string uri);
 
-    private:
+    protected:
     signals:
-        void TaskDoneSig(void* clbkArg,int err,std::string task, std::string result);
         void WalletContentReadySig(int a_nDetailed);
-        void GuiWalletInfoWarnErrSig(int type,std::string);
 
     protected:
         virtual void moveEvent(QMoveEvent *) _OVERRIDE_ ;
 
-    private:
+    protected:
         class QVBoxLayout*   m_pCentralAllLayout;
         class QHBoxLayout*   m_pMenuLayout;
         CentralWigdet*       m_pCentralWidget;
@@ -124,52 +97,25 @@ namespace gui_wallet
         QAction             m_ActionWalletContent;
         QAction             m_ActionUnlock;
         QAction             m_ActionImportKey;
-        QAction             m_ActionShowDigitalContextes;
         QAction             m_ActionOpenCliWallet;
         QAction             m_ActionOpenInfoDlg;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
         WalletContentDlg    m_wallet_content_dlg;
 
-        vector<account_object>  m_vAccounts;
-    public:
-        vector<vector<asset>>   m_vAccountsBalances;
-    private:
+        std::vector<account_object_str>  m_vAccounts;
+        std::vector<std::vector<asset_str>>   m_vAccountsBalances;
         QVBoxLayout             m_main_layout;
         QLabel                  m_num_acc_or_error_label;
         int                     m_nError;
         std::string             m_error_string;
         PasswordDialog          m_PasswdDialog2;
 
-    private:
-        /*class ImportKeyDialog : private QDialog
-        {
-        public:
-            ImportKeyDialog():m_us_name_lab(tr("Username")),m_pub_key_lab(tr("private_wif_key")){
-                m_us_name_lay.addWidget(&m_us_name_lab); m_us_name_lay.addWidget(&m_user_name);
-                m_pub_key_lay.addWidget(&m_pub_key_lab); m_pub_key_lay.addWidget(&m_pub_key);
-                m_layout.addLayout(&m_us_name_lay);m_layout.addLayout(&m_pub_key_lay);
-                setLayout(&m_layout);
-            }
-
-            void exec(const QPoint& a_move,QString& a_us_nm, QString& a_pub_k)
-            {
-                m_user_name.setText(a_us_nm);m_pub_key.setText(a_pub_k);
-                QDialog::move(a_move); QDialog::exec();
-                a_us_nm = m_user_name.text();a_pub_k=m_pub_key.text();
-            }
-            QHBoxLayout m_layout;
-            QVBoxLayout m_us_name_lay, m_pub_key_lay;
-            QLabel m_us_name_lab,m_pub_key_lab;
-            QLineEdit m_user_name, m_pub_key;
-        }m_import_key_dlg;*/
         decent::gui::tools::RichDialog m_import_key_dlg;
 
-    private:
         CliWalletDlg                        m_cCliWalletDlg;
         std::string                         m_cli_line;
 
-        QString                            m_cqsCurrentFilter;
         QString                            m_cqsPreviousFilter;
         QTextEdit*                          m_pInfoTextEdit;
         CliWalletDlg*                        m_pcInfoDlg;

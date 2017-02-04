@@ -207,7 +207,7 @@ SOURCES += ../../../src/dgui/main_gui_wallet.cpp \
     ../../../src/dgui/overview_tab.cpp \
     ../../../src/dgui/gui_wallet_global.cpp \
     ../../../src/dgui/gui_wallet_connectdlg.cpp \
-    ../../../src/dgui/fc_rpc_gui.cpp \
+    ../../../src/ui_wallet/fc_rpc_gui.cpp \
     ../../../src/dgui/gui_wallet_application.cpp
 HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/gui_wallet_centralwigdet.hpp \
@@ -217,10 +217,9 @@ HEADERS += ../../../src/dgui/gui_wallet_mainwindow.hpp \
     ../../../src/dgui/overview_tab.hpp \
     ../../../src/dgui/gui_wallet_global.hpp \
     ../../../src/dgui/gui_wallet_connectdlg.hpp \
-    ../../../src/dgui/fc_rpc_gui.hpp \
+    ../../../src/ui_wallet/fc_rpc_gui.hpp \
     ../../../include/unnamedsemaphorelite.hpp \
-    ../../../src/dgui/gui_wallet_application.hpp \
-    ../../../src/dgui/connected_api_instance.hpp
+    ../../../src/dgui/gui_wallet_application.hpp
 
 }
 
@@ -228,14 +227,22 @@ SOURCES += \
     ../../../src/dgui/text_display_dialog.cpp \
     ../../../src/dgui/walletcontentdlg.cpp \
     ../../../src/utils/richdialog.cpp \
-    ../../../src/dgui/cliwalletdlg.cpp
+    ../../../src/dgui/cliwalletdlg.cpp \
+    ../../../src/ui_wallet/ui_wallet_functions.cpp \
+    ../../../src/dgui/decent_gui_inguiloopcaller.cpp
 
 HEADERS += \
     ../../../src/dgui/text_display_dialog.hpp \
     ../../../src/dgui/walletcontentdlg.hpp \
     ../../../include/richdialog.hpp \
     ../../../src/dgui/cliwalletdlg.hpp \
-    ../../../src/dgui/qt_commonheader.hpp
+    ../../../src/dgui/qt_commonheader.hpp \
+    ../../../include/ui_wallet_functions.hpp \
+    ../../../include/ui_wallet_functions_base.hpp \
+    ../../../include/decent_tool_fifo.hpp \
+    ../../../include/decent_tool_fifo.tos \
+    ../../../include/decent_gui_inguiloopcaller_glb.hpp \
+    ../../../src/dgui/decent_gui_inguiloopcaller.hpp
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += $$DECENT_LIB/contrib/pbc/include
