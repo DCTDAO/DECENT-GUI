@@ -47,6 +47,26 @@ void ConnectToStateChangeUpdate(QObject* a_pObject,const char* a_method)
 }
 
 
+int WarnAndWaitFunc(void* a_pOwner,WarnYesOrNoFuncType a_fpYesOrNo,
+                    void* a_pDataForYesOrNo,const char* a_form,...)
+{
+    QString aString;
+
+    va_list args;
+
+    va_start( args, a_form );
+    aString.vsprintf(a_form,args);
+    va_end( args );
+
+    s_pWarner->m_nRes = -1;
+    s_pWarner->m_pParent2 = (QWidget*)a_pOwner;
+    s_pWarner->EmitShowMessageBox(aString,a_fpYesOrNo,a_pDataForYesOrNo);
+    s_pWarner->m_sema.wait();
+
+    return s_pWarner->m_nRes;
+}
+
+
 gui_wallet::application::application(int& argc, char** argv)
     :
       QApplication(argc,argv)
@@ -91,26 +111,6 @@ static int InfoFunc(void*,const char*, ...)
 static int WarnFunc(void*,const char*, ...)
 {
     return 0;
-}
-
-
-int WarnAndWaitFunc(void* a_pOwner,WarnYesOrNoFuncType a_fpYesOrNo,
-                    void* a_pDataForYesOrNo,const char* a_form,...)
-{
-    QString aString;
-
-    va_list args;
-
-    va_start( args, a_form );
-    aString.vsprintf(a_form,args);
-    va_end( args );
-
-    s_pWarner->m_nRes = -1;
-    s_pWarner->m_pParent2 = (QWidget*)a_pOwner;
-    s_pWarner->EmitShowMessageBox(aString,a_fpYesOrNo,a_pDataForYesOrNo);
-    s_pWarner->m_sema.wait();
-
-    return s_pWarner->m_nRes;
 }
 
 

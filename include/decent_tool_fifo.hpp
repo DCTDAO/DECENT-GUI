@@ -18,6 +18,7 @@ namespace decent { namespace tools{
 template <typename TypeInp, typename TypeTaskFnc>
 struct taskListItem{
     taskListItem(TypeTaskFnc fn_tsk_dn,const TypeInp& inp,void* owner = NULL,void* clbArg=NULL);
+    ~taskListItem();
 
     struct taskListItem*    next;
     void*                   owner;

@@ -36,4 +36,6 @@ typedef void (*ConnErrFuncType)(void*owner, void* clbData,const std::string& err
 typedef void (__THISCALL__ *TypeCallbackSetNewTaskGlb)(void* owner,SetNewTask_last_args);
 typedef void (*WarnYesOrNoFuncType)(void*owner,int answer,/*string**/void* str_ptr);
 
+#include "debug_decent_application.h"
+
 #endif // UI_WALLET_FUNCTIONS_BASE_HPP

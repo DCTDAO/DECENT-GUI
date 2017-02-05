@@ -22,4 +22,7 @@ int CallFunctionInGuiLoop(SetNewTask_last_args,Type* a_memb,void (Type::*a_fpFun
 
 int CallFunctionInGuiLoop(SetNewTask_last_args,void* owner,TypeCallbackSetNewTaskGlb fpFnc);
 
+int WarnAndWaitFunc(void* a_pOwner,WarnYesOrNoFuncType a_fpYesOrNo,
+                    void* a_pDataForYesOrNo,const char* a_form,...);
+
 #endif // DECENT_GUI_INGUILOOPCALLER_GLB_HPP

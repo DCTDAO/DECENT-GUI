@@ -67,7 +67,7 @@ gui_wallet::ConnectDlg::ConnectDlg(QWidget* a_parent)
 
 gui_wallet::ConnectDlg::~ConnectDlg()
 {
-    SaveWalletFile(m_wdata);
+    SaveWalletFile2(m_wdata);
 }
 
 
@@ -149,6 +149,10 @@ void gui_wallet::ConnectDlg::SetPassword(void* a_owner,int a_answer,/*string**/v
 void gui_wallet::ConnectDlg::ConnectPushedSlot()
 {
     m_wdata.wallet_file_name = GetWalletFileName();
+    if(g_nDebugApplication)
+    {
+        printf("fn:%s, ln:%d -> wal_fl_name=%s\n",__FUNCTION__,__LINE__,m_wdata.wallet_file_name.c_str());
+    }
 
     if(LoadWalletFile(&m_wdata))
     { // File does not exist
@@ -159,6 +163,12 @@ void gui_wallet::ConnectDlg::ConnectPushedSlot()
         m_wdata.chain_id = (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ;
     }
 
+    if(g_nDebugApplication)
+    {
+        printf("fn:%s, ln:%d \n",__FUNCTION__,__LINE__);
+    }
+
+    m_wdata.action = WAT::CONNECT;
     StartConnectionProcedure(m_wdata,this,&m_wdata,&gui_wallet::ConnectDlg::SaveAndConnectDoneFncGUI);
 
 }

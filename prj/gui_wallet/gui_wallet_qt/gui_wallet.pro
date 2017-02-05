@@ -229,7 +229,8 @@ SOURCES += \
     ../../../src/utils/richdialog.cpp \
     ../../../src/dgui/cliwalletdlg.cpp \
     ../../../src/ui_wallet/ui_wallet_functions.cpp \
-    ../../../src/dgui/decent_gui_inguiloopcaller.cpp
+    ../../../src/dgui/decent_gui_inguiloopcaller.cpp \
+    ../../../src/utils/decent_tools_rwlock.cpp
 
 HEADERS += \
     ../../../src/dgui/text_display_dialog.hpp \
@@ -242,7 +243,9 @@ HEADERS += \
     ../../../include/decent_tool_fifo.hpp \
     ../../../include/decent_tool_fifo.tos \
     ../../../include/decent_gui_inguiloopcaller_glb.hpp \
-    ../../../src/dgui/decent_gui_inguiloopcaller.hpp
+    ../../../src/dgui/decent_gui_inguiloopcaller.hpp \
+    ../../../include/decent_tools_rwlock.hpp \
+    ../../../include/debug_decent_application.h
 
 INCLUDEPATH += /usr/local/include
 INCLUDEPATH += $$DECENT_LIB/contrib/pbc/include

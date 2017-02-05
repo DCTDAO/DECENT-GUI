@@ -24,12 +24,14 @@ public:
 
     void CallFunctionInGuiLoop(SetNewTask_last_args,void* owner,TypeCallbackSetNewTaskGlb fpFnc);
 
+    // void* a_clbData,int64_t a_err, const std::string& a_inp, const std::string& a_result
 private:
 signals:
-    void NewFunctionToCallSig(SetNewTask_last_args,void* owner,TypeCallbackSetNewTaskGlb fpFnc);
+    void NewFunctionToCallSig(void*,int64_t, std::string, std::string,void*,TypeCallbackSetNewTaskGlb);
 
 private slots:
-    void NextFunctionToCallSlot(SetNewTask_last_args,void* owner,TypeCallbackSetNewTaskGlb fpFnc);
+    //void NextFunctionToCallSlot(SetNewTask_last_args,void* owner,TypeCallbackSetNewTaskGlb fpFnc);
+    void NextFunctionToCallSlot(void*,int64_t, std::string, std::string,void*,TypeCallbackSetNewTaskGlb);
 };
 
 }}

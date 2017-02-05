@@ -13,12 +13,13 @@
 #include "ui_wallet_functions_base.hpp"
 
 // WAT stands for Wallet Acctions Type
-namespace WAT {enum _WAT_TP{CONNECT,SAVE2,LOAD2};}
+namespace WAT {enum _WAT_TP{CONNECT,SAVE2,LOAD2,EXIT};}
 
 // WAS stands for wallet Api State
 namespace WAS{enum _API_STATE{DEFAULT_ST=0,CONNECTED_ST,_API_STATE_SIZE};}
 
 typedef struct SConnectionStruct{
+    ~SConnectionStruct(){__DEBUG_APP2__(1,"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");}
     WAT::_WAT_TP   action;
     std::string   wallet_file_name;
     ConnErrFuncType fpErr; WarnYesOrNoFuncType fpWarnFunc;
@@ -31,7 +32,7 @@ typedef struct SConnectionStruct{
 
 
 int LoadWalletFile(SConnectionStruct* a_pWalletData);
-int SaveWalletFile(const SConnectionStruct& a_pWalletData);
+int SaveWalletFile2(const SConnectionStruct& a_pWalletData);
 
 
 void SetManagementCallback_base(void* a_pOwner,void* a_pClbData,...);
@@ -61,8 +62,5 @@ static int SetNewTask(const std::string& a_inp_line, Type* a_memb, void* a_clbDa
     return SetNewTask_base(a_inp_line, a_memb, a_clbData, a_clbkFunction);
 }
 
-
-int WarnAndWaitFunc(void* a_pOwner,WarnYesOrNoFuncType a_fpYesOrNo,
-                    void* a_pDataForYesOrNo,const char* a_form,...);
 
 #endif // UI_WALLET_FUNCTIONS_HPP

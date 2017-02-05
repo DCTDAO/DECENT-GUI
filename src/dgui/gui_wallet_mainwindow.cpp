@@ -98,8 +98,8 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
 Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
-    delete m_pInfoTextEdit;
-    delete m_pcInfoDlg;
+    //delete m_pInfoTextEdit;
+    //delete m_pcInfoDlg;
 }
 
 
@@ -640,20 +640,19 @@ donePoint:
 }
 
 
-void Mainwindow_gui_wallet::ManagementNewFuncGUI(void* a_clbkArg,int64_t a_err,const std::string& task,const std::string& result)
+void Mainwindow_gui_wallet::ManagementNewFuncGUI(void* a_clbkArg,int64_t a_err,const std::string& a_task,const std::string& a_result)
 {
     int nCode = (int)a_err;
     int nError = 0;  // in 64 bit should be stored and error and message
 
-    if(g_nDebugApplication)
-    {
-        printf("fn:%s, ln:%d -> code=%d, err=%d\n",__FUNCTION__,__LINE__,nCode,nError);
-    }
+    __DEBUG_APP2__(2,"clbArg=%p, task=\"%s\", res=\"%s\", err=%d",
+                   a_clbkArg,a_task.c_str(),a_result.c_str(),nError);
 
     switch(nCode)
     {
     case WAS::CONNECTED_ST:
     {
+        __DEBUG_APP2__(2,"WAS::CONNECTED_ST");
         QString cqsNewFilter = m_pCentralWidget->getFilterText();
         if(cqsNewFilter==m_cqsPreviousFilter){return;}
 
@@ -670,6 +669,7 @@ void Mainwindow_gui_wallet::ManagementNewFuncGUI(void* a_clbkArg,int64_t a_err,c
         break;
     }
     default:
+        __DEBUG_APP2__(2,"default");
         break;
     }
 

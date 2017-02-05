@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include "debug_decent_application.h"
 
 /*
     struct taskListItem*    next;
@@ -35,6 +36,13 @@ decent::tools::taskListItem<TypeInp,TypeTaskFnc>::taskListItem(TypeTaskFnc a_fn_
       next(NULL),owner(a_owner),callbackArg(a_clbArg),input(a_inp),fn_tsk_dn2(a_fn_tsk_dn)
 {
     //
+}
+
+
+template <typename TypeInp, typename TypeTaskFnc>
+decent::tools::taskListItem<TypeInp,TypeTaskFnc>::~taskListItem()
+{
+    __DEBUG_APP2__(1,"this=%p    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ",this);
 }
 
 
@@ -65,10 +73,12 @@ decent::tools::FiFo<TypeInp,TypeTaskFnc>::~FiFo()
 
     m_task_mutex.lock();
     pItemTodelete = m_pFirstTask ? m_pFirstTask->next : NULL;
+    __DEBUG_APP2__(1,"pItemTodelete=%p ",pItemTodelete);
     while(pItemTodelete)
     {
+        __DEBUG_APP2__(_DEF_LOG_LEVEL_,"this=%p    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ",pItemTodelete);
         pItemTemp = pItemTodelete->next;
-        delete pItemTodelete;
+        if(pItemTodelete != (&m_InitialTaskBuffer)){delete pItemTodelete;}
         pItemTodelete = pItemTemp;
     }
     m_task_mutex.unlock();
@@ -92,7 +102,8 @@ bool decent::tools::FiFo<TypeInp,TypeTaskFnc>::GetFirstTask(decent::tools::taskL
         {
             pTmp = m_pFirstTask->next;
             memcpy(m_pFirstTask,m_pFirstTask->next,sizeof(struct taskListItem<TypeInp,TypeTaskFnc>));
-            delete pTmp;
+            if(pTmp != (&m_InitialTaskBuffer)){delete pTmp;}
+            __DEBUG_APP2__(_DEF_LOG_LEVEL_,"this=%p    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ",pTmp);
         }
         else {m_pFirstTask = NULL;}
         bRet = true;

@@ -20,6 +20,7 @@
 #include <fc/network/http/websocket.hpp>
 #include <fc/rpc/websocket_api.hpp>
 #include "decent_gui_inguiloopcaller_glb.hpp"
+#include "decent_tools_rwlock.hpp"
 
 #ifdef WIN32
 #include <windows.h>
@@ -41,14 +42,22 @@ static void*                        s_pManagerOwner = NULL;
 static void*                        s_pManagerClbData = NULL;
 
 static void gui_wallet_application_MenegerThreadFunc(void);
+static int SaveWalletFile_private(const SConnectionStruct& a_WalletData);
 
 struct StructApi{StructApi():wal_api(NULL),gui_api(NULL){} graphene::wallet::wallet_api* wal_api; fc::rpc::gui* gui_api;};
 
-class NewTestMutex : public std::mutex{
+class NewTestMutex2 : public std::mutex{
 public:
-    void lock(){/*if(g_nDebugApplication){printf("++locking!\n");}*/std::mutex::lock();/*if(g_nDebugApplication){printf("++locked!\n");}*/}
-    void unlock(){/*if(g_nDebugApplication){printf("--unlocking!\n");}*/std::mutex::unlock();/*if(g_nDebugApplication){printf("--unlocked!\n");}*/}
+    void lock(){if(g_nDebugApplication>1){printf("++locking!\n");}std::mutex::lock();if(g_nDebugApplication>1){printf("++locked!\n");}}
+    void unlock(){if(g_nDebugApplication>1){printf("--unlocking!\n");}std::mutex::unlock();if(g_nDebugApplication>1){printf("--unlocked!\n");}}
 };
+
+#define NewTestMutex decent::tools::RWLock
+//#define NewTestMutex std::mutex
+//#define NewTestMutex NewTestMutex2
+
+
+static NewTestMutex*   s_pMutex_for_cur_api; // It is better to use here rw mutex
 
 static decent::tools::FiFo<SConnectionStruct,CONN_FNC_TYPE>*  s_pConnectionRequestFifo;
 static decent::tools::UnnamedSemaphoreLite*     s_pSema_for_connection_thread;
@@ -58,6 +67,7 @@ static void ConnectionThreadFunction(void);
 class ConnectionThreadStarter{
 public:
     ConnectionThreadStarter(){
+        s_pMutex_for_cur_api = new NewTestMutex;
         s_pConnectionRequestFifo = new decent::tools::FiFo<SConnectionStruct,TypeCallbackSetNewTaskGlb>;
         //if(!s_pConnectionRequestFifo){throw "Low memory!\n" __FILE__ ;}
         s_pSema_for_connection_thread = new decent::tools::UnnamedSemaphoreLite;
@@ -71,17 +81,18 @@ public:
     ~ConnectionThreadStarter(){
         s_nManagerThreadRun = 0;
         s_nConThreadRun = 0;
+        s_pSema_for_connection_thread->post();
         s_pManagementThread->join();
         s_pConnectionThread->join();
         delete s_pManagementThread;
         delete s_pConnectionThread;
         delete s_pSema_for_connection_thread;
         delete s_pConnectionRequestFifo;
+        delete s_pMutex_for_cur_api;
     }
 };
+static ConnectionThreadStarter s_ConnectionThreadStarter;
 
-//static std::mutex   s_mutex_for_cur_api; // It is better to use here rw mutex
-static NewTestMutex   s_mutex_for_cur_api; // It is better to use here rw mutex
 static StructApi      s_CurrentApi;
 
 static int ConnectToNewWitness(const decent::tools::taskListItem<SConnectionStruct,CONN_FNC_TYPE>&);
@@ -124,7 +135,7 @@ int SetNewTask_base(const std::string& a_inp_line, void* a_owner, void* a_clbDat
     fpTaskDone = va_arg( aFunc, TypeCallbackSetNewTaskGlb);
     va_end( aFunc );
 
-    std::lock_guard<NewTestMutex> lock(s_mutex_for_cur_api);
+    std::lock_guard<NewTestMutex> lock(*s_pMutex_for_cur_api);
     if(s_CurrentApi.gui_api)
     {
         (s_CurrentApi.gui_api)->SetNewTask(a_inp_line,a_owner,a_clbData,fpTaskDone);
@@ -192,23 +203,13 @@ int LoadWalletFile(SConnectionStruct* a_pWalletData)
 
 
 
-int SaveWalletFile(const SConnectionStruct& a_WalletData)
+int SaveWalletFile2(const SConnectionStruct& a_WalletData)
 {
     int nReturn(0);
-    s_mutex_for_cur_api.lock();
-    try{
-        s_wdata.ws_server = a_WalletData.ws_server;
-        s_wdata.ws_user = a_WalletData.ws_user ;
-        s_wdata.ws_password = a_WalletData.ws_password;
-        //m_wdata.chain_id = chain_id_type( std::string( (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ) );
-        s_wdata.chain_id = chain_id_type(a_WalletData.chain_id);
-
-        if(s_CurrentApi.wal_api){(s_CurrentApi.wal_api)->save_wallet_file(a_WalletData.wallet_file_name);}
-        else{nReturn=NO_API_INITED;}
-    }
+    s_pMutex_for_cur_api->lock();
+    try{SaveWalletFile_private(a_WalletData);}
     catch(...){nReturn=UNKNOWN_EXCEPTION;}
-
-    s_mutex_for_cur_api.unlock();
+    s_pMutex_for_cur_api->unlock();
     return nReturn;
 }
 
@@ -220,44 +221,58 @@ int SaveWalletFile(const SConnectionStruct& a_WalletData)
 //void (__THISCALL__ *TypeCallbackSetNewTaskGlb)(void* owner,SetNewTask_last_args)
 
 
+static int SaveWalletFile_private(const SConnectionStruct& a_WalletData)
+{
+    int nReturn(0);
+    s_wdata.ws_server = a_WalletData.ws_server;
+    s_wdata.ws_user = a_WalletData.ws_user ;
+    s_wdata.ws_password = a_WalletData.ws_password;
+    //m_wdata.chain_id = chain_id_type( std::string( (((QLineEdit*)m_main_table.cellWidget(CHAIN_ID_FIELD,1))->text()).toLatin1().data() ) );
+    s_wdata.chain_id = chain_id_type(a_WalletData.chain_id);
+
+    if(s_CurrentApi.wal_api){(s_CurrentApi.wal_api)->save_wallet_file(a_WalletData.wallet_file_name);}
+    else{nReturn=NO_API_INITED;}
+    return nReturn;
+}
+
+
 static void gui_wallet_application_MenegerThreadFunc(void)
 {
     char vnOpt[WAS::_API_STATE_SIZE];
     int i;
 
     s_nManagerThreadRun = 1;
+    if(g_nDebugApplication){printf("!!!!!!! fn:%s, ln:%d\n",__FUNCTION__,__LINE__);}
 
     memset(vnOpt,0,sizeof(vnOpt));
 
     while(s_nManagerThreadRun)
     {
         // make checks
-        s_mutex_for_cur_api.lock();
+        s_pMutex_for_cur_api->lock();
 
         if(s_CurrentApi.wal_api )
         {
             vnOpt[WAS::CONNECTED_ST] = 1;
         }
 
-        {
-            std::lock_guard<NewTestMutex> lock(s_mutex_for_cur_api);
+        s_pMutex_for_cur_api->unlock();
 
-            for(i=0;i<WAS::_API_STATE_SIZE;++i)
+        for(i=0;i<WAS::_API_STATE_SIZE;++i)
+        {
+            if(vnOpt[i])
             {
-                if(vnOpt[i])
-                {
-                    //if(g_nDebugApplication){printf("emit UpdateGuiStateSig(%d)\n",i);}
-                    //emit UpdateGuiStateSig(i);
-                    CallFunctionInGuiLoop(s_pManagerClbData,(int64_t)i, __MANAGER_CLB_,
-                                          __FILE__ "\nManagement",s_pManagerOwner,s_fpMenegmentClbk);
-                    vnOpt[i] = 0;
-                }
-            }  // for(i=0;i<_API_STATE_SIZE;++i)
-        }
+                //if(g_nDebugApplication){printf("emit UpdateGuiStateSig(%d)\n",i);}
+                //emit UpdateGuiStateSig(i);
+                CallFunctionInGuiLoop(s_pManagerClbData,(int64_t)i, __MANAGER_CLB_,
+                                      __FILE__ "\nManagement",s_pManagerOwner,s_fpMenegmentClbk);
+                vnOpt[i] = 0;
+            }
+        }  // for(i=0;i<_API_STATE_SIZE;++i)
 
 
         Sleep(1000);
-    }
+    } // while(s_nManagerThreadRun)
 }
 
 
@@ -270,19 +285,26 @@ static void __THISCALL__ MenegementClbkDefault(void* a_owner,SetNewTask_last_arg
     }
 }
 
+
 static void ConnectionThreadFunction(void)
 {
     decent::tools::taskListItem<SConnectionStruct,CONN_FNC_TYPE> aTaskItem(NULL,SConnectionStruct());
-    int nConnectReturn;
+    //int nConnectReturn;
     s_nConThreadRun = 1;
+    std::thread* pConnectionThread;
 
     while(s_nConThreadRun)
     {
         s_pSema_for_connection_thread->wait();
-        if(g_nDebugApplication){printf("fn:%s, ln:%d -> Connection request!\n",__FUNCTION__,__LINE__);}
+        __DEBUG_APP2__(1,"!!!!!!!!!!!!\n");
         while(s_pConnectionRequestFifo->GetFirstTask(&aTaskItem))
         {
-            nConnectReturn = ConnectToNewWitness(aTaskItem);
+            //nConnectReturn = ConnectToNewWitness(aTaskItem);
+            pConnectionThread = new std::thread(&ConnectToNewWitness,aTaskItem);
+            if(pConnectionThread){
+                pConnectionThread->detach();
+                delete pConnectionThread;
+            }
         }
 
     }
@@ -291,9 +313,9 @@ static void ConnectionThreadFunction(void)
 
 static void SetCurrentApis(const StructApi* a_pApis)
 {
-    s_mutex_for_cur_api.lock();
+    s_pMutex_for_cur_api->lock();
     memcpy(&s_CurrentApi,a_pApis,sizeof(StructApi));
-    s_mutex_for_cur_api.unlock();
+    s_pMutex_for_cur_api->unlock();
 }
 
 
@@ -305,7 +327,7 @@ static int ConnectToNewWitness(const decent::tools::taskListItem<SConnectionStru
 
         if(aStrct.action == WAT::SAVE2)
         {
-            int nReturn(SaveWalletFile(aStrct));
+            int nReturn(SaveWalletFile2(aStrct));
             CallFunctionInGuiLoop(a_con_data.callbackArg,(int64_t)nReturn, __CONNECTION_CLB_,
                                   __FILE__ "\nSaving procedure",a_con_data.owner,a_con_data.fn_tsk_dn2);
             return nReturn;
