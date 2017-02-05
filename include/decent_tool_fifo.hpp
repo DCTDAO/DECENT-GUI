@@ -10,10 +10,48 @@
 #ifndef DECENT_TOOL_FIFO_HPP
 #define DECENT_TOOL_FIFO_HPP
 
+//#define USE_FIFO_SIMPLE
+
 #include <mutex>
 #include <stddef.h>
 
 namespace decent { namespace tools{
+
+#ifdef USE_FIFO_SIMPLE
+
+template <typename TypeFifoVrb>
+class FiFo
+{
+public:
+    FiFo();
+    virtual ~FiFo();
+
+    /*
+     *  return
+     *      NULL     -> there is no any task to handle
+     *      non NULL -> pointer to tast to fullfill
+     */
+    bool GetFirstTask(TypeFifoVrb* firstElementBuffer);
+    void AddNewTask(const TypeFifoVrb& a_new);
+
+protected:
+    template <typename TypeFifoVrb>
+    struct fifoListItem{
+        fifoListItem(const TypeFifoVrb& inp);
+        ~fifoListItem();
+
+        struct fifoListItem*    next;
+        TypeFifoVrb             elemnt;
+    };
+
+protected:
+    fifoListItem<TypeFifoVrb>*  m_pFirstTask;
+    fifoListItem<TypeFifoVrb>*  m_pLastTask;
+    std::mutex                          m_task_mutex;
+};
+
+
+#else  // #ifdef USE_FIFO_SIMPLE
 
 template <typename TypeInp, typename TypeTaskFnc>
 struct taskListItem{
@@ -48,6 +86,9 @@ protected:
     taskListItem<TypeInp,TypeTaskFnc>*  m_pLastTask;
     std::mutex                          m_task_mutex;
 };
+
+
+#endif  // #ifdef USE_FIFO_SIMPLE
 
 }}
 

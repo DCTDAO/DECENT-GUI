@@ -7,6 +7,10 @@
  *  This file implements ...
  *
  */
+
+
+#define     CLI_WALLET_CODE     ((void*)-1)
+
 #include "gui_wallet_mainwindow.hpp"
 #include <QMenuBar>
 //#include "connected_api_instance.hpp"
@@ -21,6 +25,42 @@
 
 using namespace gui_wallet;
 extern int g_nDebugApplication;
+
+
+
+/*//////////////////////////////////////////////////////////////////////////////////*/
+
+static const char* FindValueStringByKey(const char* a_cpcInput, const char* a_key)
+{
+    const char* cpcValueFld = strstr(a_cpcInput,a_key);
+
+    if(!cpcValueFld){return NULL;}
+    cpcValueFld = strchr(cpcValueFld+1,':');
+    if(!cpcValueFld){return NULL;}
+    return cpcValueFld + 1;
+}
+
+
+static bool FindStringByKey(const char* a_cpcInput, const char* a_key, std::string* a_pToFind)
+{
+    std::string& csToParse = *a_pToFind;
+    const char *cpcStrBegin, *cpcStrEnd, *cpcValueFld = strstr(a_cpcInput,a_key);
+
+    if(!cpcValueFld++){return false;}
+    cpcValueFld = strchr(cpcValueFld,':');
+    if(!cpcValueFld++){return false;}
+    cpcStrBegin = strchr(cpcValueFld,'\"');
+    if(!cpcStrBegin++){return false;}
+    cpcStrEnd = strchr(cpcStrBegin,'\"');
+    if(!cpcStrEnd){return false;}
+    csToParse = std::string(cpcStrBegin,((size_t)cpcStrEnd)-((size_t)cpcStrBegin));
+    return true;
+
+
+}
+
+
+/*//////////////////////////////////////////////////////////////////////////////////*/
 
 Mainwindow_gui_wallet::Mainwindow_gui_wallet()
         :
@@ -89,7 +129,7 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
     connect(&m_ConnectDlg, SIGNAL(ConnectDoneSig()), this, SLOT(ConnectDoneSlot()) );
     //connect(pUsersCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(CurrentUserBalanceSlot(int)) );
     //void GuiWalletInfoWarnErrSlot(std::string);
-    connect(m_pCentralWidget->GetBrowseContentTab(),SIGNAL(GetdetailsOnDigContentSig(int,std::string)),this,SLOT(GetDigitalContentDetails(int,std::string)));
+    connect(m_pCentralWidget->GetBrowseContentTab(),SIGNAL(ShowDetailsOnDigContentSig(std::string)),this,SLOT(ShowDetailsOnDigContentSlot(std::string)));
 
     ConnectToStateChangeUpdate(this,SLOT(StateUpdateSlot(int)));
 
@@ -98,8 +138,8 @@ Mainwindow_gui_wallet::Mainwindow_gui_wallet()
 
 Mainwindow_gui_wallet::~Mainwindow_gui_wallet()
 {
-    //delete m_pInfoTextEdit;
-    //delete m_pcInfoDlg;
+    delete m_pInfoTextEdit;
+    delete m_pcInfoDlg;
 }
 
 
@@ -189,30 +229,13 @@ void Mainwindow_gui_wallet::CreateMenues()
 }
 
 
-void Mainwindow_gui_wallet::GetDigitalContentDetails(int a_act,std::string a_uri)
-{
-    switch(a_act)
-    {
-    case DCA::CALL_GET_CONTENT:
-    {
-        m_URI = a_uri;
-        std::string inp_line (std::string("get_content ")+a_uri);
-        SetNewTask(inp_line,this,NULL,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
-        break;
-    }
-    default:
-        break;
-    }
-}
-
-
 // static int SetNewTask(const std::string& a_inp_line, Type* a_memb, void* a_clbData,
 //                      void (Type::*a_clbkFunction)(SetNewTask_last_args))
 
 void Mainwindow_gui_wallet::CliCallbackFnc(void*/*arg*/,const std::string& a_task)
 {
     m_cli_line = a_task;
-    SetNewTask(a_task,this,(void*)-1,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
+    SetNewTask(a_task,this,CLI_WALLET_CODE,&Mainwindow_gui_wallet::TaskDoneFuncGUI);
     //UseConnectedApiInstance(this,NULL,&Mainwindow_gui_wallet::CliCallbackFunction);
 }
 
@@ -226,6 +249,13 @@ void Mainwindow_gui_wallet::OpenCliWalletDlgSlot()
 void Mainwindow_gui_wallet::OpenInfoDlgSlot()
 {
     m_pcInfoDlg->exec();
+}
+
+
+void Mainwindow_gui_wallet::ShowDetailsOnDigContentSlot(std::string a_get_cont_str)
+{
+    m_pInfoTextEdit->setText(tr(a_get_cont_str.c_str()));
+    m_pcInfoDlg->exec();  // Shold be modified
 }
 
 
@@ -376,7 +406,7 @@ void Mainwindow_gui_wallet::UnlockSlot()
 void Mainwindow_gui_wallet::moveEvent(QMoveEvent * a_event)
 {
     //m_wallet_content_dlg.move( mapToGlobal(a_event->pos()));
-    m_wallet_content_dlg.move( /*mapToGlobal*/(a_event->pos()));
+    //m_wallet_content_dlg.move( /*mapToGlobal*/(a_event->pos()));
 }
 
 
@@ -513,6 +543,23 @@ void Mainwindow_gui_wallet::HelpSlot()
 }
 
 
+static void ParseDigitalContentFromGetContentString(gui_wallet::SDigitalContent* a_pContent, const std::string& a_str)
+{
+    __DEBUG_APP2__(3,"str_to_parse is: \"\n%s\n\"",a_str.c_str());
+    //std::string created;
+    //std::string expiration;
+    FindStringByKey(a_str.c_str(),"created",&a_pContent->created);
+    FindStringByKey(a_str.c_str(),"expiration",&a_pContent->expiration);
+    const char* cpcStrToGet = FindValueStringByKey(a_str.c_str(),"size");
+    if(cpcStrToGet)
+    {
+        char* pcTerm;
+        a_pContent->size = strtod(cpcStrToGet,&pcTerm);
+    }
+    a_pContent->get_content_str = a_str;
+}
+
+
 void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const std::string& a_task,const std::string& a_result)
 {
     //emit TaskDoneSig(a_callbackArg,a_err,a_task,a_result);
@@ -521,7 +568,7 @@ void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const 
                                    __FUNCTION__,a_clbkArg,a_task.c_str(),a_result.c_str());
     }
 
-    if(a_clbkArg == ((void*)-1))
+    if(a_clbkArg == CLI_WALLET_CODE)
     {
         if(a_err)
         {
@@ -559,7 +606,7 @@ void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const 
     {
         int nCurUserIndex, nUpdate;
 
-        if(a_clbkArg == ((void*)-1))
+        if(a_clbkArg == CLI_WALLET_CODE)
         {
             goto donePoint;
             if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
@@ -580,6 +627,8 @@ void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const 
         if(g_nDebugApplication){printf("cur_index=%d\n",nCurUserIndex);}
         if(nCurUserIndex<0){return;}
 
+
+#ifdef API_SHOULD_BE_DEFINED2
         if((((int)m_vAccountsBalances.size()) -1) < nCurUserIndex)
         {
             m_vAccountsBalances.resize(nCurUserIndex+1);
@@ -587,7 +636,7 @@ void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const 
 
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
         double lfDecents = strtod(a_result.c_str(),NULL);
-#ifdef API_SHOULD_BE_DEFINED2
+
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
         std::vector<asset> vAssets;
         if(g_nDebugApplication){printf("line:%d\n",__LINE__);}
@@ -607,13 +656,25 @@ void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const 
     else if(strstr(a_task.c_str(),"list_content "))
     {
         //QTableWidget& cContents = m_pCentralWidget->getDigitalContentsTable();
-        std::vector<gui_wallet::SDigitalContent> vcDigContent;
-        GetDigitalContentsFromString(vcDigContent,a_result.c_str());
-        m_pCentralWidget->SetDigitalContentsGUI(vcDigContent);
+        std::string csGetContStr;
+        m_vcDigContent.clear();
+        GetDigitalContentsFromString(m_vcDigContent,a_result.c_str());
+        const int cnContsNumber(m_vcDigContent.size());
+
+        for(int i(0); i<cnContsNumber; ++i)
+        {
+            csGetContStr = std::string("get_content \"") + m_vcDigContent[i].URI + "\"";
+            SetNewTask(csGetContStr,this,(void*)((size_t)i),&Mainwindow_gui_wallet::TaskDoneFuncGUI);
+        }
+
     }
     else if(strstr(a_task.c_str(),"get_content "))
     {
-        //
+        const int cnIndex (  (int)(  (size_t)a_clbkArg  )     );
+        const int cnContsNumber(m_vcDigContent.size());
+        if(cnIndex>=cnContsNumber){return;}
+        ParseDigitalContentFromGetContentString(&m_vcDigContent[cnIndex],a_result);
+        if(cnIndex==(cnContsNumber-1)){m_pCentralWidget->SetDigitalContentsGUI(m_vcDigContent);}
     }
     else if(strstr(a_task.c_str(),"info"))
     {
@@ -631,7 +692,7 @@ void Mainwindow_gui_wallet::TaskDoneFuncGUI(void* a_clbkArg,int64_t a_err,const 
     }
 
 donePoint:
-    if(a_clbkArg == ((void*)-1))
+    if(a_clbkArg == CLI_WALLET_CODE)
     {
         m_cCliWalletDlg.appentText(a_result);
         if(a_err){ m_cCliWalletDlg->setTextColor(Qt::black);}

@@ -12,6 +12,8 @@
 #include <thread>
 #include <iostream>
 
+#ifndef WALLETCONTENTDLG_UNDERSTAND
+
 extern int g_nDebugApplication;
 
 gui_wallet::WalletContentDlg::WalletContentDlg()
@@ -43,3 +45,5 @@ int gui_wallet::WalletContentDlg::execWCt(std::vector<account_object_str>& a_pAc
 
     return QDialog::exec();
 }
+
+#endif  //  #ifndef WALLETCONTENTDLG_UNDERSTAND

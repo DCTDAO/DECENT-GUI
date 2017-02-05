@@ -171,6 +171,10 @@ void Browse_content_tab::DigContCallback(_NEEDED_ARGS_)
         printf("!!!! fn:%s, ln:%d  ",__FUNCTION__,__LINE__);
         printf("clbdata=%p, act=%d, pDigCont=%p\n",a_clb_data,a_act,a_pDigContent);
     }
+
+    emit ShowDetailsOnDigContentSig(a_pDigContent->get_content_str);
+
+#if 0
     switch(a_act)
     {
     case DCA::CALL_GET_CONTENT:
@@ -179,6 +183,7 @@ void Browse_content_tab::DigContCallback(_NEEDED_ARGS_)
     default:
         break;
     }
+#endif  // #if 0
 }
 
 
@@ -214,11 +219,13 @@ void Browse_content_tab::SetDigitalContentsGUI(const std::vector<gui_wallet::SDi
         if(!pCheck){throw "Low memory!";}
         m_TableWidget.setCellWidget(i,DCF::IS_SELECTED,pCheck);
 
-        pLabel = new TableWidgetItemW<QLabel>(tr("1970.01.01"),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
+        pLabel = new TableWidgetItemW<QLabel>(tr(aTemporar.created.c_str()),
+                                              aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
         m_TableWidget.setCellWidget(i,DCF::TIME,pLabel);
 
-        pLabel = new TableWidgetItemW<QLabel>(tr(aTemporar.synopsis.c_str()),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
+        pLabel = new TableWidgetItemW<QLabel>(tr(aTemporar.synopsis.c_str()),
+                                              aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
         m_TableWidget.setCellWidget(i,DCF::SYNOPSIS,pLabel);
 
@@ -227,11 +234,13 @@ void Browse_content_tab::SetDigitalContentsGUI(const std::vector<gui_wallet::SDi
         if(!pLabel){throw "Low memory!";}
         m_TableWidget.setCellWidget(i,DCF::RATING,pLabel);
 
-        pLabel = new TableWidgetItemW<QLabel>(tr("left"),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
+        pLabel = new TableWidgetItemW<QLabel>(tr(aTemporar.expiration.c_str()),
+                                              aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
         m_TableWidget.setCellWidget(i,DCF::LEFT,pLabel);
 
-        pLabel = new TableWidgetItemW<QLabel>(tr("1MB"),aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
+        pLabel = new TableWidgetItemW<QLabel>(QString::number(aTemporar.size,'f').remove( QRegExp("0+$") ).remove( QRegExp("\\.$") ),
+                                              aTemporar,this,NULL,&Browse_content_tab::DigContCallback);
         if(!pLabel){throw "Low memory!";}
         m_TableWidget.setCellWidget(i,DCF::SIZE,pLabel);
 

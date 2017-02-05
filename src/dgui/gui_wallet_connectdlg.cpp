@@ -195,6 +195,7 @@ void gui_wallet::ConnectDlg::SaveAndConnectDoneFncGUI(void* /*clbkArg*/,int64_t 
                             QMessageBox::Ok,this);
     aMessageBox.setDetailedText(QObject::tr("Connected"));
     aMessageBox.exec();
+    emit ConnectDoneSig();
 }
 
 

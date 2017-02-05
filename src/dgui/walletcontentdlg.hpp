@@ -10,6 +10,8 @@
 #ifndef WALLETCONTENTDLG_HPP
 #define WALLETCONTENTDLG_HPP
 
+#define WALLETCONTENTDLG_UNDERSTAND
+
 #include <QDialog>
 //#include <graphene/wallet/wallet.hpp>
 //#include "connected_api_instance.hpp"
@@ -28,6 +30,8 @@
 #ifndef _LIKELY_
 #define _LIKELY_(_expr_)    (_expr_)
 #endif
+
+#ifndef WALLETCONTENTDLG_UNDERSTAND
 
 namespace gui_wallet
 {
@@ -68,5 +72,8 @@ private:
 };
 
 }
+
+
+#endif  // #ifndef WALLETCONTENTDLG_UNDERSTAND
 
 #endif // WALLETCONTENTDLG_HPP

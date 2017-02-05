@@ -42,6 +42,12 @@ namespace gui_wallet
         std::string synopsis;
         std::string URI;
         double AVG_rating;
+        //
+        std::string created;
+        std::string expiration;
+        double  size;
+
+        std::string  get_content_str;
     };
 
 #define _NEEDED_ARGS_ void* a_clb_data,int a_act,const gui_wallet::SDigitalContent* a_pDigContent
@@ -80,7 +86,7 @@ namespace gui_wallet
 
     public:
     signals:
-        void GetdetailsOnDigContentSig(int act,std::string uri);
+        void ShowDetailsOnDigContentSig(std::string get_cont_str);
 
     protected:
         void PrepareTableWidgetHeaderGUI();

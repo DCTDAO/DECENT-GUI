@@ -65,7 +65,7 @@ namespace gui_wallet
         void OpenCliWalletDlgSlot();
         void OpenInfoDlgSlot();
 
-        void GetDigitalContentDetails(int act,std::string uri);
+        void ShowDetailsOnDigContentSlot(std::string get_cont_str);
 
     protected:
     signals:
@@ -101,10 +101,10 @@ namespace gui_wallet
         QAction             m_ActionOpenInfoDlg;
         ConnectDlg          m_ConnectDlg;
         TextDisplayDialog   m_info_dialog;
-        WalletContentDlg    m_wallet_content_dlg;
+        //WalletContentDlg    m_wallet_content_dlg;
 
-        std::vector<account_object_str>  m_vAccounts;
-        std::vector<std::vector<asset_str>>   m_vAccountsBalances;
+        //std::vector<account_object_str>  m_vAccounts;
+        //std::vector<std::vector<asset_str>>   m_vAccountsBalances;
         QVBoxLayout             m_main_layout;
         QLabel                  m_num_acc_or_error_label;
         int                     m_nError;
@@ -119,7 +119,8 @@ namespace gui_wallet
         QString                            m_cqsPreviousFilter;
         QTextEdit*                          m_pInfoTextEdit;
         CliWalletDlg*                        m_pcInfoDlg;
-        std::string                         m_URI;
+        //std::string                         m_URI;
+        std::vector<gui_wallet::SDigitalContent> m_vcDigContent;
     };
 
 }

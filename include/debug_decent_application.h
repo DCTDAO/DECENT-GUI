@@ -16,7 +16,7 @@
 #include <string.h>
 extern int g_nDebugApplication;
 
-#define _DEF_LOG_LEVEL_ 0
+#define _DEF_LOG_LEVEL_ 2
 
 #define __SOURCE_FILE__ (strrchr(__FILE__,'/') ? strrchr(__FILE__,'/') + 1 : (strrchr(__FILE__,'\\') ? strrchr(__FILE__,'\\') + 1 : __FILE__))
 
