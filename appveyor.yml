@@ -1,0 +1,68 @@
+version: 1.5.0.{build}
+
+image: Visual Studio 2017
+
+environment:
+  BOOST: C:\Libraries\boost_1_69_0
+  QT: C:\Qt\5.12\msvc2017_64
+  DOXYGEN: 1.8.14
+  IPFS: 0.4.22
+
+install:
+- cmd: >-
+    cd C:\Tools\vcpkg
+
+    git pull --quiet
+
+    bootstrap-vcpkg.bat
+
+    vcpkg --triplet x64-windows-static install cryptopp curl openssl pbc nlohmann-json
+
+    vcpkg upgrade --no-dry-run
+
+    IF NOT EXIST installed\x64-windows-static\tools\go-ipfs\%IPFS%.stamp curl https://github.com/ipfs/go-ipfs/releases/download/v%IPFS%/go-ipfs_v%IPFS%_windows-amd64.zip -L -o downloads\ipfs.zip && del installed\x64-windows-static\tools\go-ipfs /Q && 7z x downloads\ipfs.zip -oinstalled\x64-windows-static\tools && echo "yes" > installed\x64-windows-static\tools\go-ipfs\%IPFS%.stamp
+
+    cd %APPVEYOR_BUILD_FOLDER%
+
+    nuget install Doxygen -version %DOXYGEN% -outputdirectory ..
+
+    git submodule update --init --recursive
+
+cache: C:\Tools\vcpkg\installed
+
+build_script:
+- cmd: >-
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+    cmake -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\DECENT -DCMAKE_PROGRAM_PATH=%APPVEYOR_BUILD_FOLDER%\..\Doxygen.%DOXYGEN%\tools -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST%\lib64-msvc-14.1 -DQt5Widgets_DIR=%QT%\lib\cmake\Qt5Widgets -DQt5LinguistTools_DIR=%QT%\lib\cmake\Qt5LinguistTools -G Ninja .
+
+    ninja -j2 install
+
+    msbuild Windows\DECENTSetup.sln /p:Configuration=Release /p:ProductVersion=%APPVEYOR_BUILD_VERSION% /p:DECENTPath=%APPVEYOR_BUILD_FOLDER%\DECENT /p:QtPath=%QT% /p:IPFSPath=C:\Tools\vcpkg\installed\x64-windows-static\tools\go-ipfs /p:OutputPath=%APPVEYOR_BUILD_FOLDER%\%APPVEYOR_BUILD_VERSION%
+
+artifacts:
+- path: $(APPVEYOR_BUILD_VERSION)\DECENTSetup.msi
+  name: MSI
+
+deploy:
+- provider: BinTray
+  username: decent-dcore
+  api_key:
+    secure: fc8ctUCKj9rzRdCbbz1K3i8rsJ5fACPvdSsvbVlucIZ7Fa5pb8EERHddfsEIhkkq
+  subject: decentfoundation
+  repo: windows
+  package: DECENT
+  version: $(APPVEYOR_BUILD_VERSION)/$(APPVEYOR_BUILD_VERSION)
+  artifact: MSI
+  publish: true
+  override: true
+  on:
+    APPVEYOR_REPO_TAG: true
+
+notifications:
+- provider: Email
+  to:
+  - '{{commitAuthorEmail}}'
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: false

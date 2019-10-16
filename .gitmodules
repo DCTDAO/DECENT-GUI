@@ -1,0 +1,8 @@
+[submodule "DCore"]
+        branch = master
+        path = DCore
+        url = https://github.com/DECENTfoundation/DECENT-Network.git
+[submodule "src/updatemanager"]
+        branch = master
+        path = src/updatemanager
+        url = https://github.com/DECENTfoundation/updatemanager.git
