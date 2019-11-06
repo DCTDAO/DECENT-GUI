@@ -7,8 +7,8 @@
       "inheritEnvironments": [
         "msvc_x64_x64"
       ],
-      "buildRoot": "C:\\Projects\\CMakeBuilds\\${name}",
-      "installRoot": "C:\\Projects\\DCore",
+      "buildRoot": "C:\\Projects\\CMakeBuilds\\DECENT\\${name}",
+      "installRoot": "C:\\Projects\\DECENT",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -50,8 +50,8 @@
       "inheritEnvironments": [
         "msvc_x64_x64"
       ],
-      "buildRoot": "C:\\Projects\\CMakeBuilds\\${name}",
-      "installRoot": "C:\\Projects\\DCore\\RelWithDebInfo",
+      "buildRoot": "C:\\Projects\\CMakeBuilds\\DECENT\\${name}",
+      "installRoot": "C:\\Projects\\DECENT\\RelWithDebInfo",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -93,8 +93,8 @@
       "inheritEnvironments": [
         "msvc_x64_x64"
       ],
-      "buildRoot": "C:\\Projects\\CMakeBuilds\\${name}",
-      "installRoot": "C:\\Projects\\DCore\\MinSizeRel",
+      "buildRoot": "C:\\Projects\\CMakeBuilds\\DECENT\\${name}",
+      "installRoot": "C:\\Projects\\DECENT\\MinSizeRel",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
@@ -136,8 +136,8 @@
       "inheritEnvironments": [
         "msvc_x64_x64"
       ],
-      "buildRoot": "C:\\Projects\\CMakeBuilds\\${name}",
-      "installRoot": "C:\\Projects\\DCore\\Debug",
+      "buildRoot": "C:\\Projects\\CMakeBuilds\\DECENT\\${name}",
+      "installRoot": "C:\\Projects\\DECENT\\Debug",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
