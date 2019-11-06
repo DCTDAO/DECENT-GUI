@@ -1,6 +1,11 @@
 Building DECENT
 ---------------
 
+| CI | Status |
+| -- | ------ |
+| Travis | [![Build Status](https://travis-ci.com/DECENTFoundation/DECENT-GUI.svg?branch=master)](https://travis-ci.com/DECENTFoundation/DECENT-GUI)
+| Appveyor | [![Build Status](https://ci.appveyor.com/api/projects/status/github/decentfoundation/DECENT-GUI?svg=true&branch=master)](https://ci.appveyor.com/project/DECENTfoundation/DECENT-GUI) |
+
 ### Installing prerequisites in Linux
 
 For Debian 10/Ubuntu 18.04 LTS or later, execute in console:
