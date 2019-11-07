@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
       gui_wallet::Globals::setCommandLine(app_options, cfg_options);
       bpo::parsed_options optparsed = bpo::command_line_parser(argc, argv).options(app_options).allow_unregistered().run();
       bpo::store(optparsed, options);
-      if (decent::check_unrecognized(optparsed))
+      if( decent::check_unrecognized(optparsed) )
       {
          return EXIT_FAILURE;
       }
@@ -58,16 +58,8 @@ int main(int argc, char* argv[])
    }
    else if( options.count("version") )
    {
-      std::string boost_version_text = decent::get_boost_version();
-      std::string openssl_version_text = decent::get_openssl_version();
-      std::string cryptopp_version_text = decent::get_cryptopp_version();
-
-      std::cout << "DECENT Wallet " << graphene::utilities::git_version();
-#ifndef NDEBUG
-      std::cout << " (debug)";
-#endif /* NDEBUG */
-      std::cout << "\nBoost " << boost_version_text << "\n" << openssl_version_text << "\nCryptopp " << cryptopp_version_text << "\nQt " << qVersion() << std::endl;
-
+      decent::dump_version_info();
+      std::cout << "Qt " << qVersion() << std::endl;
       return EXIT_SUCCESS;
    }
    else if( options.count("generate-keys") )
