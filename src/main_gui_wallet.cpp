@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
    QCoreApplication::setApplicationVersion(QString::fromStdString(graphene::utilities::git_version()));
 
    bpo::options_description app_options("DECENT Wallet");
-   bpo::options_description cfg_options("DECENT Wallet");
+   bpo::options_description cfg_options("Configuration options");
    bpo::variables_map options;
 
    try
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
    }
    else if( options.count("version") )
    {
-      decent::dump_version_info();
+      decent::dump_version_info("DECENT Wallet");
       std::cout << "Qt " << qVersion() << std::endl;
       return EXIT_SUCCESS;
    }
