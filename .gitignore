@@ -10,3 +10,4 @@ CMakeLists.txt.user
 
 *.qm
 .DS_Store
+MacOS/dist/
