@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
    try {
       qRegisterMetaType<std::string>( "std::string" );
       qRegisterMetaType<int64_t>( "int64_t" );
-      app.setApplicationDisplayName("DECENT");
+      app.setApplicationDisplayName(gui_wallet::MainWindow::tr("DECENT Wallet"));
 
       aMainWindow.show();
       //aMainWindow.StartUpdateThread();

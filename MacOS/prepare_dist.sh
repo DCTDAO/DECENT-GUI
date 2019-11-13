@@ -125,4 +125,4 @@ install_name_tool -add_rpath @executable_path/../Frameworks/ DECENT
 
 (otool -L DECENT | grep -q /usr/local) && echo "DECENT: found /usr/local in RPATH" && exit 1
 
-echo "Prepared DCore $2 distribution"
+echo "Prepared DECENT Wallet $2 distribution"

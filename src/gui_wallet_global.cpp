@@ -1413,8 +1413,8 @@ QProcess* run_ipfs_daemon(QObject* parent, const QString& app_dir)
 
 int runDecentD(gui_wallet::BlockChainStartType type, fc::promise<void>::ptr& exit_promise)
 {
-   bpo::options_description app_options("DECENT Daemon");
-   bpo::options_description cfg_options("DECENT Daemon");
+   bpo::options_description app_options("DECENT Wallet");
+   bpo::options_description cfg_options("Configuration options");
    bpo::variables_map options;
 
    try

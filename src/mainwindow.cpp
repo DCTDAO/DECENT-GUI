@@ -395,7 +395,7 @@ void MainWindow::slot_daemonFinished(int ret)
       return;
 
    if(ret != 0)
-      QMessageBox::critical(this, tr("DECENT Daemon"),
+      QMessageBox::critical(this, tr("DECENT Wallet"),
                          tr("The background processing thread finished unexpectedly. Application will terminate.\nError code: %1").arg(ret),
                          QMessageBox::Close);
    close();

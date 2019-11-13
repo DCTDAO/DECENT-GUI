@@ -5,7 +5,13 @@
     <name>CProgBar</name>
     <message>
         <location filename="../update_prog_bar.cpp" line="15"/>
+        <location filename="../update_prog_bar.cpp" line="66"/>
         <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../update_prog_bar.cpp" line="26"/>
+        <source>DECENT Wallet update</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -459,11 +465,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="398"/>
-        <source>DECENT Daemon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../mainwindow.cpp" line="399"/>
         <source>The background processing thread finished unexpectedly. Application will terminate.
 Error code: %1</source>
@@ -502,6 +503,12 @@ Error code: %1</source>
     <message>
         <location filename="../mainwindow.cpp" line="1094"/>
         <source>Failed to get account information - %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main_gui_wallet.cpp" line="201"/>
+        <location filename="../mainwindow.cpp" line="398"/>
+        <source>DECENT Wallet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

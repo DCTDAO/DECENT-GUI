@@ -23,7 +23,7 @@ CProgBar::CProgBar(int maximum, const QString& text, bool modal, bool hasCancel,
 {
     setRange(0, maximum);
     //resize(300, 40);
-    setWindowTitle("DECENT update");
+    setWindowTitle(tr("DECENT Wallet update"));
     //setModal(modal);
     QObject::connect(this, SIGNAL(canceled(void)), SLOT(progCanceled_slot(void)));
 
@@ -63,7 +63,7 @@ void CProgBar::Init(int maximum, const QString& text, uint32_t* abort, QWidget* 
 void CProgBar::EnableCancel(bool enable)
 {
     m_hasCancel = enable;
-    setCancelButtonText(enable ? "Cancel" : QString());
+    setCancelButtonText(enable ? tr("Cancel") : QString());
     Qt::WindowFlags flags = windowFlags();
     Qt::WindowFlags helpFlag = Qt::WindowContextHelpButtonHint;
     flags = flags & (~helpFlag);
