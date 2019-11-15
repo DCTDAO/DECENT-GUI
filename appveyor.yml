@@ -60,8 +60,8 @@ deploy:
     secure: fc8ctUCKj9rzRdCbbz1K3i8rsJ5fACPvdSsvbVlucIZ7Fa5pb8EERHddfsEIhkkq
   subject: decentfoundation
   repo: windows
-  package: DECENT
-  version: $(APPVEYOR_BUILD_VERSION)/$(APPVEYOR_BUILD_VERSION)
+  package: DCore
+  version: $(APPVEYOR_BUILD_VERSION)/dev/$(APPVEYOR_BUILD_VERSION)
   artifact: MSI
   publish: true
   override: true
