@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
             return EXIT_FAILURE;
          }
 
-         fc::file_appender::config ap_config(decent_path_finder::instance().get_decent_logs() / "gui_wallet.log");
+         fc::file_appender::config ap_config(graphene::utilities::decent_path_finder::instance().get_decent_logs() / "gui_wallet.log");
          ap_config.flush                = true;
          ap_config.rotate               = true;
          ap_config.rotation_interval    = fc::hours( 1 );
