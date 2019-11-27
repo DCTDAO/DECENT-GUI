@@ -115,7 +115,6 @@ void BrowseContentTab::timeToUpdate(const std::string& result)
 
 std::string BrowseContentTab::getUpdateCommand()
 {
-   graphene::chain::ContentObjectPropertyManager type_composer;
    graphene::chain::ContentObjectTypeValue type(graphene::chain::EContentObjectApplication::DecentCore);
    std::string str_type;
    type.to_string(str_type);

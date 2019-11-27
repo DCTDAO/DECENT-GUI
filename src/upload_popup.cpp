@@ -641,12 +641,10 @@ void Upload_popup::slot_UploadContent()
    std::string title = m_strTitle.toStdString();
    std::string desc = m_pDescriptionText->toPlainText().toStdString();
 
-   graphene::chain::ContentObjectTypeValue content_type(graphene::chain::EContentObjectApplication::DecentCore);
-   graphene::chain::ContentObjectPropertyManager synopsis_construct;
-   synopsis_construct.set<graphene::chain::ContentObjectType>(content_type);
+   graphene::chain::ContentObjectPropertyManager synopsis_construct("");
+   synopsis_construct.set<graphene::chain::ContentObjectType>(graphene::chain::EContentObjectApplication::DecentCore);
    synopsis_construct.set<graphene::chain::ContentObjectTitle>(title);
    synopsis_construct.set<graphene::chain::ContentObjectDescription>(desc);
-   std::string synopsis = synopsis_construct.m_str_synopsis;
 
    std::string str_seeders = getChosenPublishers().join(", ").toStdString();
 
@@ -678,7 +676,7 @@ void Upload_popup::slot_UploadContent()
       submitCommand += " \"" + str_expiration + "\"";                     //expiration
       submitCommand += " \"DCT\"";                                        //fee asset
       submitCommand += " \"" + str_fee + "\"";                            //fee price
-      submitCommand += " \"" + escape_string(synopsis) + "\"";            //synopsis
+      submitCommand += " \"" + escape_string(synopsis_construct._synopsis) + "\""; //synopsis
       submitCommand += " " + str_AES_key  + "";                           //AES key
       submitCommand += cd;                                                //cd
       submitCommand += " true";
@@ -693,7 +691,7 @@ void Upload_popup::slot_UploadContent()
       submitCommand += " [{\"region\" : \"\", \"amount\" : \"" + m_price + "\", \"asset_symbol\" : \"" + assetName + "\" }]";// price_amount
       submitCommand += " [" + str_seeders + "]";                           // seeders
       submitCommand += " \"" + m_life_time + "T23:59:59\"";                // expiration
-      submitCommand += " \"" + escape_string(synopsis) + "\"";             // synopsis
+      submitCommand += " \"" + escape_string(synopsis_construct._synopsis) + "\""; // synopsis
 
       // this is an example how price per regions will be used
       // submitCommand += " [[\"default\", \"0\"], [\"US\", \"10\"]]";

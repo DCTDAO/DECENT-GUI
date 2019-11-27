@@ -119,7 +119,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../browse_content_tab.cpp" line="235"/>
+        <location filename="../browse_content_tab.cpp" line="234"/>
         <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -531,41 +531,41 @@ Error code: %1</source>
     </message>
     <message>
         <location filename="../mining_vote_tab.cpp" line="186"/>
-        <location filename="../mining_vote_tab.cpp" line="276"/>
+        <location filename="../mining_vote_tab.cpp" line="275"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mining_vote_tab.cpp" line="190"/>
-        <location filename="../mining_vote_tab.cpp" line="276"/>
+        <location filename="../mining_vote_tab.cpp" line="275"/>
         <source>Un-vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mining_vote_tab.cpp" line="275"/>
+        <location filename="../mining_vote_tab.cpp" line="274"/>
         <source>For every vote or unvote opeation you will pay %1 fee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mining_vote_tab.cpp" line="277"/>
+        <location filename="../mining_vote_tab.cpp" line="276"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mining_vote_tab.cpp" line="292"/>
-        <location filename="../mining_vote_tab.cpp" line="329"/>
+        <location filename="../mining_vote_tab.cpp" line="291"/>
+        <location filename="../mining_vote_tab.cpp" line="328"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mining_vote_tab.cpp" line="293"/>
+        <location filename="../mining_vote_tab.cpp" line="292"/>
         <source>Your vote for number of miners (%1) should be equal or smaller to number of votes you have given (%2)
 
 In order to un-vote, please change your vote for number of miners</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mining_vote_tab.cpp" line="329"/>
+        <location filename="../mining_vote_tab.cpp" line="328"/>
         <source>Failed to submit voting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1034,7 +1034,7 @@ This operation will cost %2</source>
     </message>
     <message>
         <location filename="../upload_popup.cpp" line="627"/>
-        <location filename="../upload_popup.cpp" line="723"/>
+        <location filename="../upload_popup.cpp" line="721"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1049,7 +1049,7 @@ This operation will cost %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../upload_popup.cpp" line="723"/>
+        <location filename="../upload_popup.cpp" line="721"/>
         <source>Failed to submit content</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1092,27 +1092,27 @@ This operation will cost %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../upload_tab.cpp" line="206"/>
+        <location filename="../upload_tab.cpp" line="205"/>
         <source>Details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../upload_tab.cpp" line="212"/>
+        <location filename="../upload_tab.cpp" line="211"/>
         <source>Publish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../upload_tab.cpp" line="225"/>
+        <location filename="../upload_tab.cpp" line="224"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../upload_tab.cpp" line="225"/>
+        <location filename="../upload_tab.cpp" line="224"/>
         <source>Cannot resubmit content.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../upload_tab.cpp" line="225"/>
+        <location filename="../upload_tab.cpp" line="224"/>
         <source>IPFS is not running.</source>
         <translation type="unfinished"></translation>
     </message>

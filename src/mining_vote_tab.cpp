@@ -217,7 +217,6 @@ std::string MinerVotingTab::getUpdateCommand()
    if (currentUserName.empty())
       return std::string();
 
-   graphene::chain::ContentObjectPropertyManager type_composer;
    graphene::chain::ContentObjectTypeValue type(graphene::chain::EContentObjectApplication::DecentCore);
    std::string str_type;
    type.to_string(str_type);
