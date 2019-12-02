@@ -50,7 +50,7 @@ For Debian 10/Ubuntu 18.04 LTS or later, execute in console:
      cd ..
      rm -rf cmake-3.13.4 cmake-3.13.4.tar.gz
 
-For Fedora 29 or later, execute in console:
+For Fedora 30 or later, execute in console:
 
     sudo dnf install curl
     sudo curl https://bintray.com/user/downloadSubjectPublicKey?username=decentfoundation -o /etc/pki/rpm-gpg/RPM-GPG-KEY-decentfoundation
