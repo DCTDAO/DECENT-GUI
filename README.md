@@ -13,7 +13,7 @@ For Debian 10/Ubuntu 18.04 LTS or later, execute in console:
     sudo apt-get install apt-transport-https curl gnupg lsb-release software-properties-common
     curl https://bintray.com/user/downloadSubjectPublicKey?username=decentfoundation | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://dl.bintray.com/decentfoundation/$(lsb_release -is | tr "[:upper:]" "[:lower:]") $(lsb_release -cs) libpbc"
-    sudo apt-get install build-essential make cmake g++ doxygen git qt5-default qttools5-dev qttools5-dev-tools libreadline-dev libcrypto++-dev libgmp-dev libpbc-dev libssl-dev libcurl4-openssl-dev libboost-all-dev zlib1g-dev
+    sudo apt-get install build-essential make cmake g++ git qt5-default qttools5-dev qttools5-dev-tools libreadline-dev libcrypto++-dev libgmp-dev libpbc-dev libssl-dev libcurl4-openssl-dev libboost-all-dev zlib1g-dev
     mkdir ~/dev
 
     # Download and build JSON 3.7.3
@@ -55,7 +55,7 @@ For Fedora 30 or later, execute in console:
     sudo dnf install curl
     sudo curl https://bintray.com/user/downloadSubjectPublicKey?username=decentfoundation -o /etc/pki/rpm-gpg/RPM-GPG-KEY-decentfoundation
     sudo curl https://docs.decent.ch/assets/bintray-decentfoundation-fedora.repo -o /etc/yum.repos.d/bintray-decentfoundation.repo
-    sudo dnf install make cmake gcc-c++ doxygen git qt5-qtbase-devel qt5-linguist readline-devel cryptopp-devel openssl-devel gmp-devel libpbc-devel libcurl-devel json-devel zlib-devel boost-devel boost-static
+    sudo dnf install make cmake gcc-c++ git qt5-qtbase-devel qt5-linguist readline-devel cryptopp-devel openssl-devel gmp-devel libpbc-devel libcurl-devel json-devel zlib-devel boost-devel boost-static
     mkdir ~/dev
 
 For CentOS 8, execute in console:
@@ -64,7 +64,7 @@ For CentOS 8, execute in console:
     sudo curl https://bintray.com/user/downloadSubjectPublicKey?username=decentfoundation -o /etc/pki/rpm-gpg/RPM-GPG-KEY-decentfoundation
     sudo curl https://docs.decent.ch/assets/bintray-decentfoundation-centos.repo -o /etc/yum.repos.d/bintray-decentfoundation.repo
     sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-    sudo dnf install --enablerepo PowerTools make cmake gcc-c++ doxygen git qt5-qtbase-devel qt5-linguist readline-devel cryptopp-devel openssl-devel gmp-devel libpbc-devel libcurl-devel json-devel zlib-devel boost-devel boost-static
+    sudo dnf install --enablerepo PowerTools make cmake gcc-c++ git qt5-qtbase-devel qt5-linguist readline-devel cryptopp-devel openssl-devel gmp-devel libpbc-devel libcurl-devel json-devel zlib-devel boost-devel boost-static
     mkdir ~/dev
 
 ### Installing prerequisites in MacOS
@@ -75,7 +75,7 @@ For CentOS 8, execute in console:
 Then, execute in console:
 
     $ brew update
-    $ brew install cmake boost cryptopp openssl@1.1 pbc qt readline doxygen git ipfs
+    $ brew install cmake boost cryptopp openssl@1.1 pbc qt readline git ipfs
     $ brew tap nlohmann/json
     $ brew install nlohmann_json --with-cmake
     $ brew link --force readline
@@ -88,8 +88,6 @@ Then, execute in console:
 * Install Visual Studio 2017 Community (https://visualstudio.microsoft.com/downloads)
 * Install Boost 1.68 MSVC 14.1 (https://sourceforge.net/projects/boost/files/boost-binaries) (choose *C:\Projects\boost_1_68_0* as installation prefix)
 * Install Qt 5.12.6 (https://www.qt.io) for MSVC 14.1 x64 (choose *C:\Projects\Qt* as installation prefix)
-* Install Doxygen (http://www.doxygen.org) (choose *C:\Doxygen* as installation prefix)
-* Install Perl (http://strawberryperl.com) (choose *C:\Strawberry* as installation prefix)
 
 Then, start _Visual Studio 2017 x64 Native Tools Command Prompt_ and execute:
 
@@ -140,10 +138,8 @@ You can use CMake generator to create a Visual Studio 2017 project files and per
     cd \Projects\DECENT-Network
     set BOOST=C:\Projects\boost_1_68_0
     set QT_CMAKE=C:\Projects\Qt\5.12.6\msvc2017_64\lib\cmake
-    set DOXYGEN=C:\Doxygen
-    set PERL=C:\Strawberry\perl
     set VCPKG=C:\Projects\vcpkg
-    cmake -DCMAKE_TOOLCHAIN_FILE=%VCPKG%\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%DOXYGEN%;%PERL% -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST%\lib64-msvc-14.1 -DQt5Widgets_DIR=%QT_CMAKE%\Qt5Widgets -DQt5LinguistTools_DIR=%QT_CMAKE%\Qt5LinguistTools -G "Visual Studio 15 2017 Win64" .
+    cmake -DCMAKE_TOOLCHAIN_FILE=%VCPKG%\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST%\lib64-msvc-14.1 -DQt5Widgets_DIR=%QT_CMAKE%\Qt5Widgets -DQt5LinguistTools_DIR=%QT_CMAKE%\Qt5LinguistTools -G "Visual Studio 15 2017 Win64" .
 
 You can specify any other custom install prefix for `cmake` during the initial configuration, for example, by adding `-DCMAKE_INSTALL_PREFIX=C:\Projects\DECENT-Network-prefix` to the command line.
 

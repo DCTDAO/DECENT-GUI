@@ -45,7 +45,6 @@ addons:
       - sourceline: 'deb [arch=amd64] https://dl.bintray.com/decentfoundation/ubuntu xenial libpbc'
         key_url: 'https://bintray.com/user/downloadSubjectPublicKey?username=decentfoundation'
     packages:
-      - doxygen
       - qt5-default
       - qttools5-dev
       - qttools5-dev-tools

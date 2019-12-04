@@ -1,7 +1,6 @@
 version: 1.5.0.{build}
 
 environment:
-  DOXYGEN: 1.8.14
   IPFS: 0.4.22
   matrix:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -33,8 +32,6 @@ install:
 
     cd %APPVEYOR_BUILD_FOLDER%
 
-    nuget install Doxygen -version %DOXYGEN% -outputdirectory ..
-
     git submodule update --init --recursive
 
 cache: C:\Tools\vcpkg\installed
@@ -43,7 +40,7 @@ build_script:
 - cmd: >-
     call "%VCVARS%"
 
-    cmake -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\DECENT -DCMAKE_PROGRAM_PATH=%APPVEYOR_BUILD_FOLDER%\..\Doxygen.%DOXYGEN%\tools -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST_LIB% -DQt5Widgets_DIR=%QT%\lib\cmake\Qt5Widgets -DQt5LinguistTools_DIR=%QT%\lib\cmake\Qt5LinguistTools -G Ninja .
+    cmake -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\DECENT -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST_LIB% -DQt5Widgets_DIR=%QT%\lib\cmake\Qt5Widgets -DQt5LinguistTools_DIR=%QT%\lib\cmake\Qt5LinguistTools -G Ninja .
 
     ninja -j2 install
 
