@@ -99,17 +99,17 @@ Then, start _Visual Studio 2017 x64 Native Tools Command Prompt_ and execute:
 
 After all the prerequisites are installed, execute in console (change current path to `~/dev` in Linux/MacOS or to `\Projects` in Windows):
 
-    git clone https://github.com/DECENTfoundation/DECENT-Network.git
-    cd DECENT-Network
+    git clone https://github.com/DECENTfoundation/DECENT-GUI.git
+    cd DECENT-GUI
     git submodule update --init --recursive
 
 ### Building and installing DECENT in Linux or MacOS
 
 In order to build and install DECENT, execute in console:
 
-    mkdir -p ~/dev/DECENT-Network-build
-    cd ~/dev/DECENT-Network-build
-    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ~/dev/DECENT-Network
+    mkdir -p ~/dev/DECENT-GUI-build
+    cd ~/dev/DECENT-GUI-build
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ~/dev/DECENT-GUI
     cmake --build . --target all -- -j -l 3.0
     cmake --build . --target install
 
@@ -117,7 +117,7 @@ In order to build and install DECENT, execute in console:
 >
 >     $ make -j -l 3.0 install
 
-DECENT artifact is installed at `/usr/local` directory by default. You can specify any other custom install prefix for `cmake` during the initial configuration, for example, by adding `-DCMAKE_INSTALL_PREFIX=~/dev/DECENT-Network-prefix` to the command line.
+DECENT artifact is installed at `/usr/local` directory by default. You can specify any other custom install prefix for `cmake` during the initial configuration, for example, by adding `-DCMAKE_INSTALL_PREFIX=~/dev/DECENT-GUI-prefix` to the command line.
 
 You can use any path instead of `~/dev` in the steps above.
 
@@ -126,18 +126,18 @@ You can use Xcode, or any other CMake generator, and then, if it is an IDE gener
 ### Building and installing DECENT in Windows
 
 In order to build and install DECENT follow the steps:
-* start Visual Studio 2017, navigate to _File > Open > Folder_ and choose `C:\Projects\DECENT-Network`
+* start Visual Studio 2017, navigate to _File > Open > Folder_ and choose `C:\Projects\DECENT-GUI`
 * navigate to _CMake > Change CMake Settings > DECENT_ and adjust installation prefix and paths to Boost, Qt, Doxygen, Perl and vcpkg (if needed)
 * build and install artifacts using _CMake > Install > DECENT_
 
 You can use CMake generator to create a Visual Studio 2017 project files and perform _Build > Build solution_ action from there, just start the _Visual Studio 2017 x64 Native Tools Command Prompt_ and execute:
 
-    cd \Projects\DECENT-Network
+    cd \Projects\DECENT-GUI
     set BOOST=C:\Projects\boost_1_68_0
     set QT_CMAKE=C:\Projects\Qt\5.12.6\msvc2017_64\lib\cmake
     set VCPKG=C:\Projects\vcpkg
     cmake -DCMAKE_TOOLCHAIN_FILE=%VCPKG%\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST%\lib64-msvc-14.1 -DQt5Widgets_DIR=%QT_CMAKE%\Qt5Widgets -DQt5LinguistTools_DIR=%QT_CMAKE%\Qt5LinguistTools -G "Visual Studio 15 2017 Win64" .
 
-You can specify any other custom install prefix for `cmake` during the initial configuration, for example, by adding `-DCMAKE_INSTALL_PREFIX=C:\Projects\DECENT-Network-prefix` to the command line.
+You can specify any other custom install prefix for `cmake` during the initial configuration, for example, by adding `-DCMAKE_INSTALL_PREFIX=C:\Projects\DECENT-GUI-prefix` to the command line.
 
 You can use any path instead of `C:\Projects` in the steps above.
