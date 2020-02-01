@@ -83,8 +83,7 @@ Then, execute in console:
 * Install Git for Windows (https://gitforwindows.org)
 * Install CMake tools (https://cmake.org/download)
 * Install Visual Studio 2017 Community (https://visualstudio.microsoft.com/downloads)
-* Install Boost 1.68 MSVC 14.1 (https://sourceforge.net/projects/boost/files/boost-binaries) (choose *C:\Projects\boost_1_68_0* as installation prefix)
-* Install Qt 5.12.6 (https://www.qt.io) for MSVC 14.1 x64 (choose *C:\Projects\Qt* as installation prefix)
+* Install Qt 5.12.7 (https://www.qt.io) for MSVC 14.1 x64 (choose *C:\Projects\Qt* as installation prefix)
 
 Then, start _Visual Studio 2017 x64 Native Tools Command Prompt_ and execute:
 
@@ -93,7 +92,7 @@ Then, start _Visual Studio 2017 x64 Native Tools Command Prompt_ and execute:
     git clone https://github.com/Microsoft/vcpkg.git
     cd vcpkg
     bootstrap-vcpkg.bat
-    vcpkg --triplet x64-windows-static install cryptopp curl openssl pbc nlohmann-json
+    vcpkg --triplet x64-windows-static install boost cryptopp curl openssl pbc nlohmann-json
 
 ### Obtaining the sources
 
@@ -127,16 +126,14 @@ You can use Xcode, or any other CMake generator, and then, if it is an IDE gener
 
 In order to build and install DECENT follow the steps:
 * start Visual Studio 2017, navigate to _File > Open > Folder_ and choose `C:\Projects\DECENT-GUI`
-* navigate to _CMake > Change CMake Settings > DECENT_ and adjust installation prefix and paths to Boost, Qt, Doxygen, Perl and vcpkg (if needed)
+* navigate to _CMake > Change CMake Settings > DECENT_ and adjust installation prefix and paths to Qt and vcpkg (if needed)
 * build and install artifacts using _CMake > Install > DECENT_
 
 You can use CMake generator to create a Visual Studio 2017 project files and perform _Build > Build solution_ action from there, just start the _Visual Studio 2017 x64 Native Tools Command Prompt_ and execute:
 
     cd \Projects\DECENT-GUI
-    set BOOST=C:\Projects\boost_1_68_0
-    set QT_CMAKE=C:\Projects\Qt\5.12.6\msvc2017_64\lib\cmake
-    set VCPKG=C:\Projects\vcpkg
-    cmake -DCMAKE_TOOLCHAIN_FILE=%VCPKG%\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release -DBOOST_ROOT=%BOOST% -DBOOST_LIBRARYDIR=%BOOST%\lib64-msvc-14.1 -DQt5Widgets_DIR=%QT_CMAKE%\Qt5Widgets -DQt5LinguistTools_DIR=%QT_CMAKE%\Qt5LinguistTools -G "Visual Studio 15 2017 Win64" .
+    set QT_CMAKE=C:\Projects\Qt\5.12.7\msvc2017_64\lib\cmake
+    cmake -DCMAKE_TOOLCHAIN_FILE=C:\Projects\vcpkg\scripts\buildsystems\vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_BUILD_TYPE=Release -DQt5Widgets_DIR=%QT_CMAKE%\Qt5Widgets -DQt5LinguistTools_DIR=%QT_CMAKE%\Qt5LinguistTools -G "Visual Studio 15 2017 Win64" .
 
 You can specify any other custom install prefix for `cmake` during the initial configuration, for example, by adding `-DCMAKE_INSTALL_PREFIX=C:\Projects\DECENT-GUI-prefix` to the command line.
 
