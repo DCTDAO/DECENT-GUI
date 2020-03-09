@@ -1,7 +1,7 @@
 version: 1.5.0.{build}
 
 environment:
-  IPFS: 0.4.22
+  IPFS: 0.4.23
   QT: C:\Qt\5.12\msvc2017_64
   matrix:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
