@@ -27,7 +27,7 @@ install:
 
     vcpkg upgrade --no-dry-run
 
-    IF NOT EXIST installed\x64-windows-static\tools\go-ipfs\%IPFS%.stamp curl https://github.com/ipfs/go-ipfs/releases/download/v%IPFS%/go-ipfs_v%IPFS%_windows-amd64.zip -L -o downloads\ipfs.zip && del installed\x64-windows-static\tools\go-ipfs /Q && 7z x downloads\ipfs.zip -oinstalled\x64-windows-static\tools && echo "yes" > installed\x64-windows-static\tools\go-ipfs\%IPFS%.stamp
+    IF NOT EXIST installed\x64-windows-static\tools\go-ipfs\%IPFS%.stamp mkdir downloads && curl https://github.com/ipfs/go-ipfs/releases/download/v%IPFS%/go-ipfs_v%IPFS%_windows-amd64.zip -L -o downloads\ipfs.zip && del installed\x64-windows-static\tools\go-ipfs /Q && 7z x downloads\ipfs.zip -oinstalled\x64-windows-static\tools && echo "yes" > installed\x64-windows-static\tools\go-ipfs\%IPFS%.stamp
 
     cd %APPVEYOR_BUILD_FOLDER%
 
