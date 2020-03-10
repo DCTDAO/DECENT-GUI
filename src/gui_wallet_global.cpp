@@ -1313,7 +1313,7 @@ bool IsIpfsRunning()
 
    if (Process32First(snapshot, &entry))
       do {
-         if (!stricmp(entry.szExeFile, processName))
+         if (!_stricmp(entry.szExeFile, processName))
             return true;
       } while (Process32Next(snapshot, &entry));
 
